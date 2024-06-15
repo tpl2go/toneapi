@@ -71,14 +71,6 @@ namespace tipp
         static inline void AddProduct(const Ipp64f *pSrc1, const Ipp64f *pSrc2, Ipp64f *pSrcDst, int len) { AssertNoError(ippsAddProduct_64f(pSrc1, pSrc2, pSrcDst, len)); }
         static inline void AddProduct(const Ipp32fc *pSrc1, const Ipp32fc *pSrc2, Ipp32fc *pSrcDst, int len) { AssertNoError(ippsAddProduct_32fc(pSrc1, pSrc2, pSrcDst, len)); }
         static inline void AddProduct(const Ipp64fc *pSrc1, const Ipp64fc *pSrc2, Ipp64fc *pSrcDst, int len) { AssertNoError(ippsAddProduct_64fc(pSrc1, pSrc2, pSrcDst, len)); }
-        template <typename T, typename A>
-        std::vector<T, A> AddProduct(std::vector<T, A> &Src1, std::vector<T, A> &Src2, std::vector<T, A> &SrcDst)
-        {
-            if (SrcDst.size() != Src1.size() || SrcDst.size() != Src2.size())
-                throw std::runtime_error("AddProduct: Unequal vector sizes");
-            AddProduct(Src1.data(), val, Src2.data(), SrcDst.data(), SrcDst.size());
-            return SrcDst;
-        }
 
         static inline void Add_I(const Ipp16s *pSrc, Ipp16s *pSrcDst, int len) { AssertNoError(ippsAdd_16s_I(pSrc, pSrcDst, len)); }
         static inline void Add_I(const Ipp32f *pSrc, Ipp32f *pSrcDst, int len) { AssertNoError(ippsAdd_32f_I(pSrc, pSrcDst, len)); }
@@ -87,14 +79,6 @@ namespace tipp
         static inline void Add_I(const Ipp64fc *pSrc, Ipp64fc *pSrcDst, int len) { AssertNoError(ippsAdd_64fc_I(pSrc, pSrcDst, len)); }
         static inline void Add_I(const Ipp16s *pSrc, Ipp32s *pSrcDst, int len) { AssertNoError(ippsAdd_16s32s_I(pSrc, pSrcDst, len)); }
         static inline void Add_I(const Ipp32u *pSrc, Ipp32u *pSrcDst, int len) { AssertNoError(ippsAdd_32u_I(pSrc, pSrcDst, len)); }
-        template <typename T, typename A>
-        std::vector<T, A> Add_I(std::vector<T, A> &Src, std::vector<T, A> &SrcDst)
-        {
-            if (SrcDst.size() != Src.size())
-                throw std::runtime_error("Add_I: Unequal vector sizes");
-            Add_I(Src.data(), SrcDst.data(), Src.size());
-            return SrcDst;
-        }
 
         static inline void Add(const Ipp16s *pSrc1, const Ipp16s *pSrc2, Ipp16s *pDst, int len) { AssertNoError(ippsAdd_16s(pSrc1, pSrc2, pDst, len)); }
         static inline void Add(const Ipp16u *pSrc1, const Ipp16u *pSrc2, Ipp16u *pDst, int len) { AssertNoError(ippsAdd_16u(pSrc1, pSrc2, pDst, len)); }
@@ -103,82 +87,28 @@ namespace tipp
         static inline void Add(const Ipp32fc *pSrc1, const Ipp32fc *pSrc2, Ipp32fc *pDst, int len) { AssertNoError(ippsAdd_32fc(pSrc1, pSrc2, pDst, len)); }
         static inline void Add(const Ipp64fc *pSrc1, const Ipp64fc *pSrc2, Ipp64fc *pDst, int len) { AssertNoError(ippsAdd_64fc(pSrc1, pSrc2, pDst, len)); }
         static inline void Add(const Ipp32u *pSrc1, const Ipp32u *pSrc2, Ipp32u *pDst, int len) { AssertNoError(ippsAdd_32u(pSrc1, pSrc2, pDst, len)); }
-        template <typename T, typename A>
-        std::vector<T, A> Add(std::vector<T, A> &Src1, std::vector<T, A> &Src2)
-        {
-            if (Src1.size() != Src2.size())
-                throw std::runtime_error("Add: Unequal vector sizes");
-            std::vector<T, A> Dst(Src1.size());
-            Add(Src1.data(), Src2.data(), Dst.data(), Src1.size());
-            return Dst;
-        }
 
         static inline void AndC(const Ipp8u *pSrc, Ipp8u val, Ipp8u *pDst, int len) { AssertNoError(ippsAndC_8u(pSrc, val, pDst, len)); }
         static inline void AndC(const Ipp16u *pSrc, Ipp16u val, Ipp16u *pDst, int len) { AssertNoError(ippsAndC_16u(pSrc, val, pDst, len)); }
         static inline void AndC(const Ipp32u *pSrc, Ipp32u val, Ipp32u *pDst, int len) { AssertNoError(ippsAndC_32u(pSrc, val, pDst, len)); }
-        template <typename T, typename A>
-        std::vector<T, A> AndC(std::vector<T, A> &Src, T val)
-        {
-            std::vector<T, A> Dst(Src.size());
-            AndC(Src.data(), val, Dst.data(), Src.size());
-            return Dst;
-        }
 
         static inline void AndC_I(Ipp8u val, Ipp8u *pSrcDst, int len) { AssertNoError(ippsAndC_8u_I(val, pSrcDst, len)); }
         static inline void AndC_I(Ipp16u val, Ipp16u *pSrcDst, int len) { AssertNoError(ippsAndC_16u_I(val, pSrcDst, len)); }
         static inline void AndC_I(Ipp32u val, Ipp32u *pSrcDst, int len) { AssertNoError(ippsAndC_32u_I(val, pSrcDst, len)); }
-        template <typename T, typename A>
-        std::vector<T, A> AndC_I(T val, std::vector<T, A> &SrcDst)
-        {
-            AndC_I(val, SrcDst.data(), SrcDst.size());
-            return SrcDst;
-        }
 
         static inline void And(const Ipp8u *pSrc1, const Ipp8u *pSrc2, Ipp8u *pDst, int len) { AssertNoError(ippsAnd_8u(pSrc1, pSrc2, pDst, len)); }
         static inline void And(const Ipp16u *pSrc1, const Ipp16u *pSrc2, Ipp16u *pDst, int len) { AssertNoError(ippsAnd_16u(pSrc1, pSrc2, pDst, len)); }
         static inline void And(const Ipp32u *pSrc1, const Ipp32u *pSrc2, Ipp32u *pDst, int len) { AssertNoError(ippsAnd_32u(pSrc1, pSrc2, pDst, len)); }
 
-        template <typename T, typename A>
-        std::vector<T, A> And(std::vector<T, A> &Src1, std::vector<T, A> &Src2)
-        {
-            if (Src1.size() != Src2.size())
-                throw std::runtime_error("And: Unequal vector sizes");
-            std::vector<T, A> Dst(Src1.size());
-            And(Src1.data(), Src2.data(), Dst.data(), Src1.size());
-            return Dst;
-        }
-
         static inline void And_I(const Ipp8u *pSrc, Ipp8u *pSrcDst, int len) { AssertNoError(ippsAnd_8u_I(pSrc, pSrcDst, len)); }
         static inline void And_I(const Ipp16u *pSrc, Ipp16u *pSrcDst, int len) { AssertNoError(ippsAnd_16u_I(pSrc, pSrcDst, len)); }
         static inline void And_I(const Ipp32u *pSrc, Ipp32u *pSrcDst, int len) { AssertNoError(ippsAnd_32u_I(pSrc, pSrcDst, len)); }
 
-        template <typename T, typename A>
-        std::vector<T, A> And_I(std::vector<T, A> &Src, std::vector<T, A> &SrcDst)
-        {
-            if (Src.size() != SrcDst.size())
-                throw std::runtime_error("And_I: Unequal vector sizes");
-            And_I(Src.data(), SrcDst.data(), Src.size());
-            return SrcDst;
-        }
-
         static inline void Arctan(const Ipp32f *pSrc, Ipp32f *pDst, int len) { AssertNoError(ippsArctan_32f(pSrc, pDst, len)); }
         static inline void Arctan(const Ipp64f *pSrc, Ipp64f *pDst, int len) { AssertNoError(ippsArctan_64f(pSrc, pDst, len)); }
-        template <typename T, typename A>
-        std::vector<T, A> Arctan(std::vector<T, A> &Src)
-        {
-            std::vector<T, A> Dst(Src.size());
-            Arctan(Src.data(), Dst.data(), Src.size());
-            return Dst;
-        }
 
         static inline void Arctan_I(Ipp32f *pSrcDst, int len) { AssertNoError(ippsArctan_32f_I(pSrcDst, len)); }
         static inline void Arctan_I(Ipp64f *pSrcDst, int len) { AssertNoError(ippsArctan_64f_I(pSrcDst, len)); }
-        template <typename T, typename A>
-        std::vector<T, A> Arctan_I(std::vector<T, A> &SrcDst)
-        {
-            Arctan_I(SrcDst.data(), SrcDst.size());
-            return SrcDst;
-        }
 
         //   ippsAutoCorrNormGetBufferSize
         //   ippsAutoCorrNorm_32f
@@ -188,80 +118,39 @@ namespace tipp
 
         static inline void CartToPolar(const Ipp32f *pSrcRe, const Ipp32f *pSrcIm, Ipp32f *pDstMagn, Ipp32f *pDstPhase, int len) { AssertNoError(ippsCartToPolar_32f(pSrcRe, pSrcIm, pDstMagn, pDstPhase, len)); }
         static inline void CartToPolar(const Ipp64f *pSrcRe, const Ipp64f *pSrcIm, Ipp64f *pDstMagn, Ipp64f *pDstPhase, int len) { AssertNoError(ippsCartToPolar_64f(pSrcRe, pSrcIm, pDstMagn, pDstPhase, len)); }
-        template <typename T, typename A>
-        std::pair<std::vector<T, A>, std::vector<T, A>> CartToPolar(std::vector<T, A> &SrcRe, std::vector<T, A> &SrcIm)
-        {
-            if (SrcRe.size() != SrcIm.size())
-                throw std::runtime_error("CartToPolar: Unequal vector sizes");
-            std::vector<T, A> DstMagn(SrcRe.size());
-            std::vector<T, A> DstPhase(SrcRe.size());
-            CartToPolar(SrcRe.data(), SrcIm.data(), DstMagn.data(), DstPhase.data(), SrcRe.size());
-            return std::make_pair(DstMagn, DstPhase);
-        }
 
         static inline void CartToPolar(const Ipp32fc *pSrc, Ipp32f *pDstMagn, Ipp32f *pDstPhase, int len) { AssertNoError(ippsCartToPolar_32fc(pSrc, pDstMagn, pDstPhase, len)); }
         static inline void CartToPolar(const Ipp64fc *pSrc, Ipp64f *pDstMagn, Ipp64f *pDstPhase, int len) { AssertNoError(ippsCartToPolar_64fc(pSrc, pDstMagn, pDstPhase, len)); }
 
         static inline void ConjCcs(const Ipp32f *pSrc, Ipp32fc *pDst, int lenDst) { AssertNoError(ippsConjCcs_32fc(pSrc, pDst, lenDst)); }
         static inline void ConjCcs(const Ipp64f *pSrc, Ipp64fc *pDst, int lenDst) { AssertNoError(ippsConjCcs_64fc(pSrc, pDst, lenDst)); }
-        template <typename T, typename A>
-        std::vector<T, A> ConjCcs(std::vector<T, A> &Src)
-        {
-            std::vector<T, A> Dst(Src.size());
-            ConjCcs(Src.data(), Dst.data(), Src.size());
-            return Dst;
-        }
 
         static inline void ConjCcs_I(Ipp32fc *pSrcDst, int lenDst) { AssertNoError(ippsConjCcs_32fc_I(pSrcDst, lenDst)); }
         static inline void ConjCcs_I(Ipp64fc *pSrcDst, int lenDst) { AssertNoError(ippsConjCcs_64fc_I(pSrcDst, lenDst)); }
-        template <typename T, typename A>
-        std::vector<T, A> ConjCcs_I(std::vector<T, A> &SrcDst)
-        {
-            ConjCcs_I(SrcDst.data(), SrcDst.size());
-            return SrcDst;
-        }
 
         static inline void ConjFlip(const Ipp16sc *pSrc, Ipp16sc *pDst, int len) { AssertNoError(ippsConjFlip_16sc(pSrc, pDst, len)); }
         static inline void ConjFlip(const Ipp32fc *pSrc, Ipp32fc *pDst, int len) { AssertNoError(ippsConjFlip_32fc(pSrc, pDst, len)); }
         static inline void ConjFlip(const Ipp64fc *pSrc, Ipp64fc *pDst, int len) { AssertNoError(ippsConjFlip_64fc(pSrc, pDst, len)); }
-        template <typename T, typename A>
-        std::vector<T, A> ConjFlip(std::vector<T, A> &Src)
-        {
-            std::vector<T, A> Dst(Src.size());
-            ConjFlip(Src.data(), Dst.data(), Src.size());
-            return Dst;
-        }
 
         static inline void ConjPack(const Ipp32f *pSrc, Ipp32fc *pDst, int lenDst) { AssertNoError(ippsConjPack_32fc(pSrc, pDst, lenDst)); }
         static inline void ConjPack(const Ipp64f *pSrc, Ipp64fc *pDst, int lenDst) { AssertNoError(ippsConjPack_64fc(pSrc, pDst, lenDst)); }
+
         static inline void ConjPack_I(Ipp32fc *pSrcDst, int lenDst) { AssertNoError(ippsConjPack_32fc_I(pSrcDst, lenDst)); }
         static inline void ConjPack_I(Ipp64fc *pSrcDst, int lenDst) { AssertNoError(ippsConjPack_64fc_I(pSrcDst, lenDst)); }
 
         static inline void ConjPerm(const Ipp32f *pSrc, Ipp32fc *pDst, int lenDst) { AssertNoError(ippsConjPerm_32fc(pSrc, pDst, lenDst)); }
         static inline void ConjPerm(const Ipp64f *pSrc, Ipp64fc *pDst, int lenDst) { AssertNoError(ippsConjPerm_64fc(pSrc, pDst, lenDst)); }
+
         static inline void ConjPerm_I(Ipp32fc *pSrcDst, int lenDst) { AssertNoError(ippsConjPerm_32fc_I(pSrcDst, lenDst)); }
         static inline void ConjPerm_I(Ipp64fc *pSrcDst, int lenDst) { AssertNoError(ippsConjPerm_64fc_I(pSrcDst, lenDst)); }
 
         static inline void Conj(const Ipp16sc *pSrc, Ipp16sc *pDst, int len) { AssertNoError(ippsConj_16sc(pSrc, pDst, len)); }
         static inline void Conj(const Ipp32fc *pSrc, Ipp32fc *pDst, int len) { AssertNoError(ippsConj_32fc(pSrc, pDst, len)); }
         static inline void Conj(const Ipp64fc *pSrc, Ipp64fc *pDst, int len) { AssertNoError(ippsConj_64fc(pSrc, pDst, len)); }
-        template <typename T, typename A>
-        std::vector<T, A> Conj(std::vector<T, A> &Src)
-        {
-            std::vector<T, A> Dst(Src.size());
-            Conj(Src.data(), Dst.data(), Src.size());
-            return Dst;
-        }
 
         static inline void Conj_I(Ipp16sc *pSrcDst, int len) { AssertNoError(ippsConj_16sc_I(pSrcDst, len)); }
         static inline void Conj_I(Ipp32fc *pSrcDst, int len) { AssertNoError(ippsConj_32fc_I(pSrcDst, len)); }
         static inline void Conj_I(Ipp64fc *pSrcDst, int len) { AssertNoError(ippsConj_64fc_I(pSrcDst, len)); }
-        template <typename T, typename A>
-        std::vector<T, A> Conj_I(std::vector<T, A> &SrcDst)
-        {
-            Conj_I(SrcDst.data(), SrcDst.size());
-            return SrcDst;
-        }
 
         static inline void Copy(const Ipp8u *pSrc, Ipp8u *pDst, int len) { AssertNoError(ippsCopy_8u(pSrc, pDst, len)); }                        // unsigned char
         static inline void Copy(const Ipp8s *pSrc, Ipp8s *pDst, int len) { AssertNoError(ippsCopy_8u((Ipp8u *)pSrc, (Ipp8u *)pDst, len)); }      // signed char  // REUSE
@@ -278,32 +167,12 @@ namespace tipp
         static inline void Copy(const Ipp32fc *pSrc, Ipp32fc *pDst, int len) { AssertNoError(ippsCopy_32fc(pSrc, pDst, len)); }                  // complex float
         static inline void Copy(const Ipp64sc *pSrc, Ipp64sc *pDst, int len) { AssertNoError(ippsCopy_64sc(pSrc, pDst, len)); }                  // complex signed long long
         static inline void Copy(const Ipp64fc *pSrc, Ipp64fc *pDst, int len) { AssertNoError(ippsCopy_64fc(pSrc, pDst, len)); }                  // complex double
-        template <typename T, typename A>
-        std::vector<T, A> Copy(std::vector<T, A> &Src)
-        {
-            std::vector<T, A> Dst(Src.size());
-            Copy(Src.data(), Dst.data(), Src.size());
-            return Dst;
-        }
 
         static inline void DivCRev(const Ipp16u *pSrc, Ipp16u val, Ipp16u *pDst, int len) { AssertNoError(ippsDivCRev_16u(pSrc, val, pDst, len)); }
         static inline void DivCRev(const Ipp32f *pSrc, Ipp32f val, Ipp32f *pDst, int len) { AssertNoError(ippsDivCRev_32f(pSrc, val, pDst, len)); }
-        template <typename T, typename A>
-        std::vector<T, A> DivCRev(std::vector<T, A> &Src, T val)
-        {
-            std::vector<T, A> Dst(Src.size());
-            DivCRev(Src.data(), val, Dst.data(), Src.size());
-            return Dst;
-        }
 
         static inline void DivCRev_I(Ipp16u val, Ipp16u *pSrcDst, int len) { AssertNoError(ippsDivCRev_16u_I(val, pSrcDst, len)); }
         static inline void DivCRev_I(Ipp32f val, Ipp32f *pSrcDst, int len) { AssertNoError(ippsDivCRev_32f_I(val, pSrcDst, len)); }
-        template <typename T, typename A>
-        std::vector<T, A> DivCRev_I(T val, std::vector<T, A> &SrcDst)
-        {
-            DivCRev_I(val, SrcDst.data(), SrcDst.size());
-            return SrcDst;
-        }
 
         static inline void DivC_I(Ipp32f val, Ipp32f *pSrcDst, int len) { AssertNoError(ippsDivC_32f_I(val, pSrcDst, len)); }
         static inline void DivC_I(Ipp64f val, Ipp64f *pSrcDst, int len) { AssertNoError(ippsDivC_64f_I(val, pSrcDst, len)); }
@@ -311,12 +180,6 @@ namespace tipp
         static inline void DivC_I(Ipp64fc val, Ipp64fc *pSrcDst, int len) { AssertNoError(ippsDivC_64fc_I(val, pSrcDst, len)); }
         static inline void DivC_I(const double val, Ipp64fc *pSrcDst, int len) { AssertNoError(ippsDivC_64f_I(val, reinterpret_cast<Ipp64f *>(pSrcDst), 2 * len)); }
         static inline void DivC_I(const float val, Ipp32fc *pSrcDst, int len) { AssertNoError(ippsDivC_32f_I(val, reinterpret_cast<Ipp32f *>(pSrcDst), 2 * len)); }
-        template <typename T, typename A>
-        std::vector<T, A> DivC_I(T val, std::vector<T, A> &SrcDst)
-        {
-            DivC_I(val, SrcDst.data(), SrcDst.size());
-            return SrcDst;
-        }
 
         static inline void DivC(const Ipp32f *pSrc, Ipp32f val, Ipp32f *pDst, int len) { AssertNoError(ippsDivC_32f(pSrc, val, pDst, len)); }
         static inline void DivC(const Ipp64f *pSrc, Ipp64f val, Ipp64f *pDst, int len) { AssertNoError(ippsDivC_64f(pSrc, val, pDst, len)); }
@@ -324,25 +187,11 @@ namespace tipp
         static inline void DivC(const Ipp64fc *pSrc, Ipp64fc val, Ipp64fc *pDst, int len) { AssertNoError(ippsDivC_64fc(pSrc, val, pDst, len)); }
         static inline void DivC(const Ipp32fc *pSrc, Ipp32f val, Ipp32fc *pDst, int len) { AssertNoError(ippsDivC_32f(reinterpret_cast<const Ipp32f *>(pSrc), val, reinterpret_cast<Ipp32f *>(pDst), 2 * len)); }
         static inline void DivC(const Ipp64fc *pSrc, Ipp64f val, Ipp64fc *pDst, int len) { AssertNoError(ippsDivC_64f(reinterpret_cast<const Ipp64f *>(pSrc), val, reinterpret_cast<Ipp64f *>(pDst), 2 * len)); }
-        template <typename T, typename A>
-        std::vector<T, A> DivC(std::vector<T, A> &Src, T val)
-        {
-            std::vector<T, A> Dst(Src.size());
-            DivC(Src.data(), val, Dst.data(), Src.size());
-            return Dst;
-        }
 
         static inline void Div(const Ipp32f *pSrc1, const Ipp32f *pSrc2, Ipp32f *pDst, int len) { AssertNoError(ippsDiv_32f(pSrc1, pSrc2, pDst, len)); }
         static inline void Div(const Ipp64f *pSrc1, const Ipp64f *pSrc2, Ipp64f *pDst, int len) { AssertNoError(ippsDiv_64f(pSrc1, pSrc2, pDst, len)); }
         static inline void Div(const Ipp32fc *pSrc1, const Ipp32fc *pSrc2, Ipp32fc *pDst, int len) { AssertNoError(ippsDiv_32fc(pSrc1, pSrc2, pDst, len)); }
         static inline void Div(const Ipp64fc *pSrc1, const Ipp64fc *pSrc2, Ipp64fc *pDst, int len) { AssertNoError(ippsDiv_64fc(pSrc1, pSrc2, pDst, len)); }
-        template <typename T, typename A>
-        std::vector<T, A> Div(std::vector<T, A> &Src1, std::vector<T, A> &Src2)
-        {
-            std::vector<T, A> Dst(Src1.size());
-            Div(Src1.data(), Src2.data(), Dst.data(), Src1.size());
-            return Dst;
-        }
 
         static inline void DotProd(const Ipp32f *pSrc1, const Ipp32f *pSrc2, int len, Ipp32f *pDp) { AssertNoError(ippsDotProd_32f(pSrc1, pSrc2, len, pDp)); }
         static inline void DotProd(const Ipp32fc *pSrc1, const Ipp32fc *pSrc2, int len, Ipp32fc *pDp) { AssertNoError(ippsDotProd_32fc(pSrc1, pSrc2, len, pDp)); }
@@ -357,34 +206,12 @@ namespace tipp
         static inline void DotProd(const Ipp16sc *pSrc1, const Ipp16sc *pSrc2, int len, Ipp64sc *pDp) { AssertNoError(ippsDotProd_16sc64sc(pSrc1, pSrc2, len, pDp)); }
         static inline void DotProd(const Ipp16s *pSrc1, const Ipp16sc *pSrc2, int len, Ipp64sc *pDp) { AssertNoError(ippsDotProd_16s16sc64sc(pSrc1, pSrc2, len, pDp)); }
         static inline void DotProd(const Ipp16s *pSrc1, const Ipp16s *pSrc2, int len, Ipp32f *pDp) { AssertNoError(ippsDotProd_16s32f(pSrc1, pSrc2, len, pDp)); }
-        template <typename T, typename A>
-        std::vector<T, A> DotProd(std::vector<T, A> &Src1, std::vector<T, A> &Src2)
-        {
-            if (Src1.size() != Src2.size())
-                throw std::invalid_argument("DotProd: vector sizes do not match");
-            std::vector<T, A> Dst(Src1.size());
-            DotProd(Src1.data(), Src2.data(), Src1.size(), Dst.data());
-            return Dst;
-        }
 
         static inline void Exp(const Ipp32f *pSrc, Ipp32f *pDst, int len) { AssertNoError(ippsExp_32f(pSrc, pDst, len)); }
         static inline void Exp(const Ipp64f *pSrc, Ipp64f *pDst, int len) { AssertNoError(ippsExp_64f(pSrc, pDst, len)); }
-        template <typename T, typename A>
-        std::vector<T, A> Exp(std::vector<T, A> &Src)
-        {
-            std::vector<T, A> Dst(Src.size());
-            Exp(Src.data(), Dst.data(), Src.size());
-            return Dst;
-        }
 
         static inline void Exp_I(Ipp32f *pSrcDst, int len) { AssertNoError(ippsExp_32f_I(pSrcDst, len)); }
         static inline void Exp_I(Ipp64f *pSrcDst, int len) { AssertNoError(ippsExp_64f_I(pSrcDst, len)); }
-        template <typename T, typename A>
-        std::vector<T, A> Exp_I(std::vector<T, A> &SrcDst)
-        {
-            Exp_I(SrcDst.data(), SrcDst.size());
-            return SrcDst;
-        }
 
         static inline void Flip(const Ipp8u *pSrc, Ipp8u *pDst, int len) { AssertNoError(ippsFlip_8u(pSrc, pDst, len)); }
         static inline void Flip(const Ipp16u *pSrc, Ipp16u *pDst, int len) { AssertNoError(ippsFlip_16u(pSrc, pDst, len)); }
@@ -392,13 +219,6 @@ namespace tipp
         static inline void Flip(const Ipp64f *pSrc, Ipp64f *pDst, int len) { AssertNoError(ippsFlip_64f(pSrc, pDst, len)); }
         static inline void Flip(const Ipp32fc *pSrc, Ipp32fc *pDst, int len) { AssertNoError(ippsFlip_32fc(pSrc, pDst, len)); }
         static inline void Flip(const Ipp64fc *pSrc, Ipp64fc *pDst, int len) { AssertNoError(ippsFlip_64fc(pSrc, pDst, len)); }
-        template <typename T, typename A>
-        std::vector<T, A> Flip(std::vector<T, A> &Src)
-        {
-            std::vector<T, A> Dst(Src.size());
-            Flip(Src.data(), Dst.data(), Src.size());
-            return Dst;
-        }
 
         static inline void Flip_I(Ipp16u *pSrcDst, int len) { AssertNoError(ippsFlip_16u_I(pSrcDst, len)); }
         static inline void Flip_I(Ipp8u *pSrcDst, int len) { AssertNoError(ippsFlip_8u_I(pSrcDst, len)); }
@@ -406,12 +226,6 @@ namespace tipp
         static inline void Flip_I(Ipp64f *pSrcDst, int len) { AssertNoError(ippsFlip_64f_I(pSrcDst, len)); }
         static inline void Flip_I(Ipp32fc *pSrcDst, int len) { AssertNoError(ippsFlip_32fc_I(pSrcDst, len)); }
         static inline void Flip_I(Ipp64fc *pSrcDst, int len) { AssertNoError(ippsFlip_64fc_I(pSrcDst, len)); }
-        template <typename T, typename A>
-        std::vector<T, A> Flip_I(std::vector<T, A> &SrcDst)
-        {
-            Flip_I(SrcDst.data(), SrcDst.size());
-            return SrcDst;
-        }
 
         static inline void Goertz(const Ipp32f *pSrc, int len, Ipp32fc *pVal, Ipp32f rFreq) { AssertNoError(ippsGoertz_32f(pSrc, len, pVal, rFreq)); }
         static inline void Goertz(const Ipp64f *pSrc, int len, Ipp64fc *pVal, Ipp64f rFreq) { AssertNoError(ippsGoertz_64f(pSrc, len, pVal, rFreq)); }
