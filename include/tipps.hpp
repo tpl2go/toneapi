@@ -13,82 +13,6 @@ namespace tipp
     namespace ipps
     {
 
-        // Custom allocator
-        template <typename T>
-        class IPPAllocator
-        {
-        public:
-            using value_type = T;
-            using pointer = T *;
-            using const_pointer = const T *;
-            using reference = T &;
-            using const_reference = const T &;
-            using size_type = std::size_t;
-            using difference_type = std::ptrdiff_t;
-
-            // Rebind allocator to another type
-            template <typename U>
-            struct rebind
-            {
-                using other = IPPAllocator<U>;
-            };
-
-            // Constructor
-            IPPAllocator() noexcept {}
-
-            // Copy constructor
-            template <typename U>
-            IPPAllocator(const IPPAllocator<U> &) noexcept {}
-
-            // Allocate memory
-            pointer allocate(size_type n, const void *hint = 0)
-            {
-                if (n > max_size())
-                    throw std::bad_alloc();
-                return static_cast<pointer>(ippsMalloc_32fc(n * sizeof(T)));
-            }
-
-            // Deallocate memory
-            void deallocate(pointer p, size_type n) noexcept
-            {
-                ippsFree(p);
-            }
-
-            // Construct an object in allocated memory
-            template <typename U, typename... Args>
-            void construct(U *p, Args &&...args)
-            {
-                ::new ((void *)p) U(std::forward<Args>(args)...);
-            }
-
-            // Destroy an object in allocated memory
-            template <typename U>
-            void destroy(U *p)
-            {
-                p->~U();
-            }
-
-            // Returns the maximum number of elements that can be allocated
-            size_type max_size() const noexcept
-            {
-                return size_type(~0) / sizeof(T);
-            }
-        };
-
-        // Equality comparison operator
-        template <typename T, typename U>
-        bool operator==(const IPPAllocator<T> &, const IPPAllocator<U> &) noexcept
-        {
-            return true;
-        }
-
-        // Inequality comparison operator
-        template <typename T, typename U>
-        bool operator!=(const IPPAllocator<T> &, const IPPAllocator<U> &) noexcept
-        {
-            return false;
-        }
-
         static inline void Abs(const Ipp16s *pSrc, Ipp16s *pDst, int len) { AssertNoError(ippsAbs_16s(pSrc, pDst, len)); }
         static inline void Abs(const Ipp32s *pSrc, Ipp32s *pDst, int len) { AssertNoError(ippsAbs_32s(pSrc, pDst, len)); }
         static inline void Abs(const Ipp32f *pSrc, Ipp32f *pDst, int len) { AssertNoError(ippsAbs_32f(pSrc, pDst, len)); }
@@ -138,7 +62,7 @@ namespace tipp
         std::vector<T, A> AddProductC(std::vector<T, A> &Src, T val, std::vector<T, A> &SrcDst)
         {
             if (SrcDst.size() != Src.size())
-                throw std::runtime_error("Unequal vector sizes in AddProductC");
+                throw std::runtime_error("AddProductC: Unequal vector sizes");
             AddProductC(Src.data(), val, Src.size(), SrcDst.data());
             return SrcDst;
         }
@@ -151,7 +75,7 @@ namespace tipp
         std::vector<T, A> AddProduct(std::vector<T, A> &Src1, std::vector<T, A> &Src2, std::vector<T, A> &SrcDst)
         {
             if (SrcDst.size() != Src1.size() || SrcDst.size() != Src2.size())
-                throw std::runtime_error("Unequal vector sizes in AddProductC");
+                throw std::runtime_error("AddProduct: Unequal vector sizes");
             AddProduct(Src1.data(), val, Src2.data(), SrcDst.data(), SrcDst.size());
             return SrcDst;
         }
@@ -167,7 +91,7 @@ namespace tipp
         std::vector<T, A> Add_I(std::vector<T, A> &Src, std::vector<T, A> &SrcDst)
         {
             if (SrcDst.size() != Src.size())
-                throw std::runtime_error("Unequal vector sizes in Add_I");
+                throw std::runtime_error("Add_I: Unequal vector sizes");
             Add_I(Src.data(), SrcDst.data(), Src.size());
             return SrcDst;
         }
@@ -183,7 +107,7 @@ namespace tipp
         std::vector<T, A> Add(std::vector<T, A> &Src1, std::vector<T, A> &Src2)
         {
             if (Src1.size() != Src2.size())
-                throw std::runtime_error("Unequal vector sizes in Add");
+                throw std::runtime_error("Add: Unequal vector sizes");
             std::vector<T, A> Dst(Src1.size());
             Add(Src1.data(), Src2.data(), Dst.data(), Src1.size());
             return Dst;
@@ -218,7 +142,7 @@ namespace tipp
         std::vector<T, A> And(std::vector<T, A> &Src1, std::vector<T, A> &Src2)
         {
             if (Src1.size() != Src2.size())
-                throw std::runtime_error("Unequal vector sizes in And");
+                throw std::runtime_error("And: Unequal vector sizes");
             std::vector<T, A> Dst(Src1.size());
             And(Src1.data(), Src2.data(), Dst.data(), Src1.size());
             return Dst;
@@ -232,7 +156,7 @@ namespace tipp
         std::vector<T, A> And_I(std::vector<T, A> &Src, std::vector<T, A> &SrcDst)
         {
             if (Src.size() != SrcDst.size())
-                throw std::runtime_error("Unequal vector sizes in And_I");
+                throw std::runtime_error("And_I: Unequal vector sizes");
             And_I(Src.data(), SrcDst.data(), Src.size());
             return SrcDst;
         }
@@ -268,7 +192,7 @@ namespace tipp
         std::pair<std::vector<T, A>, std::vector<T, A>> CartToPolar(std::vector<T, A> &SrcRe, std::vector<T, A> &SrcIm)
         {
             if (SrcRe.size() != SrcIm.size())
-                throw std::runtime_error("Unequal vector sizes in CartToPolar");
+                throw std::runtime_error("CartToPolar: Unequal vector sizes");
             std::vector<T, A> DstMagn(SrcRe.size());
             std::vector<T, A> DstPhase(SrcRe.size());
             CartToPolar(SrcRe.data(), SrcIm.data(), DstMagn.data(), DstPhase.data(), SrcRe.size());
@@ -277,14 +201,6 @@ namespace tipp
 
         static inline void CartToPolar(const Ipp32fc *pSrc, Ipp32f *pDstMagn, Ipp32f *pDstPhase, int len) { AssertNoError(ippsCartToPolar_32fc(pSrc, pDstMagn, pDstPhase, len)); }
         static inline void CartToPolar(const Ipp64fc *pSrc, Ipp64f *pDstMagn, Ipp64f *pDstPhase, int len) { AssertNoError(ippsCartToPolar_64fc(pSrc, pDstMagn, pDstPhase, len)); }
-        template <typename T, typename A>
-        std::pair<std::vector<T, A>, std::vector<T, A>> CartToPolar(std::vector<T, A> &Src)
-        {
-            std::vector<T, A> DstMagn(Src.size());
-            std::vector<T, A> DstPhase(Src.size());
-            CartToPolar(Src.data(), DstMagn.data(), DstPhase.data(), Src.size());
-            return std::make_pair(DstMagn, DstPhase);
-        }
 
         static inline void ConjCcs(const Ipp32f *pSrc, Ipp32fc *pDst, int lenDst) { AssertNoError(ippsConjCcs_32fc(pSrc, pDst, lenDst)); }
         static inline void ConjCcs(const Ipp64f *pSrc, Ipp64fc *pDst, int lenDst) { AssertNoError(ippsConjCcs_64fc(pSrc, pDst, lenDst)); }
@@ -370,324 +286,24 @@ namespace tipp
             return Dst;
         }
 
-        //   ippsCountInRange_32s
-
-        //   ippsCplxToReal_16sc
-        //   ippsCplxToReal_32fc
-        //   ippsCplxToReal_64fc
-
-        //   ippsCrossCorrNormGetBufferSize
-        //   ippsCrossCorrNorm_32f
-        //   ippsCrossCorrNorm_32fc
-        //   ippsCrossCorrNorm_64f
-        //   ippsCrossCorrNorm_64fc
-
-        //   ippsCubrt_32f
-        //   ippsCubrt_32s16s_Sfs
-        template <typename T>
-        void DFTGetSize(int length, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf);
-        template <>
-        void DFTGetSize<Ipp32fc>(int length, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf) { AssertNoError(ippsDFTGetSize_C_32fc(length, flag, ippAlgHintNone, pSizeSpec, pSizeInit, pSizeBuf)); }
-        template <>
-        void DFTGetSize<Ipp64fc>(int length, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf) { AssertNoError(ippsDFTGetSize_C_64fc(length, flag, ippAlgHintNone, pSizeSpec, pSizeInit, pSizeBuf)); }
-        template <>
-        void DFTGetSize<float>(int length, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf) { AssertNoError(ippsDFTGetSize_R_32f(length, flag, ippAlgHintNone, pSizeSpec, pSizeInit, pSizeBuf)); }
-        template <>
-        void DFTGetSize<double>(int length, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf) { AssertNoError(ippsDFTGetSize_R_64f(length, flag, ippAlgHintNone, pSizeSpec, pSizeInit, pSizeBuf)); }
-
-        template <typename T>
-        static inline void DFTInit(int length, int flag, Ipp8u *pDFTSpec, Ipp8u *pMemInit);
-        template <>
-        void DFTInit<Ipp32fc>(int length, int flag, Ipp8u *pDFTSpec, Ipp8u *pMemInit) { AssertNoError(ippsDFTInit_C_32fc(length, flag, ippAlgHintNone, (IppsDFTSpec_C_32fc *)pDFTSpec, pMemInit)); }
-        template <>
-        void DFTInit<Ipp64fc>(int length, int flag, Ipp8u *pDFTSpec, Ipp8u *pMemInit) { AssertNoError(ippsDFTInit_C_64fc(length, flag, ippAlgHintNone, (IppsDFTSpec_C_64fc *)pDFTSpec, pMemInit)); }
-        template <>
-        void DFTInit<float>(int length, int flag, Ipp8u *pDFTSpec, Ipp8u *pMemInit) { AssertNoError(ippsDFTInit_R_32f(length, flag, ippAlgHintNone, (IppsDFTSpec_R_32f *)pDFTSpec, pMemInit)); }
-        template <>
-        void DFTInit<double>(int length, int flag, Ipp8u *pDFTSpec, Ipp8u *pMemInit) { AssertNoError(ippsDFTInit_R_64f(length, flag, ippAlgHintNone, (IppsDFTSpec_R_64f *)pDFTSpec, pMemInit)); }
-
-        static inline void DFTFwd(const Ipp32fc *pSrc, Ipp32fc *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsDFTFwd_CToC_32fc(pSrc, pDst, (const IppsDFTSpec_C_32fc *)pDFTSpec, pBuffer)); }
-        static inline void DFTFwd(const Ipp64fc *pSrc, Ipp64fc *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsDFTFwd_CToC_64fc(pSrc, pDst, (const IppsDFTSpec_C_64fc *)pDFTSpec, pBuffer)); }
-        static inline void DFTFwd(const float *pSrc, Ipp32fc *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsDFTFwd_RToCCS_32f(pSrc, (float *)pDst, (const IppsDFTSpec_R_32f *)pDFTSpec, pBuffer)); }
-        static inline void DFTFwd(const double *pSrc, Ipp64fc *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsDFTFwd_RToCCS_64f(pSrc, (double *)pDst, (const IppsDFTSpec_R_64f *)pDFTSpec, pBuffer)); }
-
-        static inline void DFTInv(const Ipp32fc *pSrc, Ipp32fc *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsDFTInv_CToC_32fc(pSrc, pDst, (const IppsDFTSpec_C_32fc *)pDFTSpec, pBuffer)); }
-        static inline void DFTInv(const Ipp64fc *pSrc, Ipp64fc *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsDFTInv_CToC_64fc(pSrc, pDst, (const IppsDFTSpec_C_64fc *)pDFTSpec, pBuffer)); }
-        static inline void DFTInv(const Ipp64fc *pSrc, double *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsDFTInv_CCSToR_64f((const double *)pSrc, pDst, (const IppsDFTSpec_R_64f *)pDFTSpec, pBuffer)); }
-        static inline void DFTInv(const Ipp32fc *pSrc, float *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsDFTInv_CCSToR_32f((const float *)pSrc, pDst, (const IppsDFTSpec_R_32f *)pDFTSpec, pBuffer)); }
-
-        template <typename T>
-        static inline int get_FwdSize(int nfft) { return nfft; }
-        template <>
-        int get_FwdSize<float>(int nfft) { return nfft / 2 + 1; }
-        template <>
-        int get_FwdSize<double>(int nfft) { return nfft / 2 + 1; }
-
-        // Only 4 types are supported
-        // Trc = Ipp64fc, Tc = Ipp64fc
-        // Trc = Ipp32fc, Tc = Ipp32fc
-        // Trc = Ipp64f, Tc = Ipp64fc
-        // Trc = Ipp32f, Tc = Ipp32fc
-        template <typename Trc, typename Tc>
-        class DFT
-        {
-        private:
-            int m_SizeSpec;
-            int m_SizeInit;
-            int m_SizeBuf;
-            Ipp8u *m_pDFTSpec;
-            Ipp8u *m_pDFTWorkBuf;
-            Ipp8u *m_pDFTInitBuf;
-            int m_inNFFT;
-            int m_outNFFT;
-            int m_flag;
-
-            friend void swap(DFT &first, DFT &second)
-            {
-                std::swap(second.m_SizeSpec, first.m_SizeSpec);
-                std::swap(second.m_SizeInit, first.m_SizeInit);
-                std::swap(second.m_SizeBuf, first.m_SizeBuf);
-
-                std::swap(second.m_pDFTSpec, first.m_pDFTSpec);
-                std::swap(second.m_pDFTWorkBuf, first.m_pDFTWorkBuf);
-                std::swap(second.m_pDFTInitBuf, first.m_pDFTInitBuf);
-
-                std::swap(second.m_inNFFT, first.m_inNFFT);
-                std::swap(second.m_outNFFT, first.m_outNFFT);
-                std::swap(second.m_flag, first.m_flag);
-            }
-
-        public:
-            DFT() = default;
-
-            DFT(const int nfft, const int flag = IPP_FFT_DIV_INV_BY_N)
-            {
-                DFTGetSize<Trc>(nfft, flag, &m_SizeSpec, &m_SizeInit, &m_SizeBuf);
-
-                m_inNFFT = nfft;
-                m_outNFFT = get_FwdSize<Trc>(nfft);
-                m_flag = flag;
-
-                m_pDFTSpec = ippsMalloc_8u(m_SizeSpec);
-                m_pDFTWorkBuf = ippsMalloc_8u(m_SizeBuf);
-                m_pDFTInitBuf = ippsMalloc_8u(m_SizeInit);
-
-                DFTInit<Trc>(m_inNFFT, m_flag, m_pDFTSpec, m_pDFTInitBuf);
-            }
-
-            // Copy Constructor
-            DFT(const DFT &other)
-            {
-                m_outNFFT = other.m_outNFFT;
-                m_inNFFT = other.m_inNFFT;
-                m_flag = other.m_flag;
-
-                m_SizeSpec = other.m_SizeSpec;
-                m_SizeInit = other.m_SizeInit;
-                m_SizeBuf = other.m_SizeBuf;
-
-                m_pDFTSpec = ippsMalloc_8u(m_SizeSpec);
-                m_pDFTWorkBuf = ippsMalloc_8u(m_SizeBuf);
-                m_pDFTInitBuf = ippsMalloc_8u(m_SizeInit);
-
-                DFTInit<Trc>(m_inNFFT, m_flag, m_pDFTSpec, m_pDFTInitBuf);
-            }
-
-            // Move Constructor
-            DFT(DFT &&other)
-            {
-                swap(*this, other);
-            }
-
-            ~DFT()
-            {
-                if (m_pDFTSpec != nullptr)
-                    ippsFree(m_pDFTSpec);
-                if (m_pDFTWorkBuf != nullptr)
-                    ippsFree(m_pDFTWorkBuf);
-                if (m_pDFTInitBuf != nullptr)
-                    ippsFree(m_pDFTInitBuf);
-            }
-
-            // Copy Assignment Operator
-            DFT &operator=(DFT other)
-            {
-                swap(*this, other);
-                return *this;
-            }
-
-            void Fwd(const Trc *input, Tc *output) { DFTFwd(input, output, m_pDFTSpec, m_pDFTWorkBuf); }
-
-            void Inv(const Tc *input, Trc *output) { DFTInv(input, output, m_pDFTSpec, m_pDFTWorkBuf); }
-
-            std::vector<Tc> Fwd(const std::vector<Trc> &input)
-            {
-                if (input.size() != m_inNFFT)
-                    throw std::invalid_argument("Input vector size is not equal to predefined input DFT size");
-                std::vector<Tc> output(m_outNFFT);
-                Fwd(input.data(), output.data());
-                return output;
-            }
-
-            std::vector<Trc> Inv(const std::vector<Tc> &input)
-            {
-                if (input.size() != m_outNFFT)
-                    throw std::invalid_argument("Input vector size is not equal to predefined output DFT size");
-                std::vector<Trc> output(m_inNFFT);
-                Inv(input.data(), output.data());
-                return output;
-            }
-
-            int inSize() const { return m_inNFFT; }
-            int outSize() const { return m_outNFFT; }
-        };
-
-        template <typename T>
-        void FFTGetSize(int order, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf);
-        template <>
-        void FFTGetSize<Ipp32fc>(int order, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf) { AssertNoError(ippsFFTGetSize_C_32fc(order, flag, ippAlgHintNone, pSizeSpec, pSizeInit, pSizeBuf)); }
-        template <>
-        void FFTGetSize<Ipp64fc>(int order, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf) { AssertNoError(ippsFFTGetSize_C_64fc(order, flag, ippAlgHintNone, pSizeSpec, pSizeInit, pSizeBuf)); }
-        template <>
-        void FFTGetSize<float>(int order, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf) { AssertNoError(ippsFFTGetSize_R_32f(order, flag, ippAlgHintNone, pSizeSpec, pSizeInit, pSizeBuf)); }
-        template <>
-        void FFTGetSize<double>(int order, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf) { AssertNoError(ippsFFTGetSize_R_64f(order, flag, ippAlgHintNone, pSizeSpec, pSizeInit, pSizeBuf)); }
-
-        template <typename T>
-        static inline void FFTInit(void *ppFFTSpec, int order, int flag, Ipp8u *pDFTSpec, Ipp8u *pSpecBuffer);
-        template <>
-        void FFTInit<Ipp32fc>(void *ppFFTSpec, int order, int flag, Ipp8u *pDFTSpec, Ipp8u *pSpecBuffer) { AssertNoError(ippsFFTInit_C_32fc((IppsFFTSpec_C_32fc **)ppFFTSpec, order, flag, ippAlgHintNone, pDFTSpec, pSpecBuffer)); }
-        template <>
-        void FFTInit<Ipp64fc>(void *ppFFTSpec, int order, int flag, Ipp8u *pDFTSpec, Ipp8u *pSpecBuffer) { AssertNoError(ippsFFTInit_C_64fc((IppsFFTSpec_C_64fc **)ppFFTSpec, order, flag, ippAlgHintNone, pDFTSpec, pSpecBuffer)); }
-        template <>
-        void FFTInit<float>(void *ppFFTSpec, int order, int flag, Ipp8u *pDFTSpec, Ipp8u *pSpecBuffer) { AssertNoError(ippsFFTInit_R_32f((IppsFFTSpec_R_32f **)ppFFTSpec, order, flag, ippAlgHintNone, pDFTSpec, pSpecBuffer)); }
-        template <>
-        void FFTInit<double>(void *ppFFTSpec, int order, int flag, Ipp8u *pDFTSpec, Ipp8u *pSpecBuffer) { AssertNoError(ippsFFTInit_R_64f((IppsFFTSpec_R_64f **)ppFFTSpec, order, flag, ippAlgHintNone, pDFTSpec, pSpecBuffer)); }
-
-        static inline void FFTFwd(const Ipp32fc *pSrc, Ipp32fc *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsFFTFwd_CToC_32fc(pSrc, pDst, (const IppsFFTSpec_C_32fc *)pFFTSpec, pBuffer)); }
-        static inline void FFTFwd(const Ipp64fc *pSrc, Ipp64fc *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsFFTFwd_CToC_64fc(pSrc, pDst, (const IppsFFTSpec_C_64fc *)pFFTSpec, pBuffer)); }
-        static inline void FFTFwd(const float *pSrc, Ipp32fc *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsFFTFwd_RToCCS_32f(pSrc, (float *)pDst, (const IppsFFTSpec_R_32f *)pFFTSpec, pBuffer)); }
-        static inline void FFTFwd(const double *pSrc, Ipp64fc *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsFFTFwd_RToCCS_64f(pSrc, (double *)pDst, (const IppsFFTSpec_R_64f *)pFFTSpec, pBuffer)); }
-
-        static inline void FFTInv(const Ipp32fc *pSrc, Ipp32fc *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsFFTInv_CToC_32fc(pSrc, pDst, (const IppsFFTSpec_C_32fc *)pFFTSpec, pBuffer)); }
-        static inline void FFTInv(const Ipp64fc *pSrc, Ipp64fc *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsFFTInv_CToC_64fc(pSrc, pDst, (const IppsFFTSpec_C_64fc *)pFFTSpec, pBuffer)); }
-        static inline void FFTInv(const Ipp64fc *pSrc, double *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsFFTInv_CCSToR_64f((const double *)pSrc, pDst, (const IppsFFTSpec_R_64f *)pFFTSpec, pBuffer)); }
-        static inline void FFTInv(const Ipp32fc *pSrc, float *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsFFTInv_CCSToR_32f((const float *)pSrc, pDst, (const IppsFFTSpec_R_32f *)pFFTSpec, pBuffer)); }
-
-        static inline void FFTFwd_I(Ipp32fc *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsFFTFwd_CToC_32fc_I(pSrcDst, (const IppsFFTSpec_C_32fc *)pFFTSpec, pBuffer)); }
-        static inline void FFTFwd_I(Ipp64fc *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsFFTFwd_CToC_64fc_I(pSrcDst, (const IppsFFTSpec_C_64fc *)pFFTSpec, pBuffer)); }
-        static inline void FFTFwd_I(float *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsFFTFwd_RToCCS_32f_I(pSrcDst, (const IppsFFTSpec_R_32f *)pFFTSpec, pBuffer)); }
-        static inline void FFTFwd_I(double *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsFFTFwd_RToCCS_64f_I(pSrcDst, (const IppsFFTSpec_R_64f *)pFFTSpec, pBuffer)); }
-
-        static inline void FFTInv_I(Ipp32fc *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsFFTInv_CToC_32fc_I(pSrcDst, (const IppsFFTSpec_C_32fc *)pFFTSpec, pBuffer)); }
-        static inline void FFTInv_I(Ipp64fc *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsFFTInv_CToC_64fc_I(pSrcDst, (const IppsFFTSpec_C_64fc *)pFFTSpec, pBuffer)); }
-        static inline void FFTInv_I(Ipp64fc *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsFFTInv_CCSToR_64f_I((double *)pSrcDst, (const IppsFFTSpec_R_64f *)pFFTSpec, pBuffer)); }
-        static inline void FFTInv_I(Ipp32fc *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { AssertNoError(ippsFFTInv_CCSToR_32f_I((float *)pSrcDst, (const IppsFFTSpec_R_32f *)pFFTSpec, pBuffer)); }
-
-        template <typename Trc, typename Tc>
-        class FFT
-        {
-        private:
-            int m_SizeSpec;
-            int m_SizeInit;
-            int m_SizeBuf;
-            Ipp8u *m_pFFTSpec;
-            Ipp8u *m_pFFTWorkBuf;
-            Ipp8u *m_pFFTInitBuf;
-
-            int m_inNFFT;
-            int m_outNFFT;
-            int m_flag;
-
-            friend void swap(FFT &first, FFT &second)
-            {
-                std::swap(first.m_pFFTSpec, second.m_pFFTSpec);
-                std::swap(first.m_pFFTWorkBuf, second.m_pFFTWorkBuf);
-                std::swap(first.m_pFFTInitBuf, second.m_pFFTInitBuf);
-
-                std::swap(first.m_inNFFT, second.m_inNFFT);
-                std::swap(first.m_outNFFT, second.m_outNFFT);
-                std::swap(first.m_flag, second.m_flag);
-
-                std::swap(first.m_SizeBuf, second.m_SizeBuf);
-                std::swap(first.m_SizeInit, second.m_SizeInit);
-                std::swap(first.m_SizeSpec, second.m_SizeSpec);
-            }
-
-        public:
-            FFT(int order, int flag = IPP_FFT_DIV_INV_BY_N)
-            {
-                FFTGetSize<Trc>(order, flag, &m_SizeSpec, &m_SizeInit, &m_SizeBuf);
-
-                m_pFFTSpec = ippsMalloc_8u(m_SizeSpec);
-                m_pFFTWorkBuf = ippsMalloc_8u(m_SizeBuf);
-                m_pFFTInitBuf = ippsMalloc_8u(m_SizeInit);
-
-                FFTInit<Trc>(nfft, flag, m_pFFTSpec, m_pFFTInitBuf);
-
-                m_inNFFT = 1 << order;
-                m_outNFFT = get_FwdSize<Trc>(m_inNFFT);
-                m_flag = flag;
-            }
-
-            // Copy constructor
-            FFT(const FFT &other)
-            {
-                m_inNFFT = other.m_inNFFT;
-                m_outNFFT = other.m_outNFFT;
-                m_flag = other.m_flag;
-
-                m_SizeBuf = other.m_SizeBuf;
-                m_SizeInit = other.m_SizeInit;
-                m_SizeSpec = other.m_SizeSpec;
-
-                m_pFFTSpec = ippsMalloc_8u(m_SizeSpec);
-                m_pFFTWorkBuf = ippsMalloc_8u(m_SizeBuf);
-                m_pFFTInitBuf = ippsMalloc_8u(m_SizeInit);
-
-                FFTInit<Trc>(m_inNFFT, m_flag, m_pFFTSpec, m_pFFTInitBuf);
-            }
-
-            // Move constructor
-            FFT(FFT &&other)
-            {
-                swap(*this, other);
-            }
-
-            ~FFT()
-            {
-                if (m_pFFTSpec != nullptr)
-                    ippsFree(m_pFFTSpec);
-                if (m_pFFTWorkBuf != nullptr)
-                    ippsFree(m_pFFTWorkBuf);
-                if (m_pFFTInitBuf != nullptr)
-                    ippsFree(m_pFFTInitBuf);
-            }
-
-            // Copy assignment operator
-            FFT &operator=(const FFT other)
-            {
-                swap(*this, other);
-                return *this;
-            }
-
-            // Move assignment operator
-            FFT &operator=(FFT &&other)
-            {
-                swap(*this, other);
-                return *this;
-            }
-
-            void Fwd(const Trc *input, Tc *output) { FFTFwd(input, output, m_pFFTSpec, m_pFFTWorkBuf); }
-            void Fwd_I(const Trc *input, Tc *output) { FFTFwd_I(input, output, m_pFFTSpec, m_pFFTWorkBuf); }
-            void Inv(const Tc *input, Trc *output) { FFTInv(input, output, m_pFFTSpec, m_pFFTWorkBuf); }
-            void Inv_I(const Tc *input, Trc *output) { FFTInv_I(input, output, m_pFFTSpec, m_pFFTWorkBuf); }
-        };
-
         static inline void DivCRev(const Ipp16u *pSrc, Ipp16u val, Ipp16u *pDst, int len) { AssertNoError(ippsDivCRev_16u(pSrc, val, pDst, len)); }
         static inline void DivCRev(const Ipp32f *pSrc, Ipp32f val, Ipp32f *pDst, int len) { AssertNoError(ippsDivCRev_32f(pSrc, val, pDst, len)); }
+        template <typename T, typename A>
+        std::vector<T, A> DivCRev(std::vector<T, A> &Src, T val)
+        {
+            std::vector<T, A> Dst(Src.size());
+            DivCRev(Src.data(), val, Dst.data(), Src.size());
+            return Dst;
+        }
+
         static inline void DivCRev_I(Ipp16u val, Ipp16u *pSrcDst, int len) { AssertNoError(ippsDivCRev_16u_I(val, pSrcDst, len)); }
         static inline void DivCRev_I(Ipp32f val, Ipp32f *pSrcDst, int len) { AssertNoError(ippsDivCRev_32f_I(val, pSrcDst, len)); }
+        template <typename T, typename A>
+        std::vector<T, A> DivCRev_I(T val, std::vector<T, A> &SrcDst)
+        {
+            DivCRev_I(val, SrcDst.data(), SrcDst.size());
+            return SrcDst;
+        }
 
         static inline void DivC_I(Ipp32f val, Ipp32f *pSrcDst, int len) { AssertNoError(ippsDivC_32f_I(val, pSrcDst, len)); }
         static inline void DivC_I(Ipp64f val, Ipp64f *pSrcDst, int len) { AssertNoError(ippsDivC_64f_I(val, pSrcDst, len)); }
@@ -695,6 +311,12 @@ namespace tipp
         static inline void DivC_I(Ipp64fc val, Ipp64fc *pSrcDst, int len) { AssertNoError(ippsDivC_64fc_I(val, pSrcDst, len)); }
         static inline void DivC_I(const double val, Ipp64fc *pSrcDst, int len) { AssertNoError(ippsDivC_64f_I(val, reinterpret_cast<Ipp64f *>(pSrcDst), 2 * len)); }
         static inline void DivC_I(const float val, Ipp32fc *pSrcDst, int len) { AssertNoError(ippsDivC_32f_I(val, reinterpret_cast<Ipp32f *>(pSrcDst), 2 * len)); }
+        template <typename T, typename A>
+        std::vector<T, A> DivC_I(T val, std::vector<T, A> &SrcDst)
+        {
+            DivC_I(val, SrcDst.data(), SrcDst.size());
+            return SrcDst;
+        }
 
         static inline void DivC(const Ipp32f *pSrc, Ipp32f val, Ipp32f *pDst, int len) { AssertNoError(ippsDivC_32f(pSrc, val, pDst, len)); }
         static inline void DivC(const Ipp64f *pSrc, Ipp64f val, Ipp64f *pDst, int len) { AssertNoError(ippsDivC_64f(pSrc, val, pDst, len)); }
@@ -702,11 +324,25 @@ namespace tipp
         static inline void DivC(const Ipp64fc *pSrc, Ipp64fc val, Ipp64fc *pDst, int len) { AssertNoError(ippsDivC_64fc(pSrc, val, pDst, len)); }
         static inline void DivC(const Ipp32fc *pSrc, Ipp32f val, Ipp32fc *pDst, int len) { AssertNoError(ippsDivC_32f(reinterpret_cast<const Ipp32f *>(pSrc), val, reinterpret_cast<Ipp32f *>(pDst), 2 * len)); }
         static inline void DivC(const Ipp64fc *pSrc, Ipp64f val, Ipp64fc *pDst, int len) { AssertNoError(ippsDivC_64f(reinterpret_cast<const Ipp64f *>(pSrc), val, reinterpret_cast<Ipp64f *>(pDst), 2 * len)); }
+        template <typename T, typename A>
+        std::vector<T, A> DivC(std::vector<T, A> &Src, T val)
+        {
+            std::vector<T, A> Dst(Src.size());
+            DivC(Src.data(), val, Dst.data(), Src.size());
+            return Dst;
+        }
 
         static inline void Div(const Ipp32f *pSrc1, const Ipp32f *pSrc2, Ipp32f *pDst, int len) { AssertNoError(ippsDiv_32f(pSrc1, pSrc2, pDst, len)); }
         static inline void Div(const Ipp64f *pSrc1, const Ipp64f *pSrc2, Ipp64f *pDst, int len) { AssertNoError(ippsDiv_64f(pSrc1, pSrc2, pDst, len)); }
         static inline void Div(const Ipp32fc *pSrc1, const Ipp32fc *pSrc2, Ipp32fc *pDst, int len) { AssertNoError(ippsDiv_32fc(pSrc1, pSrc2, pDst, len)); }
         static inline void Div(const Ipp64fc *pSrc1, const Ipp64fc *pSrc2, Ipp64fc *pDst, int len) { AssertNoError(ippsDiv_64fc(pSrc1, pSrc2, pDst, len)); }
+        template <typename T, typename A>
+        std::vector<T, A> Div(std::vector<T, A> &Src1, std::vector<T, A> &Src2)
+        {
+            std::vector<T, A> Dst(Src1.size());
+            Div(Src1.data(), Src2.data(), Dst.data(), Src1.size());
+            return Dst;
+        }
 
         static inline void DotProd(const Ipp32f *pSrc1, const Ipp32f *pSrc2, int len, Ipp32f *pDp) { AssertNoError(ippsDotProd_32f(pSrc1, pSrc2, len, pDp)); }
         static inline void DotProd(const Ipp32fc *pSrc1, const Ipp32fc *pSrc2, int len, Ipp32fc *pDp) { AssertNoError(ippsDotProd_32fc(pSrc1, pSrc2, len, pDp)); }
@@ -721,140 +357,34 @@ namespace tipp
         static inline void DotProd(const Ipp16sc *pSrc1, const Ipp16sc *pSrc2, int len, Ipp64sc *pDp) { AssertNoError(ippsDotProd_16sc64sc(pSrc1, pSrc2, len, pDp)); }
         static inline void DotProd(const Ipp16s *pSrc1, const Ipp16sc *pSrc2, int len, Ipp64sc *pDp) { AssertNoError(ippsDotProd_16s16sc64sc(pSrc1, pSrc2, len, pDp)); }
         static inline void DotProd(const Ipp16s *pSrc1, const Ipp16s *pSrc2, int len, Ipp32f *pDp) { AssertNoError(ippsDotProd_16s32f(pSrc1, pSrc2, len, pDp)); }
+        template <typename T, typename A>
+        std::vector<T, A> DotProd(std::vector<T, A> &Src1, std::vector<T, A> &Src2)
+        {
+            if (Src1.size() != Src2.size())
+                throw std::invalid_argument("DotProd: vector sizes do not match");
+            std::vector<T, A> Dst(Src1.size());
+            DotProd(Src1.data(), Src2.data(), Src1.size(), Dst.data());
+            return Dst;
+        }
 
         static inline void Exp(const Ipp32f *pSrc, Ipp32f *pDst, int len) { AssertNoError(ippsExp_32f(pSrc, pDst, len)); }
         static inline void Exp(const Ipp64f *pSrc, Ipp64f *pDst, int len) { AssertNoError(ippsExp_64f(pSrc, pDst, len)); }
+        template <typename T, typename A>
+        std::vector<T, A> Exp(std::vector<T, A> &Src)
+        {
+            std::vector<T, A> Dst(Src.size());
+            Exp(Src.data(), Dst.data(), Src.size());
+            return Dst;
+        }
+
         static inline void Exp_I(Ipp32f *pSrcDst, int len) { AssertNoError(ippsExp_32f_I(pSrcDst, len)); }
         static inline void Exp_I(Ipp64f *pSrcDst, int len) { AssertNoError(ippsExp_64f_I(pSrcDst, len)); }
-
-        //   ippsFFTFwd_CToC_16fc
-        //   ippsFFTFwd_CToC_32f
-        //   ippsFFTFwd_CToC_32f_I
-        //   ippsFFTFwd_CToC_32fc
-        //   ippsFFTFwd_CToC_32fc_I
-        //   ippsFFTFwd_CToC_64f
-        //   ippsFFTFwd_CToC_64f_I
-        //   ippsFFTFwd_CToC_64fc
-        //   ippsFFTFwd_CToC_64fc_I
-        //   ippsFFTFwd_RToCCS_32f
-        //   ippsFFTFwd_RToCCS_32f_I
-        //   ippsFFTFwd_RToCCS_64f
-        //   ippsFFTFwd_RToCCS_64f_I
-        //   ippsFFTFwd_RToPack_32f
-        //   ippsFFTFwd_RToPack_32f_I
-        //   ippsFFTFwd_RToPack_64f
-        //   ippsFFTFwd_RToPack_64f_I
-        //   ippsFFTFwd_RToPerm_32f
-        //   ippsFFTFwd_RToPerm_32f_I
-        //   ippsFFTFwd_RToPerm_64f
-        //   ippsFFTFwd_RToPerm_64f_I
-        //   ippsFFTGetSize_C_16fc
-        //   ippsFFTGetSize_C_32f
-        //   ippsFFTGetSize_C_32fc
-        //   ippsFFTGetSize_C_64f
-        //   ippsFFTGetSize_C_64fc
-        //   ippsFFTGetSize_R_32f
-        //   ippsFFTGetSize_R_64f
-        //   ippsFFTInit_C_16fc
-        //   ippsFFTInit_C_32f
-        //   ippsFFTInit_C_32fc
-        //   ippsFFTInit_C_64f
-        //   ippsFFTInit_C_64fc
-        //   ippsFFTInit_R_32f
-        //   ippsFFTInit_R_64f
-        //   ippsFFTInv_CCSToR_32f
-        //   ippsFFTInv_CCSToR_32f_I
-        //   ippsFFTInv_CCSToR_64f
-        //   ippsFFTInv_CCSToR_64f_I
-        //   ippsFFTInv_CToC_16fc
-        //   ippsFFTInv_CToC_32f
-        //   ippsFFTInv_CToC_32f_I
-        //   ippsFFTInv_CToC_32fc
-        //   ippsFFTInv_CToC_32fc_I
-        //   ippsFFTInv_CToC_64f
-        //   ippsFFTInv_CToC_64f_I
-        //   ippsFFTInv_CToC_64fc
-        //   ippsFFTInv_CToC_64fc_I
-        //   ippsFFTInv_PackToR_32f
-        //   ippsFFTInv_PackToR_32f_I
-        //   ippsFFTInv_PackToR_64f
-        //   ippsFFTInv_PackToR_64f_I
-        //   ippsFFTInv_PermToR_32f
-        //   ippsFFTInv_PermToR_32f_I
-        //   ippsFFTInv_PermToR_64f
-        //   ippsFFTInv_PermToR_64f_I
-
-        //   ippsFIRGenBandpass_64f
-        //   ippsFIRGenBandstop_64f
-        //   ippsFIRGenGetBufferSize
-        //   ippsFIRGenHighpass_64f
-        //   ippsFIRGenLowpass_64f
-
-        //   ippsFIRLMS32f_16s
-        //   ippsFIRLMSGetDlyLine32f_16s
-        //   ippsFIRLMSGetDlyLine_32f
-        //   ippsFIRLMSGetStateSize32f_16s
-        //   ippsFIRLMSGetStateSize_32f
-        //   ippsFIRLMSGetTaps32f_16s
-        //   ippsFIRLMSGetTaps_32f
-        //   ippsFIRLMSInit32f_16s
-        //   ippsFIRLMSInit_32f
-        //   ippsFIRLMSSetDlyLine32f_16s
-        //   ippsFIRLMSSetDlyLine_32f
-        //   ippsFIRLMS_32f
-
-        //   ippsFIRMR32f_32fc
-        //   ippsFIRMRGetSize
-        //   ippsFIRMRGetSize32f_32fc
-        //   ippsFIRMRInit32f_32fc
-        //   ippsFIRMRInit_32f
-        //   ippsFIRMRInit_32fc
-        //   ippsFIRMRInit_64f
-        //   ippsFIRMRInit_64fc
-        //   ippsFIRMR_16s
-        //   ippsFIRMR_16sc
-        //   ippsFIRMR_32f
-        //   ippsFIRMR_32fc
-        //   ippsFIRMR_64f
-        //   ippsFIRMR_64fc
-        //   ippsFIRSR32f_32fc
-        //   ippsFIRSRGetSize
-        //   ippsFIRSRGetSize32f_32fc
-        //   ippsFIRSRInit32f_32fc
-        //   ippsFIRSRInit_32f
-        //   ippsFIRSRInit_32fc
-        //   ippsFIRSRInit_64f
-        //   ippsFIRSRInit_64fc
-        //   ippsFIRSR_16s
-        //   ippsFIRSR_16sc
-        //   ippsFIRSR_32f
-        //   ippsFIRSR_32fc
-        //   ippsFIRSR_64f
-        //   ippsFIRSR_64fc
-        //   ippsFIRSparseGetDlyLine_32f
-        //   ippsFIRSparseGetDlyLine_32fc
-        //   ippsFIRSparseGetStateSize_32f
-        //   ippsFIRSparseGetStateSize_32fc
-        //   ippsFIRSparseInit_32f
-        //   ippsFIRSparseInit_32fc
-        //   ippsFIRSparseSetDlyLine_32f
-        //   ippsFIRSparseSetDlyLine_32fc
-        //   ippsFIRSparse_32f
-        //   ippsFIRSparse_32fc
-        //   ippsFilterMedianGetBufferSize
-        //   ippsFilterMedian_16s
-        //   ippsFilterMedian_16s_I
-        //   ippsFilterMedian_32f
-        //   ippsFilterMedian_32f_I
-        //   ippsFilterMedian_32s
-        //   ippsFilterMedian_32s_I
-        //   ippsFilterMedian_64f
-        //   ippsFilterMedian_64f_I
-        //   ippsFilterMedian_8u
-        //   ippsFilterMedian_8u_I
-
-        //   ippsFindNearestOne_16u
-        //   ippsFindNearest_16u
+        template <typename T, typename A>
+        std::vector<T, A> Exp_I(std::vector<T, A> &SrcDst)
+        {
+            Exp_I(SrcDst.data(), SrcDst.size());
+            return SrcDst;
+        }
 
         static inline void Flip(const Ipp8u *pSrc, Ipp8u *pDst, int len) { AssertNoError(ippsFlip_8u(pSrc, pDst, len)); }
         static inline void Flip(const Ipp16u *pSrc, Ipp16u *pDst, int len) { AssertNoError(ippsFlip_16u(pSrc, pDst, len)); }
@@ -862,15 +392,26 @@ namespace tipp
         static inline void Flip(const Ipp64f *pSrc, Ipp64f *pDst, int len) { AssertNoError(ippsFlip_64f(pSrc, pDst, len)); }
         static inline void Flip(const Ipp32fc *pSrc, Ipp32fc *pDst, int len) { AssertNoError(ippsFlip_32fc(pSrc, pDst, len)); }
         static inline void Flip(const Ipp64fc *pSrc, Ipp64fc *pDst, int len) { AssertNoError(ippsFlip_64fc(pSrc, pDst, len)); }
+        template <typename T, typename A>
+        std::vector<T, A> Flip(std::vector<T, A> &Src)
+        {
+            std::vector<T, A> Dst(Src.size());
+            Flip(Src.data(), Dst.data(), Src.size());
+            return Dst;
+        }
+
         static inline void Flip_I(Ipp16u *pSrcDst, int len) { AssertNoError(ippsFlip_16u_I(pSrcDst, len)); }
         static inline void Flip_I(Ipp8u *pSrcDst, int len) { AssertNoError(ippsFlip_8u_I(pSrcDst, len)); }
         static inline void Flip_I(Ipp32f *pSrcDst, int len) { AssertNoError(ippsFlip_32f_I(pSrcDst, len)); }
         static inline void Flip_I(Ipp64f *pSrcDst, int len) { AssertNoError(ippsFlip_64f_I(pSrcDst, len)); }
         static inline void Flip_I(Ipp32fc *pSrcDst, int len) { AssertNoError(ippsFlip_32fc_I(pSrcDst, len)); }
         static inline void Flip_I(Ipp64fc *pSrcDst, int len) { AssertNoError(ippsFlip_64fc_I(pSrcDst, len)); }
-
-        //   ippsFree
-        //   ippsGetLibVersion
+        template <typename T, typename A>
+        std::vector<T, A> Flip_I(std::vector<T, A> &SrcDst)
+        {
+            Flip_I(SrcDst.data(), SrcDst.size());
+            return SrcDst;
+        }
 
         static inline void Goertz(const Ipp32f *pSrc, int len, Ipp32fc *pVal, Ipp32f rFreq) { AssertNoError(ippsGoertz_32f(pSrc, len, pVal, rFreq)); }
         static inline void Goertz(const Ipp64f *pSrc, int len, Ipp64fc *pVal, Ipp64f rFreq) { AssertNoError(ippsGoertz_64f(pSrc, len, pVal, rFreq)); }
@@ -878,143 +419,6 @@ namespace tipp
         static inline void Goertz(const Ipp64fc *pSrc, int len, Ipp64fc *pVal, Ipp64f rFreq) { AssertNoError(ippsGoertz_64fc(pSrc, len, pVal, rFreq)); }
         static inline void Goertz_Sfs(const Ipp16s *pSrc, int len, Ipp16sc *pVal, Ipp32f rFreq, int scaleFactor) { AssertNoError(ippsGoertz_16s_Sfs(pSrc, len, pVal, rFreq, scaleFactor)); }
         static inline void Goertz_Sfs(const Ipp16sc *pSrc, int len, Ipp16sc *pVal, Ipp32f rFreq, int scaleFactor) { AssertNoError(ippsGoertz_16sc_Sfs(pSrc, len, pVal, rFreq, scaleFactor)); }
-
-        //   ippsHilbertGetSize_32f32fc
-        //   ippsHilbertGetSize_64f64fc
-        //   ippsHilbertInit_32f32fc
-        //   ippsHilbertInit_64f64fc
-        //   ippsHilbert_32f32fc
-        //   ippsHilbert_64f64fc
-        //   ippsIIR32f_16s_ISfs
-        //   ippsIIR32f_16s_Sfs
-        //   ippsIIR32fc_16sc_ISfs
-        //   ippsIIR32fc_16sc_Sfs
-        //   ippsIIR64f_16s_ISfs
-        //   ippsIIR64f_16s_Sfs
-        //   ippsIIR64f_32f
-        //   ippsIIR64f_32f_I
-        //   ippsIIR64f_32s_IPSfs
-        //   ippsIIR64f_32s_ISfs
-        //   ippsIIR64f_32s_PSfs
-        //   ippsIIR64f_32s_Sfs
-        //   ippsIIR64fc_16sc_ISfs
-        //   ippsIIR64fc_16sc_Sfs
-        //   ippsIIR64fc_32fc
-        //   ippsIIR64fc_32fc_I
-        //   ippsIIR64fc_32sc_ISfs
-        //   ippsIIR64fc_32sc_Sfs
-        //   ippsIIRGenGetBufferSize
-        //   ippsIIRGenHighpass_64f
-        //   ippsIIRGenLowpass_64f
-        //   ippsIIRGetDlyLine32f_16s
-        //   ippsIIRGetDlyLine32fc_16sc
-        //   ippsIIRGetDlyLine64f_16s
-        //   ippsIIRGetDlyLine64f_32f
-        //   ippsIIRGetDlyLine64f_32s
-        //   ippsIIRGetDlyLine64f_DF1_32s
-        //   ippsIIRGetDlyLine64fc_16sc
-        //   ippsIIRGetDlyLine64fc_32fc
-        //   ippsIIRGetDlyLine64fc_32sc
-        //   ippsIIRGetDlyLine_32f
-        //   ippsIIRGetDlyLine_32fc
-        //   ippsIIRGetDlyLine_64f
-        //   ippsIIRGetDlyLine_64fc
-        //   ippsIIRGetStateSize32f_16s
-        //   ippsIIRGetStateSize32f_BiQuad_16s
-        //   ippsIIRGetStateSize32fc_16sc
-        //   ippsIIRGetStateSize32fc_BiQuad_16sc
-        //   ippsIIRGetStateSize64f_16s
-        //   ippsIIRGetStateSize64f_32f
-        //   ippsIIRGetStateSize64f_32s
-        //   ippsIIRGetStateSize64f_BiQuad_16s
-        //   ippsIIRGetStateSize64f_BiQuad_32f
-        //   ippsIIRGetStateSize64f_BiQuad_32s
-        //   ippsIIRGetStateSize64f_BiQuad_DF1_32s
-        //   ippsIIRGetStateSize64fc_16sc
-        //   ippsIIRGetStateSize64fc_32fc
-        //   ippsIIRGetStateSize64fc_32sc
-        //   ippsIIRGetStateSize64fc_BiQuad_16sc
-        //   ippsIIRGetStateSize64fc_BiQuad_32fc
-        //   ippsIIRGetStateSize64fc_BiQuad_32sc
-        //   ippsIIRGetStateSize_32f
-        //   ippsIIRGetStateSize_32fc
-        //   ippsIIRGetStateSize_64f
-        //   ippsIIRGetStateSize_64fc
-        //   ippsIIRGetStateSize_BiQuad_32f
-        //   ippsIIRGetStateSize_BiQuad_32fc
-        //   ippsIIRGetStateSize_BiQuad_64f
-        //   ippsIIRGetStateSize_BiQuad_64fc
-        //   ippsIIRGetStateSize_BiQuad_DF1_32f
-        //   ippsIIRIIR64f_32f
-        //   ippsIIRIIR64f_32f_I
-        //   ippsIIRIIRGetDlyLine64f_32f
-        //   ippsIIRIIRGetDlyLine_32f
-        //   ippsIIRIIRGetDlyLine_64f
-        //   ippsIIRIIRGetStateSize64f_32f
-        //   ippsIIRIIRGetStateSize_32f
-        //   ippsIIRIIRGetStateSize_64f
-        //   ippsIIRIIRInit64f_32f
-        //   ippsIIRIIRInit_32f
-        //   ippsIIRIIRInit_64f
-        //   ippsIIRIIRSetDlyLine64f_32f
-        //   ippsIIRIIRSetDlyLine_32f
-        //   ippsIIRIIRSetDlyLine_64f
-        //   ippsIIRIIR_32f
-        //   ippsIIRIIR_32f_I
-        //   ippsIIRIIR_64f
-        //   ippsIIRIIR_64f_I
-        //   ippsIIRInit32f_16s
-        //   ippsIIRInit32f_BiQuad_16s
-        //   ippsIIRInit32fc_16sc
-        //   ippsIIRInit32fc_BiQuad_16sc
-        //   ippsIIRInit64f_16s
-        //   ippsIIRInit64f_32f
-        //   ippsIIRInit64f_32s
-        //   ippsIIRInit64f_BiQuad_16s
-        //   ippsIIRInit64f_BiQuad_32f
-        //   ippsIIRInit64f_BiQuad_32s
-        //   ippsIIRInit64f_BiQuad_DF1_32s
-        //   ippsIIRInit64fc_16sc
-        //   ippsIIRInit64fc_32fc
-        //   ippsIIRInit64fc_32sc
-        //   ippsIIRInit64fc_BiQuad_16sc
-        //   ippsIIRInit64fc_BiQuad_32fc
-        //   ippsIIRInit64fc_BiQuad_32sc
-        //   ippsIIRInit_32f
-        //   ippsIIRInit_32fc
-        //   ippsIIRInit_64f
-        //   ippsIIRInit_64fc
-        //   ippsIIRInit_BiQuad_32f
-        //   ippsIIRInit_BiQuad_32fc
-        //   ippsIIRInit_BiQuad_64f
-        //   ippsIIRInit_BiQuad_64fc
-        //   ippsIIRInit_BiQuad_DF1_32f
-        //   ippsIIRSetDlyLine32f_16s
-        //   ippsIIRSetDlyLine32fc_16sc
-        //   ippsIIRSetDlyLine64f_16s
-        //   ippsIIRSetDlyLine64f_32f
-        //   ippsIIRSetDlyLine64f_32s
-        //   ippsIIRSetDlyLine64f_DF1_32s
-        //   ippsIIRSetDlyLine64fc_16sc
-        //   ippsIIRSetDlyLine64fc_32fc
-        //   ippsIIRSetDlyLine64fc_32sc
-        //   ippsIIRSetDlyLine_32f
-        //   ippsIIRSetDlyLine_32fc
-        //   ippsIIRSetDlyLine_64f
-        //   ippsIIRSetDlyLine_64fc
-        //   ippsIIRSparseGetStateSize_32f
-        //   ippsIIRSparseInit_32f
-        //   ippsIIRSparse_32f
-        //   ippsIIR_32f
-        //   ippsIIR_32f_I
-        //   ippsIIR_32f_IP
-        //   ippsIIR_32f_P
-        //   ippsIIR_32fc
-        //   ippsIIR_32fc_I
-        //   ippsIIR_64f
-        //   ippsIIR_64f_I
-        //   ippsIIR_64fc
-        //   ippsIIR_64fc_I
 
         static inline void Imag(const Ipp16sc *pSrc, Ipp16s *pDstIm, int len) { AssertNoError(ippsImag_16sc(pSrc, pDstIm, len)); }
         static inline void Imag(const Ipp32fc *pSrc, Ipp32f *pDstIm, int len) { AssertNoError(ippsImag_32fc(pSrc, pDstIm, len)); }
