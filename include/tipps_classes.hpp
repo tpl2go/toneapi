@@ -76,7 +76,7 @@ namespace tipp
 
                 swap(second.m_pDFTSpec, first.m_pDFTSpec);
                 swap(second.m_pDFTWorkBuf, first.m_pDFTWorkBuf);
-                std::swap(second.m_pDFTInitBuf, first.m_pDFTInitBuf);
+                swap(second.m_pDFTInitBuf, first.m_pDFTInitBuf);
 
                 swap(second.m_inNFFT, first.m_inNFFT);
                 swap(second.m_outNFFT, first.m_outNFFT);
@@ -313,34 +313,34 @@ namespace tipp
             void Inv_I(const Tc *input, Trc *output) { FFTInv_I(input, output, m_pFFTSpec, m_pFFTWorkBuf); }
         };
 
-        static inline void FIRSR(const Ipp32f *pSrc, Ipp32f *pDst, int numIters, IppsFIRSpec_32f *pSpec, const Ipp32f *pDlySrc, Ipp32f *pDlyDst, Ipp8u *pBuf)
+        static inline void FIRSR(const Ipp32f *pSrc, Ipp32f *pDst, int numIters, Ipp8u *pSpec, const Ipp32f *pDlySrc, Ipp32f *pDlyDst, Ipp8u *pBuf)
         {
-            AssertNoError(ippsFIRSR_32f(pSrc, pDst, numIters, pSpec, pDlySrc, pDlyDst, pBuf));
+            AssertNoError(ippsFIRSR_32f(pSrc, pDst, numIters, (IppsFIRSpec_32f *)pSpec, pDlySrc, pDlyDst, pBuf));
         }
 
-        static inline void FIRSR(const Ipp64f *pSrc, Ipp64f *pDst, int numIters, IppsFIRSpec_64f *pSpec, const Ipp64f *pDlySrc, Ipp64f *pDlyDst, Ipp8u *pBuf)
+        static inline void FIRSR(const Ipp64f *pSrc, Ipp64f *pDst, int numIters, Ipp8u *pSpec, const Ipp64f *pDlySrc, Ipp64f *pDlyDst, Ipp8u *pBuf)
         {
-            AssertNoError(ippsFIRSR_64f(pSrc, pDst, numIters, pSpec, pDlySrc, pDlyDst, pBuf));
+            AssertNoError(ippsFIRSR_64f(pSrc, pDst, numIters, (IppsFIRSpec_64f *)pSpec, pDlySrc, pDlyDst, pBuf));
         }
 
-        static inline void FIRSR(const Ipp32fc *pSrc, Ipp32fc *pDst, int numIters, IppsFIRSpec_32fc *pSpec, const Ipp32fc *pDlySrc, Ipp32fc *pDlyDst, Ipp8u *pBuf)
+        static inline void FIRSR(const Ipp32fc *pSrc, Ipp32fc *pDst, int numIters, Ipp8u *pSpec, const Ipp32fc *pDlySrc, Ipp32fc *pDlyDst, Ipp8u *pBuf)
         {
-            AssertNoError(ippsFIRSR_32fc(pSrc, pDst, numIters, pSpec, pDlySrc, pDlyDst, pBuf));
+            AssertNoError(ippsFIRSR_32fc(pSrc, pDst, numIters, (IppsFIRSpec_32fc *)pSpec, pDlySrc, pDlyDst, pBuf));
         }
 
-        static inline void FIRSR(const Ipp64fc *pSrc, Ipp64fc *pDst, int numIters, IppsFIRSpec_64fc *pSpec, const Ipp64fc *pDlySrc, Ipp64fc *pDlyDst, Ipp8u *pBuf)
+        static inline void FIRSR(const Ipp64fc *pSrc, Ipp64fc *pDst, int numIters, Ipp8u *pSpec, const Ipp64fc *pDlySrc, Ipp64fc *pDlyDst, Ipp8u *pBuf)
         {
-            AssertNoError(ippsFIRSR_64fc(pSrc, pDst, numIters, pSpec, pDlySrc, pDlyDst, pBuf));
+            AssertNoError(ippsFIRSR_64fc(pSrc, pDst, numIters, (IppsFIRSpec_64fc *)pSpec, pDlySrc, pDlyDst, pBuf));
         }
 
-        static inline void FIRSR(const Ipp16s *pSrc, Ipp16s *pDst, int numIters, IppsFIRSpec_32f *pSpec, const Ipp16s *pDlySrc, Ipp16s *pDlyDst, Ipp8u *pBuf)
+        static inline void FIRSR(const Ipp16s *pSrc, Ipp16s *pDst, int numIters, Ipp8u *pSpec, const Ipp16s *pDlySrc, Ipp16s *pDlyDst, Ipp8u *pBuf)
         {
-            AssertNoError(ippsFIRSR_16s(pSrc, pDst, numIters, pSpec, pDlySrc, pDlyDst, pBuf));
+            AssertNoError(ippsFIRSR_16s(pSrc, pDst, numIters, (IppsFIRSpec_32f *)pSpec, pDlySrc, pDlyDst, pBuf));
         }
 
-        static inline void FIRSR(const Ipp16sc *pSrc, Ipp16sc *pDst, int numIters, IppsFIRSpec_32fc *pSpec, const Ipp16sc *pDlySrc, Ipp16sc *pDlyDst, Ipp8u *pBuf)
+        static inline void FIRSR(const Ipp16sc *pSrc, Ipp16sc *pDst, int numIters, Ipp8u *pSpec, const Ipp16sc *pDlySrc, Ipp16sc *pDlyDst, Ipp8u *pBuf)
         {
-            AssertNoError(ippsFIRSR_16sc(pSrc, pDst, numIters, pSpec, pDlySrc, pDlyDst, pBuf));
+            AssertNoError(ippsFIRSR_16sc(pSrc, pDst, numIters, (IppsFIRSpec_32fc *)pSpec, pDlySrc, pDlyDst, pBuf));
         }
 
         template <typename T>
@@ -386,8 +386,20 @@ namespace tipp
 
             IppAlgType m_algType;
 
-            void prepare();
-            bool isPrepared = false; // flag to ensure that taps have been initialized
+            friend void swap(FIRSR &a, FIRSR &b)
+            {
+                using std::swap;
+                swap(a.m_taps, b.m_taps);
+                swap(a.m_tapsLen, b.m_tapsLen);
+                swap(a.m_dly, b.m_dly);
+                swap(a.m_dlyDst, b.m_dlyDst);
+                swap(a.m_dlyLen, b.m_dlyLen);
+                swap(a.m_specSize, b.m_specSize);
+                swap(a.m_bufSize, b.m_bufSize);
+                swap(a.m_spec, b.m_spec);
+                swap(a.m_buf, b.m_buf);
+                swap(a.m_algType, b.m_algType);
+            }
 
         public:
             FIRSR() = default;
@@ -396,7 +408,6 @@ namespace tipp
             {
                 m_dlyLen = taplen - 1;
                 m_algType = algType;
-                m_dlyLen = taplen - 1;
 
                 FIRSRGetSize<T>(taplen, &m_specSize, &m_bufSize);
 
@@ -417,6 +428,38 @@ namespace tipp
             // Copy constructor
             FIRSR(const FIRSR &other)
             {
+                m_tapsLen = other.m_tapsLen;
+                m_taps = ippsMalloc<T>(other.m_tapsLen);
+                Copy(other.m_taps, m_taps, other.m_tapsLen);
+
+                m_dlyLen = other.m_dlyLen;
+                m_dly = ippsMalloc<T>(other.m_dlyLen);
+                Copy(other.m_dly, m_dly, other.m_dlyLen);
+
+                m_dlyDst = ippsMalloc<T>(other.m_dlyLen);
+                Copy(other.m_dlyDst, m_dlyDst, other.m_dlyLen);
+
+                m_specSize = other.m_specSize;
+                m_bufSize = other.m_bufSize;
+                m_spec = ippsMalloc_8u(other.m_specSize);
+                m_buf = ippsMalloc_8u(other.m_bufSize);
+                Copy(other.m_spec, m_spec, other.m_specSize);
+                Copy(other.m_buf, m_buf, other.m_bufSize);
+
+                m_algType = other.m_algType;
+            }
+
+            // Move Constructor
+            FIRSR(FIRSR &&other)
+            {
+                swap(other, *this);
+            }
+
+            // Assignment operator
+            FIRSR &operator=(FIRSR other)
+            {
+                swap(other, *this);
+                return *this;
             }
 
             ~FIRSR()
@@ -433,10 +476,239 @@ namespace tipp
 
             void filter(const T *pSrc, T *pDst, int len)
             {
+                if (m_spec == nullptr)
+                    throw std::runtime_error("FIRSR not initialized");
                 FIRSR<T>(pSrc, pDst, len, m_spec, m_dly, m_dlyDst, m_buf);
                 std::swap(m_dly, m_dlyDst);
             }
         };
+
+        static inline void FIRMR(const Ipp32f *pSrc, Ipp32f *pDst, int numIters, Ipp8u *pSpec, const Ipp32f *pDlySrc, Ipp32f *pDlyDst, Ipp8u *pBuf)
+        {
+            AssertNoError(ippsFIRMR_32f(pSrc, pDst, numIters, (IppsFIRSpec_32f *)pSpec, pDlySrc, pDlyDst, pBuf));
+        }
+
+        static inline void FIRMR(const Ipp64f *pSrc, Ipp64f *pDst, int numIters, Ipp8u *pSpec, const Ipp64f *pDlySrc, Ipp64f *pDlyDst, Ipp8u *pBuf)
+        {
+            AssertNoError(ippsFIRMR_64f(pSrc, pDst, numIters, (IppsFIRSpec_64f *)pSpec, pDlySrc, pDlyDst, pBuf));
+        }
+
+        static inline void FIRMR(const Ipp32fc *pSrc, Ipp32fc *pDst, int numIters, Ipp8u *pSpec, const Ipp32fc *pDlySrc, Ipp32fc *pDlyDst, Ipp8u *pBuf)
+        {
+            AssertNoError(ippsFIRMR_32fc(pSrc, pDst, numIters, (IppsFIRSpec_32fc *)pSpec, pDlySrc, pDlyDst, pBuf));
+        }
+
+        static inline void FIRMR(const Ipp64fc *pSrc, Ipp64fc *pDst, int numIters, Ipp8u *pSpec, const Ipp64fc *pDlySrc, Ipp64fc *pDlyDst, Ipp8u *pBuf)
+        {
+            AssertNoError(ippsFIRMR_64fc(pSrc, pDst, numIters, (IppsFIRSpec_64fc *)pSpec, pDlySrc, pDlyDst, pBuf));
+        }
+
+        static inline void FIRMR(const Ipp16s *pSrc, Ipp16s *pDst, int numIters, Ipp8u *pSpec, const Ipp16s *pDlySrc, Ipp16s *pDlyDst, Ipp8u *pBuf)
+        {
+            AssertNoError(ippsFIRMR_16s(pSrc, pDst, numIters, (IppsFIRSpec_32f *)pSpec, pDlySrc, pDlyDst, pBuf));
+        }
+
+        static inline void FIRMR(const Ipp16sc *pSrc, Ipp16sc *pDst, int numIters, Ipp8u *pSpec, const Ipp16sc *pDlySrc, Ipp16sc *pDlyDst, Ipp8u *pBuf)
+        {
+            AssertNoError(ippsFIRMR_16sc(pSrc, pDst, numIters, (IppsFIRSpec_32fc *)pSpec, pDlySrc, pDlyDst, pBuf));
+        }
+
+        template <typename T>
+        void FIRMRGetSize(int tapsLen, int upFactor, int downFactor, int *pSpecSize, int *pBufSize);
+        template <>
+        void FIRMRGetSize<Ipp32f>(int tapsLen, int upFactor, int downFactor, int *pSpecSize, int *pBufSize)
+        {
+            AssertNoError(ippsFIRMRGetSize(tapsLen, upFactor, downFactor, IppDataType::ipp32f, pSpecSize, pBufSize));
+        }
+        template <>
+        void FIRMRGetSize<Ipp64f>(int tapsLen, int upFactor, int downFactor, int *pSpecSize, int *pBufSize)
+        {
+            AssertNoError(ippsFIRMRGetSize(tapsLen, upFactor, downFactor, IppDataType::ipp64f, pSpecSize, pBufSize));
+        }
+        template <>
+        void FIRMRGetSize<Ipp32fc>(int tapsLen, int upFactor, int downFactor, int *pSpecSize, int *pBufSize)
+        {
+            AssertNoError(ippsFIRMRGetSize(tapsLen, upFactor, downFactor, IppDataType::ipp32fc, pSpecSize, pBufSize));
+        }
+        template <>
+        void FIRMRGetSize<Ipp64fc>(int tapsLen, int upFactor, int downFactor, int *pSpecSize, int *pBufSize)
+        {
+            AssertNoError(ippsFIRMRGetSize(tapsLen, upFactor, downFactor, IppDataType::ipp64fc, pSpecSize, pBufSize));
+        }
+
+        template <typename T>
+        void FIRMRInit(const T *pTaps, int tapsLen, int upFactor, int upPhase, int downFactor, int downPhase, Ipp8u *pSpec);
+        template <>
+        void FIRMRInit<Ipp32f>(const Ipp32f *pTaps, int tapsLen, int upFactor, int upPhase, int downFactor, int downPhase, Ipp8u *pSpec)
+        {
+            AssertNoError(ippsFIRMRInit_32f(pTaps, tapsLen, upFactor, upPhase, downFactor, downPhase, (IppsFIRSpec_32f *)pSpec));
+        }
+        template <>
+        void FIRMRInit<Ipp64f>(const Ipp64f *pTaps, int tapsLen, int upFactor, int upPhase, int downFactor, int downPhase, Ipp8u *pSpec)
+        {
+            AssertNoError(ippsFIRMRInit_64f(pTaps, tapsLen, upFactor, upPhase, downFactor, downPhase, (IppsFIRSpec_64f *)pSpec));
+        }
+        template <>
+        void FIRMRInit<Ipp32fc>(const Ipp32fc *pTaps, int tapsLen, int upFactor, int upPhase, int downFactor, int downPhase, Ipp8u *pSpec)
+        {
+            AssertNoError(ippsFIRMRInit_32fc(pTaps, tapsLen, upFactor, upPhase, downFactor, downPhase, (IppsFIRSpec_32fc *)pSpec));
+        }
+        template <>
+        void FIRMRInit<Ipp64fc>(const Ipp64fc *pTaps, int tapsLen, int upFactor, int upPhase, int downFactor, int downPhase, Ipp8u *pSpec)
+        {
+            AssertNoError(ippsFIRMRInit_64fc(pTaps, tapsLen, upFactor, upPhase, downFactor, downPhase, (IppsFIRSpec_64fc *)pSpec));
+        }
+
+        template <typename T>
+        class FIRMR
+        {
+        private:
+            T *m_taps;
+
+            int m_tapsLen;
+
+            T *m_dly;
+            T *m_dlyDst;
+
+            int m_dlyLen;
+
+            int m_specSize;
+            int m_bufSize;
+
+            Ipp8u *m_spec;
+            Ipp8u *m_buf;
+
+            IppAlgType m_algType;
+
+            friend void swap(FIRMR &a, FIRMR &b)
+            {
+                using std::swap;
+                swap(a.m_taps, b.m_taps);
+                swap(a.m_tapsLen, b.m_tapsLen);
+                swap(a.m_dly, b.m_dly);
+                swap(a.m_dlyDst, b.m_dlyDst);
+                swap(a.m_dlyLen, b.m_dlyLen);
+                swap(a.m_specSize, b.m_specSize);
+                swap(a.m_bufSize, b.m_bufSize);
+                swap(a.m_spec, b.m_spec);
+                swap(a.m_buf, b.m_buf);
+                swap(a.m_algType, b.m_algType);
+            }
+
+        public:
+            FIRMR() = default;
+
+            FIRMR(T *taps, int taplen, IppAlgType algType = IppAlgType::ippAlgDirect)
+            {
+                m_dlyLen = taplen - 1;
+                m_algType = algType;
+
+                FIRMRGetSize<T>(taplen, &m_specSize, &m_bufSize);
+
+                m_spec = ippsMalloc_8u(m_specSize);
+                m_buf = ippsMalloc_8u(m_bufSize);
+
+                FIRMRInit<T>(m_taps, taplen m_algType, m_spec);
+
+                m_taps = ippsMalloc<T>(taplen);
+                Copy(taps, m_taps, taplen);
+
+                m_dly = ippsMalloc<T>(m_dlyLen);
+                m_dlyDst = ippsMalloc<T>(m_dlyLen);
+                std::fill(m_dly, m_dly + m_dlyLen, {});
+                std::fill(m_dlyDst, m_dlyDst + m_dlyLen, {});
+            }
+
+            // Copy constructor
+            FIRMR(const FIRMR &other)
+            {
+                m_tapsLen = other.m_tapsLen;
+                m_taps = ippsMalloc<T>(other.m_tapsLen);
+                Copy(other.m_taps, m_taps, other.m_tapsLen);
+
+                m_dlyLen = other.m_dlyLen;
+                m_dly = ippsMalloc<T>(other.m_dlyLen);
+                Copy(other.m_dly, m_dly, other.m_dlyLen);
+
+                m_dlyDst = ippsMalloc<T>(other.m_dlyLen);
+                Copy(other.m_dlyDst, m_dlyDst, other.m_dlyLen);
+
+                m_specSize = other.m_specSize;
+                m_bufSize = other.m_bufSize;
+                m_spec = ippsMalloc_8u(other.m_specSize);
+                m_buf = ippsMalloc_8u(other.m_bufSize);
+                Copy(other.m_spec, m_spec, other.m_specSize);
+                Copy(other.m_buf, m_buf, other.m_bufSize);
+
+                m_algType = other.m_algType;
+            }
+
+            // Move Constructor
+            FIRMR(FIRMR &&other)
+            {
+                swap(other, *this);
+            }
+
+            // Assignment operator
+            FIRMR &operator=(FIRMR other)
+            {
+                swap(other, *this);
+                return *this;
+            }
+
+            ~FIRMR()
+            {
+                if (m_spec != nullptr)
+                    ippsFree(m_spec);
+                if (m_buf != nullptr)
+                    ippsFree(m_buf);
+                if (m_dly != nullptr)
+                    ippsFree(m_dly);
+                if (m_dlyDst != nullptr)
+                    ippsFree(m_dlyDst);
+            }
+
+            void filter(const T *pSrc, T *pDst, int len)
+            {
+                if (m_spec == nullptr)
+                    throw std::runtime_error("FIRMR not initialized");
+                FIRMR<T>(pSrc, pDst, len, m_spec, m_dly, m_dlyDst, m_buf);
+                std::swap(m_dly, m_dlyDst);
+            }
+        };
+
+        template <typename T>
+        class FIRGen
+        {
+        private:
+            T *m_buffer;
+            int m_tapsLen;
+            int m_bufSize;
+
+        public:
+            FIRGen() = default;
+            FIRGen(int tapsLen)
+            {
+                m_tapsLen = tapsLen;
+                AssertNoError(ippsFIRGenGetBufferSize(tapsLen, &m_bufSize));
+                m_buffer = ippsMalloc<T>(m_bufSize);
+            }
+
+            // Copy constructor
+            FIRGen(const FIRGen &other)
+            {
+                m_tapsLen = other.m_tapsLen;
+                m_bufSize = other.m_bufSize;
+                m_buffer = ippsMalloc<T>(m_bufSize);
+                Copy(other.m_buffer, m_buffer, m_bufSize);
+            }
+
+            ~FIRGen()
+            {
+                if (m_buffer != nullptr)
+                    ippsFree(m_buffer);
+            }
+        }
         //   ippsCountInRange_32s
 
         //   ippsCplxToReal_16sc

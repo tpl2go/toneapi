@@ -14,6 +14,8 @@ This is not the first library to wrap Intel IPP. The following repositories have
 2. Namespaces are designed to follow the intel binaries as closely as possible (ipps, ippvm, ippi, etc)
 3. Where possible, we will create additional wrapper functions that accept and return `std::vector` instead of pointers
 
+## Class Design
+When using a class to wrap the management of a resource like memory buffers, it is strongly recommended to specify the following 5 classes --- 1) Copy Constructor 2) Move Constructor, 3) Copy Assignment Operator 4) Move Assignment Operator, 5) Destructor. This is commonly known as the Rule of Five. The move / copy assignment operator is implemented using the copy and swap idiom.
 
 ## On memory alignment
 Mallocs by modern C++ on 64-bit machines often returns a 16-byte aligned pointer. However, some SMID instructions (like AVX-256, AVX-512) require stricter memory alignment for optimal performance. Users of Intel IPP are encouraged to use `IppsMalloc` to create 64-byte aligned memory for use with IPP functions. If we were to abide by C++ practices of avoiding mallocs and using containers like `std::vector`, we have two possible options:
