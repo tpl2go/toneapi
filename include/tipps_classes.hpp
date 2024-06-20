@@ -57,94 +57,37 @@ namespace tipp
         class DFT
         {
         private:
-            int m_SizeSpec;
-            int m_SizeInit;
-            int m_SizeBuf;
-            Ipp8u *m_pDFTSpec;
-            Ipp8u *m_pDFTWorkBuf;
-            Ipp8u *m_pDFTInitBuf;
+            vector<Ipp8u> m_pDFTSpec;
+            vector<Ipp8u> m_pDFTWorkBuf;
+            vector<Ipp8u> m_pDFTInitBuf;
+
             int m_inNFFT;
             int m_outNFFT;
             int m_flag;
-
-            friend void swap(DFT &first, DFT &second)
-            {
-                using std::swap;
-                swap(second.m_SizeSpec, first.m_SizeSpec);
-                swap(second.m_SizeInit, first.m_SizeInit);
-                swap(second.m_SizeBuf, first.m_SizeBuf);
-
-                swap(second.m_pDFTSpec, first.m_pDFTSpec);
-                swap(second.m_pDFTWorkBuf, first.m_pDFTWorkBuf);
-                swap(second.m_pDFTInitBuf, first.m_pDFTInitBuf);
-
-                swap(second.m_inNFFT, first.m_inNFFT);
-                swap(second.m_outNFFT, first.m_outNFFT);
-                swap(second.m_flag, first.m_flag);
-            }
 
         public:
             DFT() = default;
 
             DFT(const int nfft, const int flag = IPP_FFT_DIV_INV_BY_N)
             {
-                DFTGetSize<Trc>(nfft, flag, &m_SizeSpec, &m_SizeInit, &m_SizeBuf);
 
                 m_inNFFT = nfft;
                 m_outNFFT = get_FwdSize<Trc>(nfft);
                 m_flag = flag;
 
-                m_pDFTSpec = ippsMalloc_8u(m_SizeSpec);
-                m_pDFTWorkBuf = ippsMalloc_8u(m_SizeBuf);
-                m_pDFTInitBuf = ippsMalloc_8u(m_SizeInit);
+                int SizeSpec, SizeInit, SizeBuf;
+                DFTGetSize<Trc>(nfft, flag, &SizeSpec, &SizeInit, &SizeBuf);
 
-                DFTInit<Trc>(m_inNFFT, m_flag, m_pDFTSpec, m_pDFTInitBuf);
+                m_pDFTSpec.resize(SizeSpec);
+                m_pDFTWorkBuf.resize(SizeBuf);
+                m_pDFTInitBuf.resize(SizeInit);
+
+                DFTInit<Trc>(m_inNFFT, m_flag, m_pDFTSpec.data(), m_pDFTInitBuf.data());
             }
 
-            // Copy Constructor
-            DFT(const DFT &other)
-            {
-                m_outNFFT = other.m_outNFFT;
-                m_inNFFT = other.m_inNFFT;
-                m_flag = other.m_flag;
+            void Fwd(const Trc *input, Tc *output) { DFTFwd(input, output, m_pDFTSpec.data(), m_pDFTWorkBuf.data()); }
 
-                m_SizeSpec = other.m_SizeSpec;
-                m_SizeInit = other.m_SizeInit;
-                m_SizeBuf = other.m_SizeBuf;
-
-                m_pDFTSpec = ippsMalloc_8u(m_SizeSpec);
-                m_pDFTWorkBuf = ippsMalloc_8u(m_SizeBuf);
-                m_pDFTInitBuf = ippsMalloc_8u(m_SizeInit);
-
-                DFTInit<Trc>(m_inNFFT, m_flag, m_pDFTSpec, m_pDFTInitBuf);
-            }
-
-            // Move Constructor
-            DFT(DFT &&other)
-            {
-                swap(*this, other);
-            }
-
-            ~DFT()
-            {
-                if (m_pDFTSpec != nullptr)
-                    ippsFree(m_pDFTSpec);
-                if (m_pDFTWorkBuf != nullptr)
-                    ippsFree(m_pDFTWorkBuf);
-                if (m_pDFTInitBuf != nullptr)
-                    ippsFree(m_pDFTInitBuf);
-            }
-
-            // Copy Assignment Operator
-            DFT &operator=(DFT other)
-            {
-                swap(*this, other);
-                return *this;
-            }
-
-            void Fwd(const Trc *input, Tc *output) { DFTFwd(input, output, m_pDFTSpec, m_pDFTWorkBuf); }
-
-            void Inv(const Tc *input, Trc *output) { DFTInv(input, output, m_pDFTSpec, m_pDFTWorkBuf); }
+            void Inv(const Tc *input, Trc *output) { DFTInv(input, output, m_pDFTSpec.data(), m_pDFTWorkBuf.data()); }
 
             std::vector<Tc> Fwd(const std::vector<Trc> &input)
             {
@@ -214,103 +157,64 @@ namespace tipp
         class FFT
         {
         private:
-            int m_SizeSpec;
-            int m_SizeInit;
-            int m_SizeBuf;
-            Ipp8u *m_pFFTSpec;
-            Ipp8u *m_pFFTWorkBuf;
-            Ipp8u *m_pFFTInitBuf;
+            vector<Ipp8u> m_pFFTSpec;
+            vector<Ipp8u> m_pFFTWorkBuf;
+            vector<Ipp8u> m_pFFTInitBuf;
 
             int m_inNFFT;
             int m_outNFFT;
             int m_flag;
 
-            friend void swap(FFT &first, FFT &second)
-            {
-                using std::swap;
-                swap(first.m_pFFTSpec, second.m_pFFTSpec);
-                swap(first.m_pFFTWorkBuf, second.m_pFFTWorkBuf);
-                swap(first.m_pFFTInitBuf, second.m_pFFTInitBuf);
-
-                swap(first.m_inNFFT, second.m_inNFFT);
-                swap(first.m_outNFFT, second.m_outNFFT);
-                swap(first.m_flag, second.m_flag);
-
-                swap(first.m_SizeBuf, second.m_SizeBuf);
-                swap(first.m_SizeInit, second.m_SizeInit);
-                swap(first.m_SizeSpec, second.m_SizeSpec);
-            }
-
         public:
             FFT() = default;
 
-            FFT(int order, int flag = IPP_FFT_DIV_INV_BY_N)
+            FFT(int order, int flag = IPP_FFT_DIV_INV_BY_N) { initialise(order, flag); }
+
+            void initialise(int order, int flag = IPP_FFT_DIV_INV_BY_N)
             {
-                FFTGetSize<Trc>(order, flag, &m_SizeSpec, &m_SizeInit, &m_SizeBuf);
+                int SizeSpec, SizeInit, SizeBuf;
 
-                m_pFFTSpec = ippsMalloc_8u(m_SizeSpec);
-                m_pFFTWorkBuf = ippsMalloc_8u(m_SizeBuf);
-                m_pFFTInitBuf = ippsMalloc_8u(m_SizeInit);
+                FFTGetSize<Trc>(order, flag, &SizeSpec, &SizeInit, &SizeBuf);
 
-                FFTInit<Trc>(nfft, flag, m_pFFTSpec, m_pFFTInitBuf);
+                m_pFFTSpec.resize(SizeSpec);
+                m_pFFTWorkBuf.resize(SizeBuf);
+                m_pFFTInitBuf.resize(SizeInit);
+
+                FFTInit<Trc>(nfft, flag, m_pFFTSpec.data(), m_pFFTInitBuf.data());
 
                 m_inNFFT = 1 << order;
                 m_outNFFT = get_FwdSize<Trc>(m_inNFFT);
                 m_flag = flag;
             }
 
-            // Copy constructor
-            FFT(const FFT &other)
+            void Fwd(const Trc *input, Tc *output)
             {
-                m_inNFFT = other.m_inNFFT;
-                m_outNFFT = other.m_outNFFT;
-                m_flag = other.m_flag;
+                if (m_pFFTInitBuf.empty())
+                    throw std::invalid_argument("FFT not initalized");
 
-                m_SizeBuf = other.m_SizeBuf;
-                m_SizeInit = other.m_SizeInit;
-                m_SizeSpec = other.m_SizeSpec;
+                FFTFwd(input, output, m_pFFTSpec.data(), m_pFFTWorkBuf.data());
+            }
+            void Fwd_I(const Trc *input, Tc *output) { FFTFwd_I(input, output, m_pFFTSpec.data(), m_pFFTWorkBuf.data()); }
+            void Inv(const Tc *input, Trc *output) { FFTInv(input, output, m_pFFTSpec.data(), m_pFFTWorkBuf.data()); }
+            void Inv_I(const Tc *input, Trc *output) { FFTInv_I(input, output, m_pFFTSpec.data(), m_pFFTWorkBuf.data()); }
 
-                m_pFFTSpec = ippsMalloc_8u(m_SizeSpec);
-                m_pFFTWorkBuf = ippsMalloc_8u(m_SizeBuf);
-                m_pFFTInitBuf = ippsMalloc_8u(m_SizeInit);
-
-                FFTInit<Trc>(m_inNFFT, m_flag, m_pFFTSpec, m_pFFTInitBuf);
+            std::vector<Tc> Fwd(const std::vector<Trc> &input)
+            {
+                if (input.size() != m_inNFFT)
+                    throw std::invalid_argument("Input vector size is not equal to predefined input DFT size");
+                std::vector<Tc> output(m_outNFFT);
+                Fwd(input.data(), output.data());
+                return output;
             }
 
-            // Move constructor
-            FFT(FFT &&other)
+            std::vector<Trc> Inv(const std::vector<Tc> &input)
             {
-                swap(*this, other);
+                if (input.size() != m_outNFFT)
+                    throw std::invalid_argument("Input vector size is not equal to predefined output DFT size");
+                std::vector<Trc> output(m_inNFFT);
+                Inv(input.data(), output.data());
+                return output;
             }
-
-            ~FFT()
-            {
-                if (m_pFFTSpec != nullptr)
-                    ippsFree(m_pFFTSpec);
-                if (m_pFFTWorkBuf != nullptr)
-                    ippsFree(m_pFFTWorkBuf);
-                if (m_pFFTInitBuf != nullptr)
-                    ippsFree(m_pFFTInitBuf);
-            }
-
-            // Copy assignment operator
-            FFT &operator=(const FFT other)
-            {
-                swap(*this, other);
-                return *this;
-            }
-
-            // Move assignment operator
-            FFT &operator=(FFT &&other)
-            {
-                swap(*this, other);
-                return *this;
-            }
-
-            void Fwd(const Trc *input, Tc *output) { FFTFwd(input, output, m_pFFTSpec, m_pFFTWorkBuf); }
-            void Fwd_I(const Trc *input, Tc *output) { FFTFwd_I(input, output, m_pFFTSpec, m_pFFTWorkBuf); }
-            void Inv(const Tc *input, Trc *output) { FFTInv(input, output, m_pFFTSpec, m_pFFTWorkBuf); }
-            void Inv_I(const Tc *input, Trc *output) { FFTInv_I(input, output, m_pFFTSpec, m_pFFTWorkBuf); }
         };
 
         static inline void FIRSR(const Ipp32f *pSrc, Ipp32f *pDst, int numIters, Ipp8u *pSpec, const Ipp32f *pDlySrc, Ipp32f *pDlyDst, Ipp8u *pBuf)
@@ -369,117 +273,45 @@ namespace tipp
         class FIRSR
         {
         private:
-            T *m_taps;
+            vector<T> m_taps;
 
-            int m_tapsLen;
+            vector<T> m_dly;
+            vector<T> m_dlyDst;
 
-            T *m_dly;
-            T *m_dlyDst;
-
-            int m_dlyLen;
-
-            int m_specSize;
-            int m_bufSize;
-
-            Ipp8u *m_spec;
-            Ipp8u *m_buf;
+            vector<Ipp8u> m_spec;
+            vector<Ipp8u> m_buf;
 
             IppAlgType m_algType;
-
-            friend void swap(FIRSR &a, FIRSR &b)
-            {
-                using std::swap;
-                swap(a.m_taps, b.m_taps);
-                swap(a.m_tapsLen, b.m_tapsLen);
-                swap(a.m_dly, b.m_dly);
-                swap(a.m_dlyDst, b.m_dlyDst);
-                swap(a.m_dlyLen, b.m_dlyLen);
-                swap(a.m_specSize, b.m_specSize);
-                swap(a.m_bufSize, b.m_bufSize);
-                swap(a.m_spec, b.m_spec);
-                swap(a.m_buf, b.m_buf);
-                swap(a.m_algType, b.m_algType);
-            }
 
         public:
             FIRSR() = default;
 
             FIRSR(T *taps, int taplen, IppAlgType algType = IppAlgType::ippAlgDirect)
             {
-                m_dlyLen = taplen - 1;
                 m_algType = algType;
+                int dlyLen = taplen - 1;
+                m_dly.resize(dlyLen);
+                m_dlyDst.resize(dlyLen);
 
-                FIRSRGetSize<T>(taplen, &m_specSize, &m_bufSize);
+                int specSize, bufSize;
 
-                m_spec = ippsMalloc_8u(m_specSize);
-                m_buf = ippsMalloc_8u(m_bufSize);
+                FIRSRGetSize<T>(taplen, &specSize, &bufSize);
 
-                FIRSRInit<T>(m_taps, taplen m_algType, m_spec);
+                m_spec.resize(specSize);
+                m_buf.resize(bufSize);
 
-                m_taps = ippsMalloc<T>(taplen);
+                FIRSRInit<T>(m_taps, taplen, m_algType, m_spec);
+
+                m_taps.resize(taplen);
                 Copy(taps, m_taps, taplen);
-
-                m_dly = ippsMalloc<T>(m_dlyLen);
-                m_dlyDst = ippsMalloc<T>(m_dlyLen);
-                std::fill(m_dly, m_dly + m_dlyLen, {});
-                std::fill(m_dlyDst, m_dlyDst + m_dlyLen, {});
-            }
-
-            // Copy constructor
-            FIRSR(const FIRSR &other)
-            {
-                m_tapsLen = other.m_tapsLen;
-                m_taps = ippsMalloc<T>(other.m_tapsLen);
-                Copy(other.m_taps, m_taps, other.m_tapsLen);
-
-                m_dlyLen = other.m_dlyLen;
-                m_dly = ippsMalloc<T>(other.m_dlyLen);
-                Copy(other.m_dly, m_dly, other.m_dlyLen);
-
-                m_dlyDst = ippsMalloc<T>(other.m_dlyLen);
-                Copy(other.m_dlyDst, m_dlyDst, other.m_dlyLen);
-
-                m_specSize = other.m_specSize;
-                m_bufSize = other.m_bufSize;
-                m_spec = ippsMalloc_8u(other.m_specSize);
-                m_buf = ippsMalloc_8u(other.m_bufSize);
-                Copy(other.m_spec, m_spec, other.m_specSize);
-                Copy(other.m_buf, m_buf, other.m_bufSize);
-
-                m_algType = other.m_algType;
-            }
-
-            // Move Constructor
-            FIRSR(FIRSR &&other)
-            {
-                swap(other, *this);
-            }
-
-            // Assignment operator
-            FIRSR &operator=(FIRSR other)
-            {
-                swap(other, *this);
-                return *this;
-            }
-
-            ~FIRSR()
-            {
-                if (m_spec != nullptr)
-                    ippsFree(m_spec);
-                if (m_buf != nullptr)
-                    ippsFree(m_buf);
-                if (m_dly != nullptr)
-                    ippsFree(m_dly);
-                if (m_dlyDst != nullptr)
-                    ippsFree(m_dlyDst);
             }
 
             void filter(const T *pSrc, T *pDst, int len)
             {
-                if (m_spec == nullptr)
+                if (m_spec.empty() || m_buf.empty())
                     throw std::runtime_error("FIRSR not initialized");
-                FIRSR<T>(pSrc, pDst, len, m_spec, m_dly, m_dlyDst, m_buf);
-                std::swap(m_dly, m_dlyDst);
+                FIRSR<T>(pSrc, pDst, len, m_spec.data(), m_dly.data(), m_dlyDst.data(), m_buf.data());
+                swap(m_dly, m_dlyDst);
             }
         };
 
@@ -563,114 +395,43 @@ namespace tipp
         class FIRMR
         {
         private:
-            T *m_taps;
+            vector<T> m_taps;
 
-            int m_tapsLen;
+            vector<T> m_dly;
+            vector<T> m_dlyDst;
 
-            T *m_dly;
-            T *m_dlyDst;
-
-            int m_dlyLen;
-
-            int m_specSize;
-            int m_bufSize;
-
-            Ipp8u *m_spec;
-            Ipp8u *m_buf;
+            vector<Ipp8u> m_spec;
+            vector<Ipp8u> m_buf;
 
             IppAlgType m_algType;
-
-            friend void swap(FIRMR &a, FIRMR &b)
-            {
-                using std::swap;
-                swap(a.m_taps, b.m_taps);
-                swap(a.m_tapsLen, b.m_tapsLen);
-                swap(a.m_dly, b.m_dly);
-                swap(a.m_dlyDst, b.m_dlyDst);
-                swap(a.m_dlyLen, b.m_dlyLen);
-                swap(a.m_specSize, b.m_specSize);
-                swap(a.m_bufSize, b.m_bufSize);
-                swap(a.m_spec, b.m_spec);
-                swap(a.m_buf, b.m_buf);
-                swap(a.m_algType, b.m_algType);
-            }
 
         public:
             FIRMR() = default;
 
             FIRMR(T *taps, int taplen, IppAlgType algType = IppAlgType::ippAlgDirect)
             {
-                m_dlyLen = taplen - 1;
+
                 m_algType = algType;
 
-                FIRMRGetSize<T>(taplen, &m_specSize, &m_bufSize);
+                int specSize, bufSize;
+                FIRMRGetSize<T>(taplen, &specSize, &bufSize);
 
-                m_spec = ippsMalloc_8u(m_specSize);
-                m_buf = ippsMalloc_8u(m_bufSize);
+                m_spec.resize(specSize);
+                m_buf.resize(bufSize);
 
-                FIRMRInit<T>(m_taps, taplen m_algType, m_spec);
+                FIRMRInit<T>(m_taps.data(), taplen, m_algType, m_spec.data());
 
-                m_taps = ippsMalloc<T>(taplen);
+                m_taps.resize(taplen);
                 Copy(taps, m_taps, taplen);
 
-                m_dly = ippsMalloc<T>(m_dlyLen);
-                m_dlyDst = ippsMalloc<T>(m_dlyLen);
-                std::fill(m_dly, m_dly + m_dlyLen, {});
-                std::fill(m_dlyDst, m_dlyDst + m_dlyLen, {});
-            }
-
-            // Copy constructor
-            FIRMR(const FIRMR &other)
-            {
-                m_tapsLen = other.m_tapsLen;
-                m_taps = ippsMalloc<T>(other.m_tapsLen);
-                Copy(other.m_taps, m_taps, other.m_tapsLen);
-
-                m_dlyLen = other.m_dlyLen;
-                m_dly = ippsMalloc<T>(other.m_dlyLen);
-                Copy(other.m_dly, m_dly, other.m_dlyLen);
-
-                m_dlyDst = ippsMalloc<T>(other.m_dlyLen);
-                Copy(other.m_dlyDst, m_dlyDst, other.m_dlyLen);
-
-                m_specSize = other.m_specSize;
-                m_bufSize = other.m_bufSize;
-                m_spec = ippsMalloc_8u(other.m_specSize);
-                m_buf = ippsMalloc_8u(other.m_bufSize);
-                Copy(other.m_spec, m_spec, other.m_specSize);
-                Copy(other.m_buf, m_buf, other.m_bufSize);
-
-                m_algType = other.m_algType;
-            }
-
-            // Move Constructor
-            FIRMR(FIRMR &&other)
-            {
-                swap(other, *this);
-            }
-
-            // Assignment operator
-            FIRMR &operator=(FIRMR other)
-            {
-                swap(other, *this);
-                return *this;
-            }
-
-            ~FIRMR()
-            {
-                if (m_spec != nullptr)
-                    ippsFree(m_spec);
-                if (m_buf != nullptr)
-                    ippsFree(m_buf);
-                if (m_dly != nullptr)
-                    ippsFree(m_dly);
-                if (m_dlyDst != nullptr)
-                    ippsFree(m_dlyDst);
+                int m_dlyLen = taplen - 1;
+                m_dly.resize(m_dlyLen);
+                m_dlyDst.resize(m_dlyLen);
             }
 
             void filter(const T *pSrc, T *pDst, int len)
             {
-                if (m_spec == nullptr)
+                if (m_spec.empty())
                     throw std::runtime_error("FIRMR not initialized");
                 FIRMR<T>(pSrc, pDst, len, m_spec, m_dly, m_dlyDst, m_buf);
                 std::swap(m_dly, m_dlyDst);

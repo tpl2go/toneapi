@@ -189,6 +189,14 @@ namespace tipp
             typedef size_t size_type;
             typedef ptrdiff_t difference_type;
 
+            friend void swap(vector &a, vector &b) noexcept
+            {
+                using std::swap;
+                swap(a.numel, b.numel);
+                swap(a.m_data, b.m_data);
+                swap(a.cap, b.cap);
+            }
+
         public:
             // Constructors
 
@@ -270,7 +278,11 @@ namespace tipp
                 return *this;
             }
 
-            ~vector() { ippsFree(m_data); }
+            ~vector()
+            {
+                if (m_data != nullptr)
+                    ippsFree(m_data);
+            }
 
             /*
             Resizes the container so that it contains n elements.
@@ -392,7 +404,7 @@ namespace tipp
 
             void clear() { numel = 0; }
 
-            bool empty() const { return numel == 0; }
+            bool empty() const noexcept { return numel == 0; }
 
             // Iterators
             pointer begin() { return m_data; }
