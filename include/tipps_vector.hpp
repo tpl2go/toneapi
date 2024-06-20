@@ -181,10 +181,13 @@ namespace tipp
         template <typename T>
         class vector
         {
-        protected:
-            size_t numel = 0;
-            size_t cap = 0;
-            T *m_data = nullptr;
+            typedef T value_type;
+            typedef T *pointer;
+            typedef const T *const_pointer;
+            typedef T &reference;
+            typedef const T &const_reference;
+            typedef size_t size_type;
+            typedef ptrdiff_t difference_type;
 
         public:
             // Constructors
@@ -192,15 +195,14 @@ namespace tipp
             // Default constructor
             vector() = default;
 
-            explicit vector(size_t count)
+            explicit vector(size_type count)
             {
                 numel = count;
                 reserve(numel);
             }
 
-            vector(size_t count, const T &value)
+            vector(size_type count, const value_type &value)
             {
-                DEBUG("vector(size_t count, const T &value)\n");
                 numel = count;
                 reserve(numel);
                 set(value);
@@ -208,55 +210,59 @@ namespace tipp
 
             // Copy constructor
             vector(const vector &other)
-                : numel(other.numel)
             {
                 reserve(numel);
-                Copy(other.m_data, m_data, (int)numel); // cannot do this as some types dont have a copy
-                for (size_t i = 0; i < numel; i++)
-                    m_data[i] = other.m_data[i]; // TODO: write using ippsCopy? would require template specializations
-            }
-
-            // Copy Assignment operator
-            vector &operator=(const vector &other)
-            {
-                DEBUG("vector& operator=(const vector &other)\n");
-
-                // set size
+                Copy(other.m_data, m_data, (int)numel);
                 numel = other.numel;
-                // set cap
-                reserve(numel); // even if count is 0, reserve() will do nothing
-                // copy data
-                // Copy<T>(other.m_data, m_data, (int)numel);
-                for (size_t i = 0; i < numel; i++)
-                    m_data[i] = other.m_data[i]; // TODO: write using ippsCopy? would require template specializations
-                return *this;
             }
 
             // Move constructor
+            // Move constructors typically "steal" the resources held by the argument
+            // rather than make copies of them, and leave the argument in some valid
+            // but otherwise indeterminate state.
             vector(vector &&other)
-                : numel(other.numel), cap(other.cap), m_data(other.m_data)
             {
-                DEBUG("vector(vector &&other)\n");
+                // steal other's data
+                numel = other.numel;
+                cap = other.cap;
+                m_data = other.m_data;
 
-                // nullify the other
+                // nullify other
                 other.m_data = nullptr;
                 other.cap = 0;
                 other.numel = 0;
             }
 
-            // Move Assignment operator
-            vector &operator=(vector &&other)
+            // Copy Assignment operator
+            vector &operator=(vector &other)
             {
                 if (this != &other)
                 {
-                    DEBUG("vector& operator=(vector &&other)\n");
-                    // Free existing resource
-                    ippsFree(m_data);
-                    // move parameters
+                    if (other.numel > 0)
+                    {
+                        reserve(other.numel);
+                        Copy(other.m_data, m_data, (int)numel);
+                    }
+                    numel = other.numel;
+                }
+                return *this;
+            }
+
+            // Move Assignment operator
+            vector &operator=(vector &&other) noexcept
+            {
+                if (this != &other)
+                {
+                    // free own data
+                    if (m_data != nullptr)
+                        ippsFree(m_data);
+
+                    // steal other's data
                     numel = other.numel;
                     cap = other.cap;
                     m_data = other.m_data;
-                    // nullify the other
+
+                    // nullify other
                     other.m_data = nullptr;
                     other.cap = 0;
                     other.numel = 0;
@@ -264,116 +270,97 @@ namespace tipp
                 return *this;
             }
 
-            ~vector()
-            {
-                DEBUG("~vector()\n");
-                ippsFree(m_data);
-            }
+            ~vector() { ippsFree(m_data); }
 
-            void resize(size_t new_count)
+            /*
+            Resizes the container so that it contains n elements.
+            If n is smaller than the current container size, the content is reduced to its first n elements, removing those beyond (and destroying them).
+            If n is greater than the current container size, the content is expanded by inserting at the end as many elements as needed to reach a size of n.
+            If val is specified, the new elements are initialized as copies of val, otherwise, they are value-initialized.
+            If n is also greater than the current container capacity, an automatic reallocation of the allocated storage space takes place.
+             */
+            void resize(size_type new_count)
             {
-                DEBUG("void resize(size_t new_count)\n");
-                // if count is more than capacity then reserve more
-                if (new_count > cap)
-                    reserve(new_count); // this sets cap to new_count
 
-                // no matter what, set the numel to the new count
+                reserve(new_count);
+
+                if (new_count > numel) // value initialise new elements
+                    for (int i = numel; i < new_count; i++)
+                        new (&m_data[i]) value_type{};
+                else if (new_count < numel) // destroy excess elements
+                    for (int i = new_count; i < numel; i++)
+                        m_data[i].~value_type();
+
                 numel = new_count;
             }
 
             void resize(size_t new_count, const T &value)
             {
-                DEBUG("void resize(size_t new_count, const T& value)\n");
-                // keep the old size
-                size_t oldsize = numel;
 
-                // resize as per normal
-                resize(new_count);
+                reserve(new_count);
 
-                // write the values from the old to the new (strictly if its larger)
-                if (numel > oldsize)
+                if (new_count > numel) // copy construct new elements
+                    for (int i = numel; i < new_count; i++)
+                        new (&m_data[i]) value_type(value);
+                else if (new_count < numel) // destroy excess elements
+                    for (int i = new_count; i < numel; i++)
+                        m_data[i].~value_type();
+
+                numel = new_count;
+            }
+
+            void reserve(size_type new_cap)
+            {
+                if (new_cap > cap)
                 {
-                    if (isZero(value))
-                        zero(oldsize, numel - oldsize); // zero up to the new count
-                    else
-                        set(oldsize, numel - oldsize, value); // set the value up to the new count
+                    value_type *new_data = ippsMalloc<value_type>(new_cap);
+                    if (m_data != nullptr)
+                    {
+                        Copy(m_data, new_data, (int)numel);
+                        ippsFree(m_data);
+                    }
+                    m_data = new_data;
+                    cap = new_cap;
                 }
             }
 
-            // These only have specializations, see below
-            void reserve(size_t new_cap);
-            void zero(int start, int length);
-            void zero()
+            void set(const_reference value)
             {
-                zero(0, numel); // simply call the other one to fill the whole vector with 0
+                for (int i = 0; i < numel; i++)
+                    new (&m_data[i]) value_type(value);
             }
 
-            void set(int start, int length, const T &value);
-            void set(const T &value)
-            {
-                set(0, numel, value); // simply call the other one to fill the whole vector
-            }
-            // end of specializations
+            pointer data() { return m_data; }
+            const_pointer data() const { return m_data; }
 
-            // Everything else below is to do with read-only access
-            T *data()
-            {
-                return m_data;
-            }
+            reference back() { return m_data[numel - 1]; }
+            const_reference back() const { return m_data[numel - 1]; }
 
-            const T *data() const
-            {
-                return m_data;
-            }
+            reference front() { return m_data[0]; }
 
-            T &back()
-            {
-                return m_data[numel - 1];
-            }
+            const_reference front() const { return m_data[0]; }
 
-            const T &back() const
-            {
-                return m_data[numel - 1];
-            }
-
-            T &front()
-            {
-                return m_data[0];
-            }
-
-            const T &front() const
-            {
-                return m_data[0];
-            }
-
-            T &at(size_t pos)
+            reference at(size_type pos)
             {
                 if (pos < numel && pos >= 0)
                     return m_data[pos];
                 else
-                    throw std::out_of_range(std::string("ippe::vector::range_check: Size is ") + std::to_string(numel));
+                    throw std::out_of_range(std::string("tipp::ipps::vector.at Size is ") + std::to_string(numel) + std::string(", pos is ") + std::to_string(pos));
             }
 
-            const T &at(size_t pos) const
+            const_reference at(size_type pos) const
             {
                 if (pos < numel && pos >= 0)
                     return m_data[pos];
                 else
-                    throw std::out_of_range(std::string("ippe::vector::range_check: Size is ") + std::to_string(numel));
+                    throw std::out_of_range(std::string("tipp::ipps::vector.at Size is ") + std::to_string(numel) + std::string(", pos is ") + std::to_string(pos));
             }
 
-            // true to std::vector, this will not perform bounds checking
-            T &operator[](size_t pos)
-            {
-                return m_data[pos];
-            }
+            reference operator[](size_type pos) { return m_data[pos]; }
 
-            const T &operator[](size_t pos) const
-            {
-                return m_data[pos];
-            }
+            const_reference operator[](size_type pos) const { return m_data[pos]; }
 
-            void push_back(const T &value) // for now lets not deal with lvalue/rvalue refs
+            void push_back(const_reference value)
             {
                 // check size
                 if (numel == cap)
@@ -399,57 +386,32 @@ namespace tipp
                 numel++;
             }
 
-            size_t size() const
-            {
-                return numel;
-            }
+            size_type size() const { return numel; }
 
-            size_t capacity() const
-            {
-                return cap;
-            }
+            size_type capacity() const { return cap; }
 
-            void clear()
-            {
-                numel = 0;
-            }
+            void clear() { numel = 0; }
 
-            bool empty() const
-            {
-                return numel == 0;
-            }
+            bool empty() const { return numel == 0; }
 
             // Iterators
-            T *begin()
-            {
-                return m_data;
-            }
+            pointer begin() { return m_data; }
 
-            const T *begin() const
-            {
-                return m_data;
-            }
+            const_pointer begin() const { return m_data; }
 
-            T *end()
-            {
-                return m_data + numel;
-            }
+            pointer end() { return m_data + numel; }
 
-            const T *end() const
-            {
-                return m_data + numel;
-            }
+            const_pointer end() const { return m_data + numel; }
 
             // Const iterators
-            const T *cbegin() const
-            {
-                return m_data;
-            }
+            const_pointer cbegin() const { return m_data; }
 
-            const T *cend() const
-            {
-                return m_data + numel;
-            }
+            const_pointer cend() const { return m_data + numel; }
+
+        protected:
+            size_type numel = 0;
+            size_type cap = 0;
+            pointer m_data = nullptr;
         };
 
     }
