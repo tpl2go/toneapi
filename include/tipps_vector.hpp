@@ -8,81 +8,32 @@ namespace tipp
     namespace ipp
     {
 
-        // Custom allocator
-        template <typename T>
-        class IPPAllocator
+        // Custom Allocator for use with STL vector
+        template <class T>
+        struct IPPallocator
         {
-        public:
-            using value_type = T;
-            using pointer = T *;
-            using const_pointer = const T *;
-            using reference = T &;
-            using const_reference = const T &;
-            using size_type = std::size_t;
-            using difference_type = std::ptrdiff_t;
+            typedef T value_type;
+            IPPallocator() noexcept {} // default ctor not required by C++ Standard Library
 
-            // Rebind allocator to another type
-            template <typename U>
-            struct rebind
+            // A converting copy constructor:
+            template <class U>
+            IPPallocator(const IPPallocator<U> &) noexcept {}
+
+            template <class U>
+            bool operator==(const IPPallocator<U> &) const noexcept { return true; }
+
+            template <class U>
+            bool operator!=(const IPPallocator<U> &) const noexcept { return false; }
+
+            T *allocate(const size_t n) const
             {
-                using other = IPPAllocator<U>;
-            };
-
-            // Constructor
-            IPPAllocator() noexcept {}
-
-            // Copy constructor
-            template <typename U>
-            IPPAllocator(const IPPAllocator<U> &) noexcept {}
-
-            // Allocate memory
-            pointer allocate(size_type n, const void *hint = 0)
-            {
-                if (n > max_size())
-                    throw std::bad_alloc();
-                return static_cast<pointer>(ippsMalloc_32fc(n * sizeof(T)));
+                return ippsMalloc<T>(n);
             }
-
-            // Deallocate memory
-            void deallocate(pointer p, size_type n) noexcept
+            void deallocate(T *const p, size_t) const noexcept
             {
                 ippsFree(p);
             }
-
-            // Construct an object in allocated memory
-            template <typename U, typename... Args>
-            void construct(U *p, Args &&...args)
-            {
-                ::new ((void *)p) U(std::forward<Args>(args)...);
-            }
-
-            // Destroy an object in allocated memory
-            template <typename U>
-            void destroy(U *p)
-            {
-                p->~U();
-            }
-
-            // Returns the maximum number of elements that can be allocated
-            size_type max_size() const noexcept
-            {
-                return size_type(~0) / sizeof(T);
-            }
         };
-
-        // Equality comparison operator
-        template <typename T, typename U>
-        bool operator==(const IPPAllocator<T> &, const IPPAllocator<U> &) noexcept
-        {
-            return true;
-        }
-
-        // Inequality comparison operator
-        template <typename T, typename U>
-        bool operator!=(const IPPAllocator<T> &, const IPPAllocator<U> &) noexcept
-        {
-            return false;
-        }
 
         // ippsMalloc
         // limited to 2GB of memory

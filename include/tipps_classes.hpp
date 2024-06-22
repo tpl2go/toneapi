@@ -3,6 +3,7 @@
 #include <ippcore.h>
 #include <stdexcept>
 #include "tipp_error.hpp"
+#include "tipp_vector.hpp"
 #include "tipps.hpp"
 namespace tipp
 {
@@ -57,9 +58,9 @@ namespace tipp
         class DFT
         {
         private:
-            vector<Ipp8u> m_pDFTSpec;
-            vector<Ipp8u> m_pDFTWorkBuf;
-            vector<Ipp8u> m_pDFTInitBuf;
+            std::vector<Ipp8u, IPPAllocator<Ipp8u>> m_pDFTSpec;
+            std::vector<Ipp8u, IPPAllocator<Ipp8u>> m_pDFTWorkBuf;
+            std::vector<Ipp8u, IPPAllocator<Ipp8u>> m_pDFTInitBuf;
 
             int m_inNFFT;
             int m_outNFFT;
@@ -68,9 +69,10 @@ namespace tipp
         public:
             DFT() = default;
 
-            DFT(const int nfft, const int flag = IPP_FFT_DIV_INV_BY_N)
-            {
+            DFT(const int nfft, const int flag = IPP_FFT_DIV_INV_BY_N) { initialise(nfft, flag); }
 
+            void initialise(const int nfft, const int flag = IPP_FFT_DIV_INV_BY_N)
+            {
                 m_inNFFT = nfft;
                 m_outNFFT = get_FwdSize<Trc>(nfft);
                 m_flag = flag;
@@ -85,23 +87,37 @@ namespace tipp
                 DFTInit<Trc>(m_inNFFT, m_flag, m_pDFTSpec.data(), m_pDFTInitBuf.data());
             }
 
-            void Fwd(const Trc *input, Tc *output) { DFTFwd(input, output, m_pDFTSpec.data(), m_pDFTWorkBuf.data()); }
+            void assertIsInitialised()
+            {
+                if (m_pDFTSpec.empty())
+                    throw std::invalid_argument("DFT not initalized");
+            }
 
-            void Inv(const Tc *input, Trc *output) { DFTInv(input, output, m_pDFTSpec.data(), m_pDFTWorkBuf.data()); }
+            void Fwd(const Trc *input, Tc *output)
+            {
+                assertIsInitialised();
+                DFTFwd(input, output, m_pDFTSpec.data(), m_pDFTWorkBuf.data());
+            }
+
+            void Inv(const Tc *input, Trc *output)
+            {
+                assertIsInitialised();
+                DFTInv(input, output, m_pDFTSpec.data(), m_pDFTWorkBuf.data());
+            }
 
             std::vector<Tc> Fwd(const std::vector<Trc> &input)
             {
                 if (input.size() != m_inNFFT)
-                    throw std::invalid_argument("Input vector size is not equal to predefined input DFT size");
+                    throw std::invalid_argument("DFT: Input vector size is" + std::to_string(input.size()) + ". Expected " + std::to_string(m_inNFFT));
                 std::vector<Tc> output(m_outNFFT);
                 Fwd(input.data(), output.data());
                 return output;
             }
 
-            std::vector<Trc> Inv(const std::vector<Tc> &input)
+            std::vector<Trc> Inv(const std::pmr::vector<Tc> &input)
             {
                 if (input.size() != m_outNFFT)
-                    throw std::invalid_argument("Input vector size is not equal to predefined output DFT size");
+                    throw std::invalid_argument("IDFT: Input vector size is" + std::to_string(input.size()) + ". Expected " + std::to_string(m_outNFFT));
                 std::vector<Trc> output(m_inNFFT);
                 Inv(input.data(), output.data());
                 return output;
@@ -187,21 +203,37 @@ namespace tipp
                 m_flag = flag;
             }
 
-            void Fwd(const Trc *input, Tc *output)
+            void assertIsInitialised()
             {
                 if (m_pFFTInitBuf.empty())
                     throw std::invalid_argument("FFT not initalized");
+            }
 
+            void Fwd(const Trc *input, Tc *output)
+            {
+                assertIsInitialised();
                 FFTFwd(input, output, m_pFFTSpec.data(), m_pFFTWorkBuf.data());
             }
-            void Fwd_I(const Trc *input, Tc *output) { FFTFwd_I(input, output, m_pFFTSpec.data(), m_pFFTWorkBuf.data()); }
-            void Inv(const Tc *input, Trc *output) { FFTInv(input, output, m_pFFTSpec.data(), m_pFFTWorkBuf.data()); }
-            void Inv_I(const Tc *input, Trc *output) { FFTInv_I(input, output, m_pFFTSpec.data(), m_pFFTWorkBuf.data()); }
+            void Fwd_I(const Trc *input, Tc *output)
+            {
+                assertIsInitialised();
+                FFTFwd_I(input, output, m_pFFTSpec.data(), m_pFFTWorkBuf.data());
+            }
+            void Inv(const Tc *input, Trc *output)
+            {
+                assertIsInitialised();
+                FFTInv(input, output, m_pFFTSpec.data(), m_pFFTWorkBuf.data());
+            }
+            void Inv_I(const Tc *input, Trc *output)
+            {
+                assertIsInitialised();
+                FFTInv_I(input, output, m_pFFTSpec.data(), m_pFFTWorkBuf.data());
+            }
 
             std::vector<Tc> Fwd(const std::vector<Trc> &input)
             {
                 if (input.size() != m_inNFFT)
-                    throw std::invalid_argument("Input vector size is not equal to predefined input DFT size");
+                    throw std::invalid_argument("FFT: Input vector size is" + std::to_string(input.size()) + ". Expected " + std::to_string(m_inNFFT));
                 std::vector<Tc> output(m_outNFFT);
                 Fwd(input.data(), output.data());
                 return output;
@@ -210,11 +242,14 @@ namespace tipp
             std::vector<Trc> Inv(const std::vector<Tc> &input)
             {
                 if (input.size() != m_outNFFT)
-                    throw std::invalid_argument("Input vector size is not equal to predefined output DFT size");
+                    throw std::invalid_argument("IFFT: Input vector size is" + std::to_string(input.size()) + ". Expected " + std::to_string(m_outNFFT));
                 std::vector<Trc> output(m_inNFFT);
                 Inv(input.data(), output.data());
                 return output;
             }
+
+            int inSize() const { return m_inNFFT; }
+            int outSize() const { return m_outNFFT; }
         };
 
         static inline void FIRSR(const Ipp32f *pSrc, Ipp32f *pDst, int numIters, Ipp8u *pSpec, const Ipp32f *pDlySrc, Ipp32f *pDlyDst, Ipp8u *pBuf)
@@ -269,7 +304,7 @@ namespace tipp
         template <>
         void FIRSRInit<Ipp64fc>(const Ipp64fc *pTaps, int tapsLen, IppAlgType algType, Ipp8u *pSpec) { AssertNoError(ippsFIRSRInit_64fc(pTaps, tapsLen, algType, (IppsFIRSpec_64fc *)pSpec)); }
 
-        template <typename T>
+        template <typename T, typename A>
         class FIRSR
         {
         private:
@@ -286,7 +321,10 @@ namespace tipp
         public:
             FIRSR() = default;
 
-            FIRSR(T *taps, int taplen, IppAlgType algType = IppAlgType::ippAlgDirect)
+            FIRSR(T *taps, int taplen, IppAlgType algType = IppAlgType::ippAlgDirect) { initialise(taps, taplen, algType); }
+            FIRSR(std::vector<T, A> taps, IppAlgType algType = IppAlgType::ippAlgDirect) { initialise(taps.data(), taps.size(), algType); }
+
+            void initialise(T *taps, int taplen, IppAlgType algType = IppAlgType::ippAlgDirect)
             {
                 m_algType = algType;
                 int dlyLen = taplen - 1;
@@ -306,10 +344,15 @@ namespace tipp
                 Copy(taps, m_taps, taplen);
             }
 
-            void filter(const T *pSrc, T *pDst, int len)
+            void assertIsInitialised()
             {
                 if (m_spec.empty() || m_buf.empty())
                     throw std::runtime_error("FIRSR not initialized");
+            }
+
+            void filter(const T *pSrc, T *pDst, int len)
+            {
+                assertIsInitialised();
                 FIRSR<T>(pSrc, pDst, len, m_spec.data(), m_dly.data(), m_dlyDst.data(), m_buf.data());
                 swap(m_dly, m_dlyDst);
             }
@@ -391,7 +434,7 @@ namespace tipp
             AssertNoError(ippsFIRMRInit_64fc(pTaps, tapsLen, upFactor, upPhase, downFactor, downPhase, (IppsFIRSpec_64fc *)pSpec));
         }
 
-        template <typename T>
+        template <typename T, typename A>
         class FIRMR
         {
         private:
@@ -408,9 +451,15 @@ namespace tipp
         public:
             FIRMR() = default;
 
-            FIRMR(T *taps, int taplen, IppAlgType algType = IppAlgType::ippAlgDirect)
-            {
+            FIRMR(T *taps, int taplen, IppAlgType algType = IppAlgType::ippAlgDirect) { initialise(taps, taplen, algType); }
 
+            FIRMR(std::vector<T, A> taps, IppAlgType algType = IppAlgType::ippAlgDirect)
+            {
+                FIRMR(taps.data(), taps.size(), algType);
+            }
+
+            void initialise(T *taps, int taplen, IppAlgType algType = IppAlgType::ippAlgDirect)
+            {
                 m_algType = algType;
 
                 int specSize, bufSize;
@@ -429,10 +478,15 @@ namespace tipp
                 m_dlyDst.resize(m_dlyLen);
             }
 
-            void filter(const T *pSrc, T *pDst, int len)
+            void assertIsInitialised()
             {
                 if (m_spec.empty())
                     throw std::runtime_error("FIRMR not initialized");
+            }
+
+            void filter(const T *pSrc, T *pDst, int len)
+            {
+                assertIsInitialised();
                 FIRMR<T>(pSrc, pDst, len, m_spec, m_dly, m_dlyDst, m_buf);
                 std::swap(m_dly, m_dlyDst);
             }
@@ -442,32 +496,17 @@ namespace tipp
         class FIRGen
         {
         private:
-            T *m_buffer;
+            vector<T> m_buffer;
             int m_tapsLen;
-            int m_bufSize;
 
         public:
             FIRGen() = default;
             FIRGen(int tapsLen)
             {
                 m_tapsLen = tapsLen;
-                AssertNoError(ippsFIRGenGetBufferSize(tapsLen, &m_bufSize));
-                m_buffer = ippsMalloc<T>(m_bufSize);
-            }
-
-            // Copy constructor
-            FIRGen(const FIRGen &other)
-            {
-                m_tapsLen = other.m_tapsLen;
-                m_bufSize = other.m_bufSize;
-                m_buffer = ippsMalloc<T>(m_bufSize);
-                Copy(other.m_buffer, m_buffer, m_bufSize);
-            }
-
-            ~FIRGen()
-            {
-                if (m_buffer != nullptr)
-                    ippsFree(m_buffer);
+                int bufSize;
+                AssertNoError(ippsFIRGenGetBufferSize(tapsLen, &bufSize));
+                m_buffer.resize(bufSize);
             }
         }
         //   ippsCountInRange_32s
@@ -512,34 +551,6 @@ namespace tipp
         //   ippsFIRLMSSetDlyLine_32f
         //   ippsFIRLMS_32f
 
-        //   ippsFIRMR32f_32fc
-        //   ippsFIRMRGetSize
-        //   ippsFIRMRGetSize32f_32fc
-        //   ippsFIRMRInit32f_32fc
-        //   ippsFIRMRInit_32f
-        //   ippsFIRMRInit_32fc
-        //   ippsFIRMRInit_64f
-        //   ippsFIRMRInit_64fc
-        //   ippsFIRMR_16s
-        //   ippsFIRMR_16sc
-        //   ippsFIRMR_32f
-        //   ippsFIRMR_32fc
-        //   ippsFIRMR_64f
-        //   ippsFIRMR_64fc
-        //   ippsFIRSR32f_32fc
-        //   ippsFIRSRGetSize
-        //   ippsFIRSRGetSize32f_32fc
-        //   ippsFIRSRInit32f_32fc
-        //   ippsFIRSRInit_32f
-        //   ippsFIRSRInit_32fc
-        //   ippsFIRSRInit_64f
-        //   ippsFIRSRInit_64fc
-        //   ippsFIRSR_16s
-        //   ippsFIRSR_16sc
-        //   ippsFIRSR_32f
-        //   ippsFIRSR_32fc
-        //   ippsFIRSR_64f
-        //   ippsFIRSR_64fc
         //   ippsFIRSparseGetDlyLine_32f
         //   ippsFIRSparseGetDlyLine_32fc
         //   ippsFIRSparseGetStateSize_32f
@@ -845,63 +856,6 @@ namespace tipp
         //   ippsWTInv_32f16s
         //   ippsWTInv_32f16u
         //   ippsWTInv_32f8u
-
-        //   ippsFFTFwd_CToC_16fc
-        //   ippsFFTFwd_CToC_32f
-        //   ippsFFTFwd_CToC_32f_I
-        //   ippsFFTFwd_CToC_32fc
-        //   ippsFFTFwd_CToC_32fc_I
-        //   ippsFFTFwd_CToC_64f
-        //   ippsFFTFwd_CToC_64f_I
-        //   ippsFFTFwd_CToC_64fc
-        //   ippsFFTFwd_CToC_64fc_I
-        //   ippsFFTFwd_RToCCS_32f
-        //   ippsFFTFwd_RToCCS_32f_I
-        //   ippsFFTFwd_RToCCS_64f
-        //   ippsFFTFwd_RToCCS_64f_I
-        //   ippsFFTFwd_RToPack_32f
-        //   ippsFFTFwd_RToPack_32f_I
-        //   ippsFFTFwd_RToPack_64f
-        //   ippsFFTFwd_RToPack_64f_I
-        //   ippsFFTFwd_RToPerm_32f
-        //   ippsFFTFwd_RToPerm_32f_I
-        //   ippsFFTFwd_RToPerm_64f
-        //   ippsFFTFwd_RToPerm_64f_I
-        //   ippsFFTGetSize_C_16fc
-        //   ippsFFTGetSize_C_32f
-        //   ippsFFTGetSize_C_32fc
-        //   ippsFFTGetSize_C_64f
-        //   ippsFFTGetSize_C_64fc
-        //   ippsFFTGetSize_R_32f
-        //   ippsFFTGetSize_R_64f
-        //   ippsFFTInit_C_16fc
-        //   ippsFFTInit_C_32f
-        //   ippsFFTInit_C_32fc
-        //   ippsFFTInit_C_64f
-        //   ippsFFTInit_C_64fc
-        //   ippsFFTInit_R_32f
-        //   ippsFFTInit_R_64f
-        //   ippsFFTInv_CCSToR_32f
-        //   ippsFFTInv_CCSToR_32f_I
-        //   ippsFFTInv_CCSToR_64f
-        //   ippsFFTInv_CCSToR_64f_I
-        //   ippsFFTInv_CToC_16fc
-        //   ippsFFTInv_CToC_32f
-        //   ippsFFTInv_CToC_32f_I
-        //   ippsFFTInv_CToC_32fc
-        //   ippsFFTInv_CToC_32fc_I
-        //   ippsFFTInv_CToC_64f
-        //   ippsFFTInv_CToC_64f_I
-        //   ippsFFTInv_CToC_64fc
-        //   ippsFFTInv_CToC_64fc_I
-        //   ippsFFTInv_PackToR_32f
-        //   ippsFFTInv_PackToR_32f_I
-        //   ippsFFTInv_PackToR_64f
-        //   ippsFFTInv_PackToR_64f_I
-        //   ippsFFTInv_PermToR_32f
-        //   ippsFFTInv_PermToR_32f_I
-        //   ippsFFTInv_PermToR_64f
-        //   ippsFFTInv_PermToR_64f_I
 
         //   ippsFIRGenBandpass_64f
         //   ippsFIRGenBandstop_64f
