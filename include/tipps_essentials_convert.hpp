@@ -150,6 +150,69 @@ namespace tipp
         void sortDescend_I(T *pSrcDst) { SortRadixDescend_I_L(pSrcDst, m_len, m_buffer.data()); }
     };
 
+    template <typename T>
+    static inline void SortRadixIndexGetBufferSize<T>(int len, int *pBuffferSize);
+    template <>
+    SortRadixIndexGetBufferSize<Ipp8u>(int len, int *pBuffferSize) { ippsSortRadixIndexGetBufferSize(len, IppDataType::ipp8u, pBuffferSize); }
+    template <>
+    SortRadixIndexGetBufferSize<Ipp16u>(int len, int *pBuffferSize) { ippsSortRadixIndexGetBufferSize(len, IppDataType::ipp16u, pBuffferSize); }
+    template <>
+    SortRadixIndexGetBufferSize<Ipp32u>(int len, int *pBuffferSize) { ippsSortRadixIndexGetBufferSize(len, IppDataType::ipp32u, pBuffferSize); }
+    template <>
+    SortRadixIndexGetBufferSize<Ipp64u>(int len, int *pBuffferSize) { ippsSortRadixIndexGetBufferSize(len, IppDataType::ipp64u, pBuffferSize); }
+    template <>
+    SortRadixIndexGetBufferSize<Ipp16s>(int len, int *pBuffferSize) { ippsSortRadixIndexGetBufferSize(len, IppDataType::ipp16s, pBuffferSize); }
+    template <>
+    SortRadixIndexGetBufferSize<Ipp32s>(int len, int *pBuffferSize) { ippsSortRadixIndexGetBufferSize(len, IppDataType::ipp32s, pBuffferSize); }
+    template <>
+    SortRadixIndexGetBufferSize<Ipp64s>(int len, int *pBuffferSize) { ippsSortRadixIndexGetBufferSize(len, IppDataType::ipp64s, pBuffferSize); }
+    template <>
+    SortRadixIndexGetBufferSize<Ipp32f>(int len, int *pBuffferSize) { ippsSortRadixIndexGetBufferSize(len, IppDataType::ipp32f, pBuffferSize); }
+    template <>
+    SortRadixIndexGetBufferSize<Ipp64f>(int len, int *pBuffferSize) { ippsSortRadixIndexGetBufferSize(len, IppDataType::ipp64f, pBuffferSize); }
+
+    static inline void SortRadixIndexAscend_I(Ipp64f *pSrcDst, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { AssertNoError(ippsSortRadixIndexAscend_64f_I(pSrcDst, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline void SortRadixIndexAscend_I(Ipp64s *pSrcDst, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { AssertNoError(ippsSortRadixIndexAscend_64s_I(pSrcDst, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline void SortRadixIndexAscend_I(Ipp64u *pSrcDst, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { AssertNoError(ippsSortRadixIndexAscend_64u_I(pSrcDst, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline void SortRadixIndexAscend_I(Ipp32f *pSrcDst, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { AssertNoError(ippsSortRadixIndexAscend_32f_I(pSrcDst, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline void SortRadixIndexAscend_I(Ipp32u *pSrcDst, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { AssertNoError(ippsSortRadixIndexAscend_32u_I(pSrcDst, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline void SortRadixIndexAscend_I(Ipp32s *pSrcDst, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { AssertNoError(ippsSortRadixIndexAscend_32s_I(pSrcDst, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline void SortRadixIndexAscend_I(Ipp16u *pSrcDst, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { AssertNoError(ippsSortRadixIndexAscend_16u_I(pSrcDst, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline void SortRadixIndexAscend_I(Ipp16s *pSrcDst, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { AssertNoError(ippsSortRadixIndexAscend_16s_I(pSrcDst, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline void SortRadixIndexAscend_I(Ipp8u *pSrcDst, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { AssertNoError(ippsSortRadixIndexAscend_8u_I(pSrcDst, srcStrideBytes, pDstIndx, len, pBuffer)); }
+
+    static inline void SortRadixIndexDescend_I(Ipp64f *pSrcDst, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { AssertNoError(ippsSortRadixIndexDescend_64f_I(pSrcDst, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline void SortRadixIndexDescend_I(Ipp64s *pSrcDst, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { AssertNoError(ippsSortRadixIndexDescend_64s_I(pSrcDst, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline void SortRadixIndexDescend_I(Ipp64u *pSrcDst, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { AssertNoError(ippsSortRadixIndexDescend_64u_I(pSrcDst, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline void SortRadixIndexDescend_I(Ipp32f *pSrcDst, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { AssertNoError(ippsSortRadixIndexDescend_32f_I(pSrcDst, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline void SortRadixIndexDescend_I(Ipp32u *pSrcDst, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { AssertNoError(ippsSortRadixIndexDescend_32u_I(pSrcDst, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline void SortRadixIndexDescend_I(Ipp32s *pSrcDst, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { AssertNoError(ippsSortRadixIndexDescend_32s_I(pSrcDst, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline void SortRadixIndexDescend_I(Ipp16u *pSrcDst, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { AssertNoError(ippsSortRadixIndexDescend_16u_I(pSrcDst, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline void SortRadixIndexDescend_I(Ipp16s *pSrcDst, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { AssertNoError(ippsSortRadixIndexDescend_16s_I(pSrcDst, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline void SortRadixIndexDescend_I(Ipp8u *pSrcDst, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { AssertNoError(ippsSortRadixIndexDescend_8u_I(pSrcDst, srcStrideBytes, pDstIndx, len, pBuffer)); }
+
+    template <typename T>
+    class SortRadixIndex
+    {
+    private:
+        vector<T> m_buffer;
+        int m_len;
+
+    public:
+        explicit SortRadix(int len) { initialise(len); }
+
+        void initialise(int len)
+        {
+            int BufferSize;
+            SortRadixGetBufferSize<T>(len, &BufferSize);
+            m_buffer.resize(BufferSize);
+            m_len = len;
+        }
+
+        void sortAscend_I(T *pSrcDst) { SortRadixAscend_I(pSrcDst, m_len, m_buffer.data()); }
+        void sortDescend_I(T *pSrcDst) { SortRadixDescend_I(pSrcDst, m_len, m_buffer.data()); }
+    };
+
     //   ippsTopKGetBufferSize
     //   ippsTopKInit_32f
     //   ippsTopKInit_32s
