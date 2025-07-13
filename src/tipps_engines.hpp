@@ -23,7 +23,7 @@ namespace tipp
             void assertIsInitialised()
             {
                 if (m_buffer.empty())
-                    throw std::runtime_error("SortRadixEngine not initialized");
+                    throw std::runtime_error("SortRadix_Engine not initialized");
             }
 
             void initialise(int len)
@@ -107,7 +107,7 @@ namespace tipp
             void assertIsInitialised()
             {
                 if (m_buffer.empty())
-                    throw std::runtime_error("SortRadixIndexEngine not initialized");
+                    throw std::runtime_error("SortRadixIndex_Engine not initialized");
             }
 
             IppStatus sortAscend_I(T *pSrcDst)
@@ -617,7 +617,7 @@ namespace tipp
             void assertIsInitialised()
             {
                 if (m_pRandGaussState.empty())
-                    throw std::invalid_argument("DFT not initalized");
+                    throw std::runtime_error("RandGauss_Engine not initalized");
             }
 
             IppStatus sample(T *output, int len)
@@ -654,7 +654,7 @@ namespace tipp
             void assertIsInitialised()
             {
                 if (m_pRandUniformState.empty())
-                    throw std::invalid_argument("RandUniform_Engine not initalized");
+                    throw std::runtime_error("RandUniform_Engine not initalized");
             }
             IppStatus sample(T *output, int len)
             {
@@ -695,18 +695,22 @@ namespace tipp
 
             explicit vector(size_type count)
             {
-                m_numel = count;
                 reserve(m_numel);
+                m_numel = count;
             }
 
             vector(size_type count, const value_type &value)
             {
-                m_numel = count;
                 reserve(m_numel);
+                m_numel = count;
                 set(value);
             }
 
             // Copy constructor
+            // creates a deep copy of the argument
+            // invoked in situations like:
+            //     vector a;
+            //     vector b(a);
             vector(const vector &other)
             {
                 reserve(m_numel);
@@ -718,7 +722,12 @@ namespace tipp
             // Move constructors typically "steal" the resources held by the argument
             // rather than make copies of them, and leave the argument in some valid
             // but otherwise indeterminate state.
-            vector(vector &&other)
+            // invoked in situations like:
+            //     vector a;
+            //     vector b(std::move(a));
+            //
+            //     vector c = functionReturningVector();
+            vector(vector &&other) noexcept
             {
                 // steal other's data
                 m_numel = other.m_numel;
@@ -732,6 +741,10 @@ namespace tipp
             }
 
             // Copy Assignment operator
+            // invoked in situations like:
+            //     vector a;
+            //     vector b;
+            //     a = b;
             vector &operator=(vector &other)
             {
                 if (this != &other)
@@ -747,6 +760,12 @@ namespace tipp
             }
 
             // Move Assignment operator
+            // Move assignment operators typically "steal" the resources held by the argument
+            // invoked in situations like:
+            //     vector a;
+            //     vector b;
+            //     a = std::move(b);
+
             vector &operator=(vector &&other) noexcept
             {
                 if (this != &other)
@@ -986,7 +1005,7 @@ namespace tipp
             void assertIsInitialised()
             {
                 if (m_pDFTSpec.empty())
-                    throw std::invalid_argument("DFT not initalized");
+                    throw std::runtime_error("DFT_Engine not initalized");
             }
 
             void Fwd(const Trc *input, Tc *output)
@@ -1042,7 +1061,7 @@ namespace tipp
             void assertIsInitialised()
             {
                 if (m_pFFTInitBuf.empty())
-                    throw std::invalid_argument("FFT not initalized");
+                    throw std::runtime_error("FFT not initalized");
             }
 
             IppStatus Fwd(const Trc *input, Tc *output)
