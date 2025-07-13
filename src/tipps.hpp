@@ -1,5 +1,6 @@
-#include <ippcore.h>
-#include <ippvm.h>
+#include <ipp/ippcore.h>
+#include <ipp/ippvm.h>
+#include <ipp/ipps.h>
 #include <complex>
 #include "tipp_error.hpp"
 #include <stdexcept>
@@ -292,44 +293,6 @@ namespace tipp
         static inline IppStatus SortRadixDescend_I(Ipp8u *pSrcDst, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixDescend_8u_I(pSrcDst, len, pBuffer)); }
 
         template <typename T>
-        class SortRadix_Engine
-        {
-        protected:
-            vector<T> m_buffer;
-            int m_len;
-
-        public:
-            SortRadix_Engine() = default;
-
-            explicit SortRadix_Engine(int len) { initialise(len); }
-
-            void assertIsInitialised()
-            {
-                if (m_buffer.empty())
-                    throw std::runtime_error("SortRadixEngine not initialized");
-            }
-
-            void initialise(int len)
-            {
-                int BufferSize;
-                SortRadixGetBufferSize<T>(len, &BufferSize);
-                m_buffer.resize(BufferSize);
-                m_len = len;
-            }
-
-            void sortAscend_I(T *pSrcDst)
-            {
-                assertIsInitialised;
-                SortRadixAscend_I(pSrcDst, m_len, m_buffer.data());
-            }
-            void sortDescend_I(T *pSrcDst)
-            {
-                assertIsInitialised;
-                SortRadixDescend_I(pSrcDst, m_len, m_buffer.data());
-            }
-        };
-
-        template <typename T>
         static inline IppStatus SortRadixGetBufferSize_L(int len, long long *pBuffferSize) { throw std::runtime_error("SortRadixGetBufferSize_L not implemented for this type"); };
 
         template <>
@@ -356,44 +319,6 @@ namespace tipp
         static inline IppStatus SortRadixDescend_I_L(Ipp32s *pSrcDst, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixDescend_32s_I_L(pSrcDst, len, pBuffer)); }
 
         template <typename T>
-        class SortRadix_L_Engine
-        {
-        protected:
-            vector<T> m_buffer;
-            int m_len;
-
-        public:
-            SortRadix_L_Engine() = default;
-
-            explicit SortRadix_L_Engine(int len) { initialise(len); }
-
-            void assertIsInitialised()
-            {
-                if (m_buffer.empty())
-                    throw std::runtime_error("SortRadix_L_Engine not initialized");
-            }
-
-            void initialise(int len)
-            {
-                int BufferSize;
-                SortRadixGetBufferSize_L<T>(len, &BufferSize);
-                m_buffer.resize(BufferSize);
-                m_len = len;
-            }
-
-            void sortAscend_I(T *pSrcDst)
-            {
-                assertIsInitialised();
-                SortRadixAscend_I_L(pSrcDst, m_len, m_buffer.data());
-            }
-            void sortDescend_I(T *pSrcDst)
-            {
-                assertIsInitialised();
-                SortRadixDescend_I_L(pSrcDst, m_len, m_buffer.data());
-            }
-        };
-
-        template <typename T>
         static inline IppStatus SortRadixIndexGetBufferSize(int len, int *pBuffferSize) { throw std::runtime_error("SortRadixIndexGetBufferSize not implemented for this type"); };
         template <>
         static inline IppStatus SortRadixIndexGetBufferSize<Ipp8u>(int len, int *pBuffferSize) { ippsSortRadixIndexGetBufferSize(len, IppDataType::ipp8u, pBuffferSize); }
@@ -413,50 +338,6 @@ namespace tipp
         static inline IppStatus SortRadixIndexGetBufferSize<Ipp32f>(int len, int *pBuffferSize) { ippsSortRadixIndexGetBufferSize(len, IppDataType::ipp32f, pBuffferSize); }
         template <>
         static inline IppStatus SortRadixIndexGetBufferSize<Ipp64f>(int len, int *pBuffferSize) { ippsSortRadixIndexGetBufferSize(len, IppDataType::ipp64f, pBuffferSize); }
-
-        template <typename T>
-        class SortRadixIndex_Engine
-        {
-        protected:
-            vector<T> m_buffer;
-            int m_len;
-
-        public:
-            SortRadixIndex_Engine() = default;
-
-            explicit SortRadixIndex_Engine(int len) { initialise(len); }
-
-            void initialise(int len)
-            {
-                int BufferSize;
-                SortRadixIndexGetBufferSize<T>(len, &BufferSize);
-                m_buffer.resize(BufferSize);
-                m_len = len;
-            }
-
-            void assertIsInitialised()
-            {
-                if (m_buffer.empty())
-                    throw std::runtime_error("SortRadixIndexEngine not initialized");
-            }
-
-            IppStatus sortAscend_I(T *pSrcDst)
-            {
-                assertIsInitialised();
-                return OptionalAssertNoError(SortRadixIndexAscend_I(pSrcDst, m_len, m_buffer.data()));
-            }
-            IppStatus sortDescend_I(T *pSrcDst)
-            {
-                assertIsInitialised();
-                return OptionalAssertNoError(SortRadixIndexDescend_I(pSrcDst, m_len, m_buffer.data()));
-            }
-        };
-
-        //   ippsTopKGetBufferSize
-        //   ippsTopKInit_32f
-        //   ippsTopKInit_32s
-        //   ippsTopK_32f
-        //   ippsTopK_32s
 
         static inline IppStatus Conj(const Ipp16sc *pSrc, Ipp16sc *pDst, int len) { return OptionalAssertNoError(ippsConj_16sc(pSrc, pDst, len)); }
         static inline IppStatus Conj(const Ipp32fc *pSrc, Ipp32fc *pDst, int len) { return OptionalAssertNoError(ippsConj_32fc(pSrc, pDst, len)); }
@@ -875,59 +756,6 @@ namespace tipp
         template <>
         static inline IppStatus FIRSRInit<Ipp64fc>(const Ipp64fc *pTaps, int tapsLen, IppAlgType algType, Ipp8u *pSpec) { return OptionalAssertNoError(ippsFIRSRInit_64fc(pTaps, tapsLen, algType, (IppsFIRSpec_64fc *)pSpec)); }
 
-        template <typename T>
-        class FIRSR_Engine
-        {
-        protected:
-            vector<T> m_taps;
-
-            vector<T> m_dly;
-            vector<T> m_dlyDst;
-
-            vector<Ipp8u> m_spec;
-            vector<Ipp8u> m_buf;
-
-            IppAlgType m_algType;
-
-        public:
-            FIRSR_Engine() = default;
-
-            FIRSR_Engine(T *taps, int taplen, IppAlgType algType = IppAlgType::ippAlgDirect) { initialise(taps, taplen, algType); }
-
-            void initialise(T *taps, int taplen, IppAlgType algType = IppAlgType::ippAlgDirect)
-            {
-                m_algType = algType;
-                int dlyLen = taplen - 1;
-                m_dly.resize(dlyLen);
-                m_dlyDst.resize(dlyLen);
-
-                int specSize, bufSize;
-
-                FIRSRGetSize<T>(taplen, &specSize, &bufSize);
-
-                m_spec.resize(specSize);
-                m_buf.resize(bufSize);
-
-                FIRSRInit<T>(m_taps, taplen, m_algType, m_spec);
-
-                m_taps.resize(taplen);
-                Copy(taps, m_taps, taplen);
-            }
-
-            void assertIsInitialised()
-            {
-                if (m_spec.empty() || m_buf.empty())
-                    throw std::runtime_error("FIRSR not initialized");
-            }
-
-            void filter(const T *pSrc, T *pDst, int len)
-            {
-                assertIsInitialised();
-                FIRSR<T>(pSrc, pDst, len, m_spec.data(), m_dly.data(), m_dlyDst.data(), m_buf.data());
-                swap(m_dly, m_dlyDst);
-            }
-        };
-
         static inline IppStatus FIRMR(const Ipp32f *pSrc, Ipp32f *pDst, int numIters, Ipp8u *pSpec, const Ipp32f *pDlySrc, Ipp32f *pDlyDst, Ipp8u *pBuf)
         {
             return OptionalAssertNoError(ippsFIRMR_32f(pSrc, pDst, numIters, (IppsFIRSpec_32f *)pSpec, pDlySrc, pDlyDst, pBuf));
@@ -1005,165 +833,6 @@ namespace tipp
         }
 
         template <typename T>
-        class FIRMR_Engine
-        {
-        protected:
-            vector<T> m_taps;
-
-            vector<T> m_dly;
-            vector<T> m_dlyDst;
-
-            vector<Ipp8u> m_spec;
-            vector<Ipp8u> m_buf;
-
-            IppAlgType m_algType;
-
-        public:
-            FIRMR_Engine() = default;
-
-            FIRMR_Engine(T *taps, int taplen, IppAlgType algType = IppAlgType::ippAlgDirect) { initialise(taps, taplen, algType); }
-
-            void initialise(T *taps, int taplen, IppAlgType algType = IppAlgType::ippAlgDirect)
-            {
-                m_algType = algType;
-
-                int specSize, bufSize;
-                FIRMRGetSize<T>(taplen, &specSize, &bufSize);
-
-                m_spec.resize(specSize);
-                m_buf.resize(bufSize);
-
-                FIRMRInit<T>(m_taps.data(), taplen, m_algType, m_spec.data());
-
-                m_taps.resize(taplen);
-                Copy(taps, m_taps, taplen);
-
-                int m_dlyLen = taplen - 1;
-                m_dly.resize(m_dlyLen);
-                m_dlyDst.resize(m_dlyLen);
-            }
-
-            void assertIsInitialised()
-            {
-                if (m_spec.empty())
-                    throw std::runtime_error("FIRMR not initialized");
-            }
-
-            void filter(const T *pSrc, T *pDst, int len)
-            {
-                assertIsInitialised();
-                FIRMR<T>(pSrc, pDst, len, m_spec, m_dly, m_dlyDst, m_buf);
-                swap(m_dly, m_dlyDst);
-            }
-        };
-
-        template <typename T>
-        class FIRGen_Engine
-        {
-        protected:
-            vector<T> m_buffer;
-            int m_tapsLen;
-
-        public:
-            FIRGen_Engine() = default;
-            FIRGen_Engine(int tapsLen)
-            {
-                initialise(tapsLen);
-            }
-
-            void initialise(int tapsLen)
-            {
-                m_tapsLen = tapsLen;
-                int bufSize;
-                OptionalAssertNoError(ippsFIRGenGetBufferSize(tapsLen, &bufSize));
-                m_buffer.resize(bufSize);
-            }
-
-            void assertIsInitialised()
-            {
-                if (m_buffer.empty())
-                    throw std::runtime_error("FIRGen not initialized");
-            }
-
-            IppStatus highpass(Ipp64f rFreq, Ipp64f *pTaps, IppWinType winType, IppBool doNormal)
-            {
-                assertIsInitialised();
-                // winType: ippWinBartlett,ippWinBlackman,ippWinHamming,ippWinHann,ippWinRect
-                return OptionalAssertNoError(
-                    ippsFIRGenHighpass_64f(rFreq, pTaps, m_tapsLen, winType, doNormal, m_buffer.data()));
-            }
-
-            IppStatus lowpass(Ipp64f rFreq, Ipp64f *pTaps, IppWinType winType, IppBool doNormal)
-            {
-                assertIsInitialised();
-                // winType: ippWinBartlett,ippWinBlackman,ippWinHamming,ippWinHann,ippWinRect
-                return OptionalAssertNoError(
-                    ippsFIRGenLowpass_64f(rFreq, pTaps, m_tapsLen, winType, doNormal, m_buffer.data()));
-            }
-
-            IppStatus bandpass(Ipp64f rLowFreq, Ipp64f rHighFreq, Ipp64f *pTaps, IppWinType winType, IppBool doNormal)
-            {
-                assertIsInitialised();
-                // winType: ippWinBartlett,ippWinBlackman,ippWinHamming,ippWinHann,ippWinRect
-                return OptionalAssertNoError(
-                    ippsFIRGenBandpass_64f(rLowFreq, rHighFreq, pTaps, m_tapsLen, winType, doNormal, m_buffer.data()));
-            }
-
-            IppStatus bandstop(Ipp64f rLowFreq, Ipp64f rHighFreq, Ipp64f *pTaps, IppWinType winType, IppBool doNormal)
-            {
-                assertIsInitialised();
-                // winType: ippWinBartlett,ippWinBlackman,ippWinHamming,ippWinHann,ippWinRect
-                return OptionalAssertNoError(
-                    ippsFIRGenBandstop_64f(rLowFreq, rHighFreq, pTaps, m_tapsLen, winType, doNormal, m_buffer.data()));
-            }
-        };
-
-        template <typename T>
-        class FIRLMS_Engine
-        {
-        protected:
-            float mu = 0.001f;
-            vector<Ipp8u> m_buffer;
-            IppsFIRLMSState_32f *pState = nullptr; // pointer to a region of memory in buffer
-
-        public:
-            // TODO: add mu as a parameter to the constructor
-            // TODO: check how to use this class
-
-            FIRLMS_Engine() = default;
-
-            explicit FIRLMS_Engine(int tapsLen)
-            {
-                int BufferSize;
-                OptionalAssertNoError(ippsFIRLMSGetStateSize_32f(tapsLen, 0, &BufferSize));
-                m_buffer.resize(BufferSize);
-                // zero initialise taps and delay line
-                OptionalAssertNoError(ippsFIRLMSInit_32f(&pState, nullptr, tapsLen, nullptr, 0, m_buffer.data()));
-            }
-
-            IppStatus filter(const Ipp32f *pSrc, const Ipp32f *pRef, Ipp32f *pDst, int len)
-            {
-                return OptionalAssertNoError(ippsFIRLMS_32f(pSrc, pRef, pDst, len, mu, pState));
-            }
-
-            // Retrieves the tap values from the FIR LMS filter.
-            void getTaps(Ipp32f *pOutTaps) { ippsFIRLMSGetTaps_32f(pState, pOutTaps); }
-
-            IppStatus getDlyLine(Ipp32f *pDlyLine, int *pDlyLineIndex)
-            {
-                return OptionalAssertNoError(ippsFIRLMSGetDlyLine_32f(pState, pDlyLine, pDlyLineIndex));
-            }
-
-            IppStatus setDlyLine(const Ipp32f *pDlyLine, int dlyLineIndex)
-            {
-                // This function copies the delay line values from pDlyLine,
-                // and the current delay line index from dlyLineIndex,
-                // and stores them into the state structure pState.
-                return OptionalAssertNoError(ippsFIRLMSSetDlyLine_32f(pState, pDlyLine, dlyLineIndex));
-            }
-        };
-
-        template <typename T>
         static inline IppDataType GetIppDataType()
         {
             throw std::runtime_error("Unsupported data type");
@@ -1196,48 +865,6 @@ namespace tipp
         static inline IppStatus CrossCorrNorm(const Ipp32fc *pSrc1, int src1Len, const Ipp32fc *pSrc2, int src2Len, Ipp32fc *pDst, int dstLen, int lowLag, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsCrossCorrNorm_32fc(pSrc1, src1Len, pSrc2, src2Len, pDst, dstLen, lowLag, algType, pBuffer)); }
         static inline IppStatus CrossCorrNorm(const Ipp64fc *pSrc1, int src1Len, const Ipp64fc *pSrc2, int src2Len, Ipp64fc *pDst, int dstLen, int lowLag, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsCrossCorrNorm_64fc(pSrc1, src1Len, pSrc2, src2Len, pDst, dstLen, lowLag, algType, pBuffer)); }
 
-        template <typename T>
-        class CrossCorrNorm_Engine
-        {
-        protected:
-            vector<Ipp8u> m_buffer;
-            int m_src1Len, m_src2Len, m_dstLen, m_lowLag;
-            int m_algType;
-
-        public:
-            CrossCorrNorm_Engine() = default;
-
-            explicit CrossCorrNorm_Engine(int len) { initialise(len); }
-
-            void assertIsInitialised()
-            {
-                if (m_buffer.empty())
-                    throw std::runtime_error("CrossCorrNorm not initialized");
-            }
-
-            void initialise(int src1Len, int src2Len, int dstLen, int lowLag, int algType)
-            {
-                // algoType : Bit-field mask for the algorithm type definition. Possible values are the results of composition of the IppAlgType and IppsNormOp values.
-                // IppAlgType : ippAlgAuto, ippAlgDirect, ippAlgFFT, ippAlgMask
-                // IppsNormOp : ippsNormNone, ippsNormA, ippsNormB, ippsNormMask
-
-                int BufferSize;
-                ippsCrossCorrNormGetBufferSize(src1Len, src2Len, dstLen, lowLag, GetIppDataType<T>(), algType, &BufferSize);
-                m_buffer.resize(BufferSize);
-                m_src1Len = src1Len;
-                m_src2Len = src2Len;
-                m_dstLen = dstLen;
-                m_lowLag = lowLag;
-                m_algType = algType;
-            }
-
-            void filter(const Ipp64fc *pSrc1, int src1Len, const Ipp64fc *pSrc2, int src2Len, Ipp64fc *pDst, int dstLen, int lowLag)
-            {
-                assertIsInitialised();
-                CrossCorrNorm(pSrc1, src1Len, pSrc2, src2Len, pDst, dstLen, lowLag, m_algType, m_buffer.data());
-            }
-        };
-
         static inline IppStatus FilterMedian(const Ipp8u *pSrc, Ipp8u *pDst, int len, int maskSize, const Ipp8u *pDlySrc, Ipp8u *pDlyDst, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFilterMedian_8u(pSrc, pDst, len, maskSize, pDlySrc, pDlyDst, pBuffer)); }
         static inline IppStatus FilterMedian(const Ipp16s *pSrc, Ipp16s *pDst, int len, int maskSize, const Ipp16s *pDlySrc, Ipp16s *pDlyDst, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFilterMedian_16s(pSrc, pDst, len, maskSize, pDlySrc, pDlyDst, pBuffer)); }
         static inline IppStatus FilterMedian(const Ipp32s *pSrc, Ipp32s *pDst, int len, int maskSize, const Ipp32s *pDlySrc, Ipp32s *pDlyDst, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFilterMedian_32s(pSrc, pDst, len, maskSize, pDlySrc, pDlyDst, pBuffer)); }
@@ -1250,82 +877,6 @@ namespace tipp
         static inline IppStatus FilterMedian_I(Ipp32f *pSrcDst, int len, int maskSize, const Ipp32f *pDlySrc, Ipp32f *pDlyDst, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFilterMedian_32f_I(pSrcDst, len, maskSize, pDlySrc, pDlyDst, pBuffer)); }
         static inline IppStatus FilterMedian_I(Ipp64f *pSrcDst, int len, int maskSize, const Ipp64f *pDlySrc, Ipp64f *pDlyDst, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFilterMedian_64f_I(pSrcDst, len, maskSize, pDlySrc, pDlyDst, pBuffer)); }
 
-        template <typename T>
-        class FilterMedian_Engine
-        {
-        protected:
-            vector<Ipp8u> m_buffer;
-            vector<T> m_srcDly;
-            vector<T> m_dstDly;
-            int m_maskSize;
-
-        public:
-            FilterMedian_Engine() = default;
-
-            explicit FilterMedian_Engine(int maskSize)
-            {
-                initialise(maskSize);
-            }
-
-            void initialise(int maskSize)
-            {
-                // Median mask size, must be a positive integer. If an even value is specified, the function subtracts 1 and uses the odd value of the filter mask for median filtering
-
-                m_maskSize = maskSize;
-                int bufferSize;
-                OptionalAssertNoError(ippsFilterMedianGetBufferSize(maskSize, GetIppDataType<T>(), &bufferSize));
-                m_buffer.resize(bufferSize);
-
-                int dlyLen = maskSize - 1;
-                m_srcDly.resize(dlyLen);
-                m_dstDly.resize(dlyLen);
-            }
-
-            void assertIsInitialised()
-            {
-                if (m_buffer.empty())
-                    throw std::runtime_error("FilterMedian not initialized");
-            }
-
-            IppStatus filter(const T *pSrc, T *pDst, int len)
-            {
-                assertIsInitialised();
-                return OptionalAssertNoError(ippsFilterMedian(pSrc, pDst, len, m_maskSize, m_srcDly.data(), m_dstDly.data(), m_buffer.data()));
-            }
-
-            IppStatus filter_I(const T *pSrcDst, int len)
-            {
-                assertIsInitialised();
-                return OptionalAssertNoError(ippsFilterMedian_I(pSrcDst, len, m_maskSize, m_srcDly.data(), m_dstDly.data(), m_buffer.data()));
-            }
-
-            void getSrcDlyLine(T *pDlyLine)
-            {
-                for (int i = 0; i < m_srcDly.size(); ++i)
-                {
-                    pDlyLine[i] = m_srcDly[i];
-                }
-            }
-
-            IppStatus setSrcDlyLine(const T *pDlyLine)
-            {
-                m_srcDly.set_array(pDlyLine);
-            }
-
-            void getDstDlyLine(T *pDlyLine)
-            {
-                for (int i = 0; i < m_dstDly.size(); ++i)
-                {
-                    pDlyLine[i] = m_dstDly[i];
-                }
-            }
-
-            IppStatus setDstDlyLine(const T *pDlyLine)
-            {
-                m_dstDly.set_array(pDlyLine);
-            }
-        };
-
         static inline IppStatus HilbertGetSize(int length, IppHintAlgorithm hint, int *pSpecSize, int *pBufferSize) { return OptionalAssertNoError(ippsHilbertGetSize_32f32fc(length, hint, pSpecSize, pBufferSize)); }
         static inline IppStatus HilbertGetSize(int length, IppHintAlgorithm hint, int *pSpecSize, int *pBufferSize) { return OptionalAssertNoError(ippsHilbertGetSize_64f64fc(length, hint, pSpecSize, pBufferSize)); }
         static inline IppStatus HilbertInit(int length, IppHintAlgorithm hint, IppsHilbertSpec *pSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsHilbertInit_32f32fc(length, hint, pSpec, pBuffer)); }
@@ -1333,95 +884,237 @@ namespace tipp
         static inline IppStatus Hilbert(const Ipp32f *pSrc, Ipp32fc *pDst, IppsHilbertSpec *pSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsHilbert_32f32fc(pSrc, pDst, pSpec, pBuffer)); }
         static inline IppStatus Hilbert(const Ipp64f *pSrc, Ipp64fc *pDst, IppsHilbertSpec *pSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsHilbert_64f64fc(pSrc, pDst, pSpec, pBuffer)); }
 
-        template <typename T>
-        class Hilbert_Engine
-        {
-        protected:
-            vector<Ipp8u> m_buffer;
-            vector<Ipp8u> m_spec;
-            int m_length;
-
-        public:
-            Hilbert_Engine() = default;
-
-            explicit Hilbert_Engine(int length)
-            {
-                initialise(length);
-            }
-
-            void initialise(int length)
-            {
-                m_length = length;
-                int bufferSize;
-                int specSize;
-                OptionalAssertNoError(HilbertGetSize(length, ippAlgHintAccurate, &specSize, &bufferSize));
-                m_buffer.resize(bufferSize);
-                m_spec.resize(specSize);
-
-                OptionalAssertNoError(HilbertInit(length, ippAlgHintAccurate, (IppsHilbertSpec *)m_spec.data(), m_buffer.data()));
-            }
-
-            void assertIsInitialised()
-            {
-                if (m_buffer.empty())
-                    throw std::runtime_error("Hilbert_Engine not initialized");
-            }
-
-            IppStatus Fwd(const T *pSrc, T *pDst)
-            {
-                assertIsInitialised();
-                return OptionalAssertNoError(Hilbert(pSrc, pDst, (IppsHilbertSpec *)m_spec.data(), m_buffer.data()));
-            }
-        };
-
         static inline IppStatus TopK(const Ipp32f *pSrc, Ipp64s srcIndex, Ipp64s srcStride, Ipp64s srcLen, Ipp32f *pDstValue, Ipp64s *pDstIndex, Ipp64s dstLen, IppTopKMode hint, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsTopK_32f(pSrc, srcIndex, srcStride, srcLen, pDstValue, pDstIndex, dstLen, hint, pBuffer)); }
         static inline IppStatus TopK(const Ipp32s *pSrc, Ipp64s srcIndex, Ipp64s srcStride, Ipp64s srcLen, Ipp32s *pDstValue, Ipp64s *pDstIndex, Ipp64s dstLen, IppTopKMode hint, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsTopK_32s(pSrc, srcIndex, srcStride, srcLen, pDstValue, pDstIndex, dstLen, hint, pBuffer)); }
 
         static inline IppStatus TopKInit(Ipp32s *pDstValue, Ipp64s *pDstIndex, Ipp64s dstLen) { return OptionalAssertNoError(ippsTopKInit_32s(pDstValue, pDstIndex, dstLen)); }
         static inline IppStatus TopKInit(Ipp32f *pDstValue, Ipp64s *pDstIndex, Ipp64s dstLen) { return OptionalAssertNoError(ippsTopKInit_32f(pDstValue, pDstIndex, dstLen)); }
 
-        template <typename T>
-        class TopK_Engine
-        {
-        protected:
-            vector<Ipp8u> m_buffer;
-            int m_srcLen;
-            int m_dstLen;
-            IppTopKMode m_hint; // ippTopKAuto, ippTopKDirect, ippTopKRadix
+        static inline IppStatus AutoCorrNorm(const Ipp32f *pSrc, int srcLen, Ipp32f *pDst, int dstLen, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsAutoCorrNorm_32f(pSrc, srcLen, pDst, dstLen, algType, pBuffer)); }
+        static inline IppStatus AutoCorrNorm(const Ipp64f *pSrc, int srcLen, Ipp64f *pDst, int dstLen, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsAutoCorrNorm_64f(pSrc, srcLen, pDst, dstLen, algType, pBuffer)); }
+        static inline IppStatus AutoCorrNorm(const Ipp32fc *pSrc, int srcLen, Ipp32fc *pDst, int dstLen, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsAutoCorrNorm_32fc(pSrc, srcLen, pDst, dstLen, algType, pBuffer)); }
+        static inline IppStatus AutoCorrNorm(const Ipp64fc *pSrc, int srcLen, Ipp64fc *pDst, int dstLen, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsAutoCorrNorm_64fc(pSrc, srcLen, pDst, dstLen, algType, pBuffer)); }
 
-        public:
-            TopK_Engine() = default;
+        static inline IppStatus ResamplePolyphase(const Ipp16s *pSrc, int len, Ipp16s *pDst, Ipp64f factor, Ipp32f norm, Ipp64f *pTime, int *pOutlen, const IppsResamplingPolyphase_16s *pSpec) { return OptionalAssertNoError(ippsResamplePolyphase_16s(pSrc, len, pDst, factor, norm, pTime, pOutlen, pSpec)); }
+        static inline IppStatus ResamplePolyphase(const Ipp32f *pSrc, int len, Ipp32f *pDst, Ipp64f factor, Ipp32f norm, Ipp64f *pTime, int *pOutlen, const IppsResamplingPolyphase_32f *pSpec) { return OptionalAssertNoError(ippsResamplePolyphase_32f(pSrc, len, pDst, factor, norm, pTime, pOutlen, pSpec)); }
+        static inline IppStatus ResamplePolyphaseFixed(const Ipp16s *pSrc, int len, Ipp16s *pDst, Ipp32f norm, Ipp64f *pTime, int *pOutlen, const IppsResamplingPolyphaseFixed_16s *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseFixed_16s(pSrc, len, pDst, norm, pTime, pOutlen, pSpec)); }
+        static inline IppStatus ResamplePolyphaseFixed(const Ipp32f *pSrc, int len, Ipp32f *pDst, Ipp32f norm, Ipp64f *pTime, int *pOutlen, const IppsResamplingPolyphaseFixed_32f *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseFixed_32f(pSrc, len, pDst, norm, pTime, pOutlen, pSpec)); }
 
-            TopK_Engine(Ipp64s srcLen, Ipp64s dstLen, IppTopKMode hint = ippTopKAuto)
-            {
-                initialise(srcLen, dstLen, hint);
-            }
+        static inline IppStatus ResamplePolyphaseGetFixedFilter(Ipp16s *pDst, int step, int height, const IppsResamplingPolyphaseFixed_16s *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseGetFixedFilter_16s(pDst, step, height, pSpec)); }
+        static inline IppStatus ResamplePolyphaseGetFixedFilter(Ipp32f *pDst, int step, int height, const IppsResamplingPolyphaseFixed_32f *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseGetFixedFilter_32f(pDst, step, height, pSpec)); }
 
-            void initialise(Ipp64s srcLen, Ipp64s dstLen, IppTopKMode hint = ippTopKAuto)
-            {
-                // Parameter to choose the optimization that is most suitable for the srcLen+dstlen(K) combination, supported values: ippTopKAuto/ ippTopKDirect/ ippTopKRadix.
+        static inline IppStatus ResamplePolyphaseInit(Ipp32f window, int nStep, Ipp32f rollf, Ipp32f alpha, IppsResamplingPolyphase_16s *pSpec, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseInit_16s(window, nStep, rollf, alpha, pSpec, hint)); }
+        static inline IppStatus ResamplePolyphaseInit(Ipp32f window, int nStep, Ipp32f rollf, Ipp32f alpha, IppsResamplingPolyphase_32f *pSpec, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseInit_32f(window, nStep, rollf, alpha, pSpec, hint)); }
+        static inline IppStatus ResamplePolyphaseFixedInit(int inRate, int outRate, int len, Ipp32f rollf, Ipp32f alpha, IppsResamplingPolyphaseFixed_16s *pSpec, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseFixedInit_16s(inRate, outRate, len, rollf, alpha, pSpec, hint)); }
+        static inline IppStatus ResamplePolyphaseFixedInit(int inRate, int outRate, int len, Ipp32f rollf, Ipp32f alpha, IppsResamplingPolyphaseFixed_32f *pSpec, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseFixedInit_32f(inRate, outRate, len, rollf, alpha, pSpec, hint)); }
 
-                m_srcLen = srcLen;
-                m_dstLen = dstLen;
-                m_hint = hint;
-                int bufferSize;
-                OptionalAssertNoError(ippsTopKGetBufferSize(srcLen, dstLen, GetIppDataType<T>(), hint, &bufferSize));
-                m_buffer.resize(bufferSize);
-            }
+        static inline IppStatus ResamplePolyphaseGetSize(Ipp32f window, int nStep, int *pSize, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseGetSize_16s(window, nStep, pSize, hint)); }
+        static inline IppStatus ResamplePolyphaseGetSize(Ipp32f window, int nStep, int *pSize, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseGetSize_32f(window, nStep, pSize, hint)); }
+        static inline IppStatus ResamplePolyphaseFixedGetSize(int inRate, int outRate, int len, int *pSize, int *pLen, int *pHeight, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseFixedGetSize_16s(inRate, outRate, len, pSize, pLen, pHeight, hint)); }
+        static inline IppStatus ResamplePolyphaseFixedGetSize(int inRate, int outRate, int len, int *pSize, int *pLen, int *pHeight, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseFixedGetSize_32f(inRate, outRate, len, pSize, pLen, pHeight, hint)); }
 
-            void assertIsInitialised()
-            {
-                if (m_buffer.empty())
-                    throw std::runtime_error("TopK_Engine not initialized");
-            }
+        static inline IppStatus ResamplePolyphaseSetFixedFilter(const Ipp16s *pSrc, int step, int height, IppsResamplingPolyphaseFixed_16s *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseSetFixedFilter_16s(pSrc, step, height, pSpec)); }
+        static inline IppStatus ResamplePolyphaseSetFixedFilter(const Ipp32f *pSrc, int step, int height, IppsResamplingPolyphaseFixed_32f *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseSetFixedFilter_32f(pSrc, step, height, pSpec)); }
 
-            IppStatus get_topk(const Ipp32f *pSrc, Ipp64s srcIndex, Ipp64s srcStride, Ipp64s srcLen, Ipp32f *pDstValue, Ipp64s *pDstIndex, Ipp64s dstLen)
-            {
-                assertIsInitialised();
-                OptionalAssertNoError(TopKInit(pDstValue, pDstIndex, dstLen));
-                return OptionalAssertNoError(TopK(pSrc, srcIndex, srcStride, srcLen, pDstValue, pDstIndex, dstLen, m_hint, m_buffer.data()));
-            }
-        };
+        // TODO: Create Engine for ResamplePolyphase
+
+        static inline IppStatus FIRSparse(const Ipp32f *pSrc, Ipp32f *pDst, int len, IppsFIRSparseState_32f *pState) { return OptionalAssertNoError(ippsFIRSparse_32f(pSrc, pDst, len, pState)); }
+        static inline IppStatus FIRSparse(const Ipp32fc *pSrc, Ipp32fc *pDst, int len, IppsFIRSparseState_32fc *pState) { return OptionalAssertNoError(ippsFIRSparse_32fc(pSrc, pDst, len, pState)); }
+        static inline IppStatus FIRSparseInit(IppsFIRSparseState_32f **ppState, const Ipp32f *pNZTaps, const Ipp32s *pNZTapPos, int nzTapsLen, const Ipp32f *pDlyLine, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFIRSparseInit_32f(ppState, pNZTaps, pNZTapPos, nzTapsLen, pDlyLine, pBuffer)); }
+        static inline IppStatus FIRSparseInit(IppsFIRSparseState_32fc **ppState, const Ipp32fc *pNZTaps, const Ipp32s *pNZTapPos, int nzTapsLen, const Ipp32fc *pDlyLine, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFIRSparseInit_32fc(ppState, pNZTaps, pNZTapPos, nzTapsLen, pDlyLine, pBuffer)); }
+        static inline IppStatus FIRSparseSetDlyLine(IppsFIRSparseState_32f *pState, const Ipp32f *pDlyLine) { return OptionalAssertNoError(ippsFIRSparseSetDlyLine_32f(pState, pDlyLine)); }
+        static inline IppStatus FIRSparseSetDlyLine(IppsFIRSparseState_32fc *pState, const Ipp32fc *pDlyLine) { return OptionalAssertNoError(ippsFIRSparseSetDlyLine_32fc(pState, pDlyLine)); }
+        static inline IppStatus FIRSparseGetStateSize(int nzTapsLen, int order, int *pStateSize) { return OptionalAssertNoError(ippsFIRSparseGetStateSize_32f(nzTapsLen, order, pStateSize)); }
+        static inline IppStatus FIRSparseGetStateSize(int nzTapsLen, int order, int *pStateSize) { return OptionalAssertNoError(ippsFIRSparseGetStateSize_32fc(nzTapsLen, order, pStateSize)); }
+        static inline IppStatus FIRSparseGetDlyLine(const IppsFIRSparseState_32f *pState, Ipp32f *pDlyLine) { return OptionalAssertNoError(ippsFIRSparseGetDlyLine_32f(pState, pDlyLine)); }
+        static inline IppStatus FIRSparseGetDlyLine(const IppsFIRSparseState_32fc *pState, Ipp32fc *pDlyLine) { return OptionalAssertNoError(ippsFIRSparseGetDlyLine_32fc(pState, pDlyLine)); }
+
+        // TODO: Create Engine for FIRSparse
+
+        static inline IppStatus WTFwdGetSize(IppDataType srcType, int lenLow, int offsLow, int lenHigh, int offsHigh, int *pStateSize) { return OptionalAssertNoError(ippsWTFwdGetSize(srcType, lenLow, offsLow, lenHigh, offsHigh, pStateSize)); }
+        static inline IppStatus WTInvGetSize(IppDataType dstType, int lenLow, int offsLow, int lenHigh, int offsHigh, int *pStateSize) { return OptionalAssertNoError(ippsWTInvGetSize(dstType, lenLow, offsLow, lenHigh, offsHigh, pStateSize)); }
+        static inline IppStatus WTFwdInit(IppsWTFwdState_32f *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTFwdInit_32f(pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
+        static inline IppStatus WTFwdInit(IppsWTFwdState_8u32f *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTFwdInit_8u32f(pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
+        static inline IppStatus WTFwdInit(IppsWTFwdState_16s32f *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTFwdInit_16s32f(pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
+        static inline IppStatus WTFwdInit(IppsWTFwdState_16u32f *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTFwdInit_16u32f(pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
+        static inline IppStatus WTInvInit(IppsWTInvState_32f *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTInvInit_32f(pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
+        static inline IppStatus WTInvInit(IppsWTInvState_32f8u *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTInvInit_32f8u(pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
+        static inline IppStatus WTInvInit(IppsWTInvState_32f16s *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTInvInit_32f16s(pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
+        static inline IppStatus WTInvInit(IppsWTInvState_32f16u *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTInvInit_32f16u(pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
+
+        static inline IppStatus WTFwd(const Ipp32f *pSrc, Ipp32f *pDstLow, Ipp32f *pDstHigh, int dstLen, IppsWTFwdState_32f *pState) { return OptionalAssertNoError(ippsWTFwd_32f(pSrc, pDstLow, pDstHigh, dstLen, pState)); }
+        static inline IppStatus WTFwd(const Ipp8u *pSrc, Ipp32f *pDstLow, Ipp32f *pDstHigh, int dstLen, IppsWTFwdState_8u32f *pState) { return OptionalAssertNoError(ippsWTFwd_8u32f(pSrc, pDstLow, pDstHigh, dstLen, pState)); }
+        static inline IppStatus WTFwd(const Ipp16s *pSrc, Ipp32f *pDstLow, Ipp32f *pDstHigh, int dstLen, IppsWTFwdState_16s32f *pState) { return OptionalAssertNoError(ippsWTFwd_16s32f(pSrc, pDstLow, pDstHigh, dstLen, pState)); }
+        static inline IppStatus WTFwd(const Ipp16u *pSrc, Ipp32f *pDstLow, Ipp32f *pDstHigh, int dstLen, IppsWTFwdState_16u32f *pState) { return OptionalAssertNoError(ippsWTFwd_16u32f(pSrc, pDstLow, pDstHigh, dstLen, pState)); }
+
+        static inline IppStatus WTFwdSetDlyLine(IppsWTFwdState_32f *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdSetDlyLine_32f(pState, pDlyLow, pDlyHigh)); }
+        static inline IppStatus WTFwdSetDlyLine(IppsWTFwdState_8u32f *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdSetDlyLine_8u32f(pState, pDlyLow, pDlyHigh)); }
+        static inline IppStatus WTFwdSetDlyLine(IppsWTFwdState_16s32f *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdSetDlyLine_16s32f(pState, pDlyLow, pDlyHigh)); }
+        static inline IppStatus WTFwdSetDlyLine(IppsWTFwdState_16u32f *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdSetDlyLine_16u32f(pState, pDlyLow, pDlyHigh)); }
+
+        static inline IppStatus WTFwdGetDlyLine(IppsWTFwdState_32f *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdGetDlyLine_32f(pState, pDlyLow, pDlyHigh)); }
+        static inline IppStatus WTFwdGetDlyLine(IppsWTFwdState_8u32f *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdGetDlyLine_8u32f(pState, pDlyLow, pDlyHigh)); }
+        static inline IppStatus WTFwdGetDlyLine(IppsWTFwdState_16s32f *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdGetDlyLine_16s32f(pState, pDlyLow, pDlyHigh)); }
+        static inline IppStatus WTFwdGetDlyLine(IppsWTFwdState_16u32f *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdGetDlyLine_16u32f(pState, pDlyLow, pDlyHigh)); }
+
+        static inline IppStatus WTInv(const Ipp32f *pSrcLow, const Ipp32f *pSrcHigh, int srcLen, Ipp32f *pDst, IppsWTInvState_32f *pState) { return OptionalAssertNoError(ippsWTInv_32f(pSrcLow, pSrcHigh, srcLen, pDst, pState)); }
+        static inline IppStatus WTInv(const Ipp32f *pSrcLow, const Ipp32f *pSrcHigh, int srcLen, Ipp8u *pDst, IppsWTInvState_32f8u *pState) { return OptionalAssertNoError(ippsWTInv_32f8u(pSrcLow, pSrcHigh, srcLen, pDst, pState)); }
+        static inline IppStatus WTInv(const Ipp32f *pSrcLow, const Ipp32f *pSrcHigh, int srcLen, Ipp16s *pDst, IppsWTInvState_32f16s *pState) { return OptionalAssertNoError(ippsWTInv_32f16s(pSrcLow, pSrcHigh, srcLen, pDst, pState)); }
+        static inline IppStatus WTInv(const Ipp32f *pSrcLow, const Ipp32f *pSrcHigh, int srcLen, Ipp16u *pDst, IppsWTInvState_32f16u *pState) { return OptionalAssertNoError(ippsWTInv_32f16u(pSrcLow, pSrcHigh, srcLen, pDst, pState)); }
+
+        static inline IppStatus WTInvSetDlyLine(IppsWTInvState_32f *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvSetDlyLine_32f(pState, pDlyLow, pDlyHigh)); }
+        static inline IppStatus WTInvSetDlyLine(IppsWTInvState_32f8u *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvSetDlyLine_32f8u(pState, pDlyLow, pDlyHigh)); }
+        static inline IppStatus WTInvSetDlyLine(IppsWTInvState_32f16s *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvSetDlyLine_32f16s(pState, pDlyLow, pDlyHigh)); }
+        static inline IppStatus WTInvSetDlyLine(IppsWTInvState_32f16u *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvSetDlyLine_32f16u(pState, pDlyLow, pDlyHigh)); }
+
+        static inline IppStatus WTInvGetDlyLine(IppsWTInvState_32f *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvGetDlyLine_32f(pState, pDlyLow, pDlyHigh)); }
+        static inline IppStatus WTInvGetDlyLine(IppsWTInvState_32f8u *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvGetDlyLine_32f8u(pState, pDlyLow, pDlyHigh)); }
+        static inline IppStatus WTInvGetDlyLine(IppsWTInvState_32f16s *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvGetDlyLine_32f16s(pState, pDlyLow, pDlyHigh)); }
+        static inline IppStatus WTInvGetDlyLine(IppsWTInvState_32f16u *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvGetDlyLine_32f16u(pState, pDlyLow, pDlyHigh)); }
+
+        // TODO: Create Engine for WT
+
+        // IIRInit wrappers (Direct Form)
+        static inline IppStatus IIRInit(IppsIIRState32f_16s **ppState, const Ipp32f *pTaps, int order, const Ipp32f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit32f_16s(ppState, pTaps, order, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit(IppsIIRState64f_16s **ppState, const Ipp64f *pTaps, int order, const Ipp64f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64f_16s(ppState, pTaps, order, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit(IppsIIRState64f_32s **ppState, const Ipp64f *pTaps, int order, const Ipp64f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64f_32s(ppState, pTaps, order, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit(IppsIIRState32fc_16sc **ppState, const Ipp32fc *pTaps, int order, const Ipp32fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit32fc_16sc(ppState, pTaps, order, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit(IppsIIRState64fc_16sc **ppState, const Ipp64fc *pTaps, int order, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64fc_16sc(ppState, pTaps, order, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit(IppsIIRState64fc_32sc **ppState, const Ipp64fc *pTaps, int order, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64fc_32sc(ppState, pTaps, order, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit(IppsIIRState_32f **ppState, const Ipp32f *pTaps, int order, const Ipp32f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_32f(ppState, pTaps, order, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit(IppsIIRState64f_32f **ppState, const Ipp64f *pTaps, int order, const Ipp64f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64f_32f(ppState, pTaps, order, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit(IppsIIRState_64f **ppState, const Ipp64f *pTaps, int order, const Ipp64f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_64f(ppState, pTaps, order, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit(IppsIIRState_32fc **ppState, const Ipp32fc *pTaps, int order, const Ipp32fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_32fc(ppState, pTaps, order, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit(IppsIIRState64fc_32fc **ppState, const Ipp64fc *pTaps, int order, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64fc_32fc(ppState, pTaps, order, pDppState, pBuf)); }
+        static inline IppStatus IIRInit(IppsIIRState_64fc **ppState, const Ipp64fc *pTaps, int order, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_64fc(ppState, pTaps, order, pDlyLine, pBuf)); }
+
+        // IIRInit_BiQuad wrappers
+        static inline IppStatus IIRInit_BiQuad(IppsIIRState32f_16s **ppState, const Ipp32f *pTaps, int numBq, const Ipp32f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit32f_BiQuad_16s(ppState, pTaps, numBq, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit_BiQuad(IppsIIRState64f_16s **ppState, const Ipp64f *pTaps, int numBq, const Ipp64f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64f_BiQuad_16s(ppState, pTaps, numBq, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit_BiQuad(IppsIIRState64f_32s **ppState, const Ipp64f *pTaps, int numBq, const Ipp64f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64f_BiQuad_32s(ppState, pTaps, numBq, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit_BiQuad(IppsIIRState32fc_16sc **ppState, const Ipp32fc *pTaps, int numBq, const Ipp32fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit32fc_BiQuad_16sc(ppState, pTaps, numBq, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit_BiQuad(IppsIIRState64fc_16sc **ppState, const Ipp64fc *pTaps, int numBq, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64fc_BiQuad_16sc(ppState, pTaps, numBq, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit_BiQuad(IppsIIRState64fc_32sc **ppState, const Ipp64fc *pTaps, int numBq, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64fc_BiQuad_32sc(ppState, pTaps, numBq, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit_BiQuad(IppsIIRState_32f **ppState, const Ipp32f *pTaps, int numBq, const Ipp32f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_BiQuad_32f(ppState, pTaps, numBq, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit_BiQuad(IppsIIRState64f_32f **ppState, const Ipp64f *pTaps, int numBq, const Ipp64f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64f_BiQuad_32f(ppState, pTaps, numBq, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit_BiQuad(IppsIIRState_64f **ppState, const Ipp64f *pTaps, int numBq, const Ipp64f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_BiQuad_64f(ppState, pTaps, numBq, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit_BiQuad(IppsIIRState_32fc **ppState, const Ipp32fc *pTaps, int numBq, const Ipp32fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_BiQuad_32fc(ppState, pTaps, numBq, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit_BiQuad(IppsIIRState64fc_32fc **ppState, const Ipp64fc *pTaps, int numBq, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64fc_BiQuad_32fc(ppState, pTaps, numBq, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit_BiQuad(IppsIIRState_64fc **ppState, const Ipp64fc *pTaps, int numBq, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_BiQuad_64fc(ppState, pTaps, numBq, pDlyLine, pBuf)); }
+
+        // IIRInit_BiQuad_DF1 wrappers
+        static inline IppStatus IIRInit_BiQuad_DF1(IppsIIRState64f_32s **ppState, const Ipp64f *pTaps, int numBq, const Ipp32s *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64f_BiQuad_DF1_32s(ppState, pTaps, numBq, pDlyLine, pBuf)); }
+        static inline IppStatus IIRInit_BiQuad_DF1(IppsIIRState_32f **ppState, const Ipp32f *pTaps, int numBq, const Ipp32f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_BiQuad_DF1_32f(ppState, pTaps, numBq, pDlyLine, pBuf)); }
+
+        // IIRGetStateSize wrappers (Direct Form)
+        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize32f_16s(order, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_16s(order, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_32s(order, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize32fc_16sc(order, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64fc_16sc(order, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64fc_32sc(order, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_32f(order, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_32f(order, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_64f(order, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_32fc(order, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64fc_32fc(order, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_64fc(order, pBufferSize)); }
+
+        // IIRGetStateSize_BiQuad wrappers
+        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize32f_BiQuad_16s(numBq, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_BiQuad_16s(numBq, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_BiQuad_32s(numBq, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize32fc_BiQuad_16sc(numBq, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64fc_BiQuad_16sc(numBq, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64fc_BiQuad_32sc(numBq, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_BiQuad_32f(numBq, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_BiQuad_32f(numBq, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_BiQuad_64f(numBq, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_BiQuad_32fc(numBq, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64fc_BiQuad_32fc(numBq, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_BiQuad_64fc(numBq, pBufferSize)); }
+
+        // IIRGetStateSize_BiQuad_DF1 wrappers
+        static inline IppStatus IIRGetStateSize_BiQuad_DF1(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_BiQuad_DF1_32s(numBq, pBufferSize)); }
+        static inline IppStatus IIRGetStateSize_BiQuad_DF1(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_BiQuad_DF1_32f(numBq, pBufferSize)); }
+
+        // IIRGetDlyLine wrappers
+        static inline IppStatus IIRGetDlyLine(const IppsIIRState32f_16s *pState, Ipp32f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine32f_16s(pState, pDlyLine)); }
+        static inline IppStatus IIRGetDlyLine(const IppsIIRState64f_16s *pState, Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64f_16s(pState, pDlyLine)); }
+        static inline IppStatus IIRGetDlyLine(const IppsIIRState64f_32s *pState, Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64f_32s(pState, pDlyLine)); }
+        static inline IppStatus IIRGetDlyLine(const IppsIIRState32fc_16sc *pState, Ipp32fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine32fc_16sc(pState, pDlyLine)); }
+        static inline IppStatus IIRGetDlyLine(const IppsIIRState64fc_16sc *pState, Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64fc_16sc(pState, pDlyLine)); }
+        static inline IppStatus IIRGetDlyLine(const IppsIIRState64fc_32sc *pState, Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64fc_32sc(pState, pDlyLine)); }
+        static inline IppStatus IIRGetDlyLine(const IppsIIRState_32f *pState, Ipp32f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine_32f(pState, pDlyLine)); }
+        static inline IppStatus IIRGetDlyLine(const IppsIIRState64f_32f *pState, Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64f_32f(pState, pDlyLine)); }
+        static inline IppStatus IIRGetDlyLine(const IppsIIRState_64f *pState, Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine_64f(pState, pDlyLine)); }
+        static inline IppStatus IIRGetDlyLine(const IppsIIRState_32fc *pState, Ipp32fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine_32fc(pState, pDlyLine)); }
+        static inline IppStatus IIRGetDlyLine(const IppsIIRState64fc_32fc *pState, Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64fc_32fc(pState, pDlyLine)); }
+        static inline IppStatus IIRGetDlyLine(const IppsIIRState_64fc *pState, Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine_64fc(pState, pDlyLine)); }
+
+        // IIRGetDlyLine_DF1 wrappers
+        static inline IppStatus IIRGetDlyLine_DF1(const IppsIIRState64f_32s *pState, Ipp32s *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64f_DF1_32s(pState, pDlyLine)); }
+
+        // IIRSetDlyLine wrappers
+        static inline IppStatus IIRSetDlyLine(IppsIIRState32f_16s *pState, const Ipp32f *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine32f_16s(pState, pDlyLine)); }
+        static inline IppStatus IIRSetDlyLine(IppsIIRState64f_16s *pState, const Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64f_16s(pState, pDlyLine)); }
+        static inline IppStatus IIRSetDlyLine(IppsIIRState64f_32s *pState, const Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64f_32s(pState, pDlyLine)); }
+        static inline IppStatus IIRSetDlyLine(IppsIIRState32fc_16sc *pState, const Ipp32fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine32fc_16sc(pState, pDlyLine)); }
+        static inline IppStatus IIRSetDlyLine(IppsIIRState64fc_16sc *pState, const Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64fc_16sc(pState, pDlyLine)); }
+        static inline IppStatus IIRSetDlyLine(IppsIIRState64fc_32sc *pState, const Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64fc_32sc(pState, pDlyLine)); }
+        static inline IppStatus IIRSetDlyLine(IppsIIRState_32f *pState, const Ipp32f *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine_32f(pState, pDlyLine)); }
+        static inline IppStatus IIRSetDlyLine(IppsIIRState64f_32f *pState, const Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64f_32f(pState, pDlyLine)); }
+        static inline IppStatus IIRSetDlyLine(IppsIIRState_64f *pState, const Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine_64f(pState, pDlyLine)); }
+        static inline IppStatus IIRSetDlyLine(IppsIIRState_32fc *pState, const Ipp32fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine_32fc(pState, pDlyLine)); }
+        static inline IppStatus IIRSetDlyLine(IppsIIRState64fc_32fc *pState, const Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64fc_32fc(pState, pDlyLine)); }
+        static inline IppStatus IIRSetDlyLine(IppsIIRState_64fc *pState, const Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine_64fc(pState, pDlyLine)); }
+
+        // IIRSetDlyLine_DF1 wrappers
+        static inline IppStatus IIRSetDlyLine_DF1(IppsIIRState64f_32s *pState, const Ipp32s *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64f_DF1_32s(pState, pDlyLine)); }
+
+        // IIR (Out-of-place, Sfs) wrappers
+        static inline IppStatus IIR_Sfs(const Ipp16s *pSrc, Ipp16s *pDst, int len, IppsIIRState32f_16s *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR32f_16s_Sfs(pSrc, pDst, len, pState, scaleFactor)); }
+        static inline IppStatus IIR_Sfs(const Ipp16s *pSrc, Ipp16s *pDst, int len, IppsIIRState64f_16s *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64f_16s_Sfs(pSrc, pDst, len, pState, scaleFactor)); }
+        static inline IppStatus IIR_Sfs(const Ipp32s *pSrc, Ipp32s *pDst, int len, IppsIIRState64f_32s *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64f_32s_Sfs(pSrc, pDst, len, pState, scaleFactor)); }
+        static inline IppStatus IIR_Sfs(const Ipp16sc *pSrc, Ipp16sc *pDst, int len, IppsIIRState32fc_16sc *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR32fc_16sc_Sfs(pSrc, pDst, len, pState, scaleFactor)); }
+        static inline IppStatus IIR_Sfs(const Ipp16sc *pSrc, Ipp16sc *pDst, int len, IppsIIRState64fc_16sc *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64fc_16sc_Sfs(pSrc, pDst, len, pState, scaleFactor)); }
+        static inline IppStatus IIR_Sfs(const Ipp32sc *pSrc, Ipp32sc *pDst, int len, IppsIIRState64fc_32sc *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64fc_32sc_Sfs(pSrc, pDst, len, pState, scaleFactor)); }
+
+        // IIR (Out-of-place, Floating-point) wrappers
+        static inline IppStatus IIR(const Ipp32f *pSrc, Ipp32f *pDst, int len, IppsIIRState_32f *pState) { return OptionalAssertNoError(ippsIIR_32f(pSrc, pDst, len, pState)); }
+        static inline IppStatus IIR(const Ipp64f *pSrc, Ipp64f *pDst, int len, IppsIIRState_64f *pState) { return OptionalAssertNoError(ippsIIR_64f(pSrc, pDst, len, pState)); }
+        static inline IppStatus IIR(const Ipp32f *pSrc, Ipp32f *pDst, int len, IppsIIRState64f_32f *pState) { return OptionalAssertNoError(ippsIIR64f_32f(pSrc, pDst, len, pState)); }
+        static inline IppStatus IIR(const Ipp32fc *pSrc, Ipp32fc *pDst, int len, IppsIIRState_32fc *pState) { return OptionalAssertNoError(ippsIIR_32fc(pSrc, pDst, len, pState)); }
+        static inline IppStatus IIR(const Ipp64fc *pSrc, Ipp64fc *pDst, int len, IppsIIRState_64fc *pState) { return OptionalAssertNoError(ippsIIR_64fc(pSrc, pDst, len, pState)); }
+        static inline IppStatus IIR(const Ipp32fc *pSrc, Ipp32fc *pDst, int len, IppsIIRState64fc_32fc *pState) { return OptionalAssertNoError(ippsIIR64fc_32fc(pSrc, pDst, len, pState)); }
+
+        // IIR (In-place, Sfs) wrappers
+        static inline IppStatus IIR_ISfs(Ipp16s *pSrcDst, int len, IppsIIRState32f_16s *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR32f_16s_ISfs(pSrcDst, len, pState, scaleFactor)); }
+        static inline IppStatus IIR_ISfs(Ipp16sc *pSrcDst, int len, IppsIIRState32fc_16sc *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR32fc_16sc_ISfs(pSrcDst, len, pState, scaleFactor)); }
+        static inline IppStatus IIR_ISfs(Ipp16s *pSrcDst, int len, IppsIIRState64f_16s *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64f_16s_ISfs(pSrcDst, len, pState, scaleFactor)); }
+        static inline IppStatus IIR_ISfs(Ipp32s *pSrcDst, int len, IppsIIRState64f_32s *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64f_32s_ISfs(pSrcDst, len, pState, scaleFactor)); }
+        static inline IppStatus IIR_ISfs(Ipp16sc *pSrcDst, int len, IppsIIRState64fc_16sc *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64fc_16sc_ISfs(pSrcDst, len, pState, scaleFactor)); }
+        static inline IppStatus IIR_ISfs(Ipp32sc *pSrcDst, int len, IppsIIRState64fc_32sc *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64fc_32sc_ISfs(pSrcDst, len, pState, scaleFactor)); }
+
+        // IIR (In-place, Floating-point) wrappers
+        static inline IppStatus IIR_I(Ipp32f *pSrcDst, int len, IppsIIRState_32f *pState) { return OptionalAssertNoError(ippsIIR_32f_I(pSrcDst, len, pState)); }
+        static inline IppStatus IIR_I(Ipp64f *pSrcDst, int len, IppsIIRState_64f *pState) { return OptionalAssertNoError(ippsIIR_64f_I(pSrcDst, len, pState)); }
+        static inline IppStatus IIR_I(Ipp32f *pSrcDst, int len, IppsIIRState64f_32f *pState) { return OptionalAssertNoError(ippsIIR64f_32f_I(pSrcDst, len, pState)); }
+        static inline IppStatus IIR_I(Ipp32fc *pSrcDst, int len, IppsIIRState_32fc *pState) { return OptionalAssertNoError(ippsIIR_32fc_I(pSrcDst, len, pState)); }
+        static inline IppStatus IIR_I(Ipp64fc *pSrcDst, int len, IppsIIRState_64fc *pState) { return OptionalAssertNoError(ippsIIR_64fc_I(pSrcDst, len, pState)); }
+        static inline IppStatus IIR_I(Ipp32fc *pSrcDst, int len, IppsIIRState64fc_32fc *pState) { return OptionalAssertNoError(ippsIIR64fc_32fc_I(pSrcDst, len, pState)); }
+
+        // IIR (Planar/Multi-channel, Out-of-place) wrappers
+        static inline IppStatus IIR_P(const Ipp32f **ppSrc, Ipp32f **ppDst, int len, int nChannels, IppsIIRState_32f **ppState) { return OptionalAssertNoError(ippsIIR_32f_P(ppSrc, ppDst, len, nChannels, ppState)); }
+
+        // IIR (Planar/Multi-channel, Out-of-place, Sfs) wrappers
+        static inline IppStatus IIR_PSfs(const Ipp32s **ppSrc, Ipp32s **ppDst, int len, int nChannels, IppsIIRState64f_32s **ppState, int *pScaleFactor) { return OptionalAssertNoError(ippsIIR64f_32s_PSfs(ppSrc, ppDst, len, nChannels, ppState, pScaleFactor)); }
+
+        // IIR (Planar/Multi-channel, In-place) wrappers
+        static inline IppStatus IIR_IP(Ipp32f **ppSrcDst, int len, int nChannels, IppsIIRState_32f **ppState) { return OptionalAssertNoError(ippsIIR_32f_IP(ppSrcDst, len, nChannels, ppState)); }
+
+        // IIR (Planar/Multi-channel, In-place, Sfs) wrappers
+        static inline IppStatus IIR_IPSfs(Ipp32s **ppSrcDst, int len, int nChannels, IppsIIRState64f_32s **ppState, int *pScaleFactor) { return OptionalAssertNoError(ippsIIR64f_32s_IPSfs(ppSrcDst, len, nChannels, ppState, pScaleFactor)); }
 
         /* Essential Initialization */
         static inline IppStatus Copy(const Ipp8u *pSrc, Ipp8u *pDst, int len) { return OptionalAssertNoError(ippsCopy_8u(pSrc, pDst, len)); }                        // unsigned char
@@ -1520,46 +1213,6 @@ namespace tipp
         static inline IppStatus RandGauss(Ipp32f *pDst, int len, IppsRandGaussState_32f *pRandGaussState) { return OptionalAssertNoError(ippsRandGauss_32f(pDst, len, pRandGaussState)); }
         static inline IppStatus RandGauss(Ipp64f *pDst, int len, IppsRandGaussState_64f *pRandGaussState) { return OptionalAssertNoError(ippsRandGauss_64f(pDst, len, pRandGaussState)); }
 
-        template <typename T>
-        class RandGauss_Engine
-        {
-        protected:
-            vector<T> m_pRandGaussState;
-            T m_mean;
-            T m_stdDev;
-            unsigned int m_seed;
-
-        public:
-            RandGauss_Engine() = default;
-
-            RandGauss_Engine(T mean, T stdDev, unsigned int seed) { initialise(mean, stdDev, seed); }
-
-            void initialise(T mean, T stdDev, unsigned int seed)
-            {
-                m_mean = mean;
-                m_stdDev = stdDev;
-                m_seed = seed;
-
-                int size;
-                OptionalAssertNoError(RandGaussGetSize<T>(&size));
-                m_pRandGaussState.resize(size);
-
-                OptionalAssertNoError(RandGaussInit<T>(m_pRandGaussState.data(), m_mean, m_stdDev, m_seed));
-            }
-
-            void assertIsInitialised()
-            {
-                if (m_pRandGaussState.empty())
-                    throw std::invalid_argument("DFT not initalized");
-            }
-
-            IppStatus sample(T *output, int len)
-            {
-                assertIsInitialised();
-                return OptionalAssertNoError((output, len, m_pRandGaussState.data()));
-            }
-        };
-
         static inline IppStatus RandUniformGetSize(int *pRandUniformStateSize) { return OptionalAssertNoError(ippsRandUniformGetSize_8u(pRandUniformStateSize)); }
         static inline IppStatus RandUniformGetSize(int *pRandUniformStateSize) { return OptionalAssertNoError(ippsRandUniformGetSize_16s(pRandUniformStateSize)); }
         static inline IppStatus RandUniformGetSize(int *pRandUniformStateSize) { return OptionalAssertNoError(ippsRandUniformGetSize_32f(pRandUniformStateSize)); }
@@ -1575,41 +1228,6 @@ namespace tipp
         static inline IppStatus RandUniform(Ipp32f *pDst, int len, IppsRandUniState_32f *pRandUniState) { return OptionalAssertNoError(ippsRandUniform_32f(pDst, len, pRandUniState)); }
         static inline IppStatus RandUniform(Ipp64f *pDst, int len, IppsRandUniState_64f *pRandUniState) { return OptionalAssertNoError(ippsRandUniform_64f(pDst, len, pRandUniState)); }
 
-        template <typename T>
-        class RandUniform_Engine
-        {
-        protected:
-            vector<T> m_pRandUniformState;
-            T m_low;
-            T m_high;
-            unsigned int m_seed;
-
-        public:
-            RandUniform_Engine() = default;
-            RandUniform_Engine(T low, T high, unsigned int seed) { initialise(low, high, seed); }
-            void initialise(T low, T high, unsigned int seed)
-            {
-                m_low = low;
-                m_high = high;
-                m_seed = seed;
-
-                int size;
-                OptionalAssertNoError(RandUniformGetSize<T>(&size));
-                m_pRandUniformState.resize(size);
-
-                OptionalAssertNoError(RandUniformInit<T>(m_pRandUniformState.data(), m_low, m_high, m_seed));
-            }
-            void assertIsInitialised()
-            {
-                if (m_pRandUniformState.empty())
-                    throw std::invalid_argument("RandUniform_Engine not initalized");
-            }
-            IppStatus sample(T *output, int len)
-            {
-                assertIsInitialised();
-                return OptionalAssertNoError(RandUniform<T>(output, len, m_pRandUniformState.data()));
-            }
-        };
         /* Support */
 
         // ippsMalloc
@@ -1696,288 +1314,6 @@ namespace tipp
         template <>
         static inline std::complex<double> *ippsMalloc_L<std::complex<double>>(int len) { return reinterpret_cast<std::complex<double> *>(ippsMalloc_64fc_L(len)); }
 
-        template <typename T>
-        class vector
-        {
-            typedef T value_type;
-            typedef T *pointer;
-            typedef const T *const_pointer;
-            typedef T &reference;
-            typedef const T &const_reference;
-            typedef size_t size_type;
-            typedef ptrdiff_t difference_type;
-
-            friend void swap(vector &a, vector &b) noexcept
-            {
-                using std::swap;
-                swap(a.m_numel, b.m_numel);
-                swap(a.m_data, b.m_data);
-                swap(a.m_cap, b.m_cap);
-            }
-
-        protected:
-            size_type m_numel = 0;
-            size_type m_cap = 0;
-            pointer m_data = nullptr;
-
-        public:
-            // Constructors
-
-            // Default constructor
-            vector() = default;
-
-            explicit vector(size_type count)
-            {
-                m_numel = count;
-                reserve(m_numel);
-            }
-
-            vector(size_type count, const value_type &value)
-            {
-                m_numel = count;
-                reserve(m_numel);
-                set(value);
-            }
-
-            // Copy constructor
-            vector(const vector &other)
-            {
-                reserve(m_numel);
-                Copy(other.m_data, m_data, (int)m_numel);
-                m_numel = other.m_numel;
-            }
-
-            // Move constructor
-            // Move constructors typically "steal" the resources held by the argument
-            // rather than make copies of them, and leave the argument in some valid
-            // but otherwise indeterminate state.
-            vector(vector &&other)
-            {
-                // steal other's data
-                m_numel = other.m_numel;
-                m_cap = other.m_cap;
-                m_data = other.m_data;
-
-                // nullify other
-                other.m_data = nullptr;
-                other.m_cap = 0;
-                other.m_numel = 0;
-            }
-
-            // Copy Assignment operator
-            vector &operator=(vector &other)
-            {
-                if (this != &other)
-                {
-                    if (other.m_numel > 0)
-                    {
-                        reserve(other.m_numel);
-                        Copy(other.m_data, m_data, (int)m_numel);
-                    }
-                    m_numel = other.m_numel;
-                }
-                return *this;
-            }
-
-            // Move Assignment operator
-            vector &operator=(vector &&other) noexcept
-            {
-                if (this != &other)
-                {
-                    // free own data
-                    if (m_data != nullptr)
-                        ippsFree(m_data);
-
-                    // steal other's data
-                    m_numel = other.m_numel;
-                    m_cap = other.m_cap;
-                    m_data = other.m_data;
-
-                    // nullify other
-                    other.m_data = nullptr;
-                    other.m_cap = 0;
-                    other.m_numel = 0;
-                }
-                return *this;
-            }
-
-            ~vector()
-            {
-                if (m_data != nullptr)
-                    ippsFree(m_data);
-            }
-
-            /*
-            Resizes the container so that it contains n elements.
-            If n is smaller than the current container size, the content is reduced to its first n elements, removing those beyond (and destroying them).
-            If n is greater than the current container size, the content is expanded by inserting at the end as many elements as needed to reach a size of n.
-            If val is specified, the new elements are initialized as copies of val, otherwise, they are value-initialized.
-            If n is also greater than the current container capacity, an automatic reallocation of the allocated storage space takes place.
-            */
-            void resize(size_type new_count)
-            {
-
-                reserve(new_count);
-
-                if (new_count > m_numel) // value initialise new elements
-                    for (int i = m_numel; i < new_count; i++)
-                        new (&m_data[i]) value_type{};
-                else if (new_count < m_numel) // destroy excess elements
-                    for (int i = new_count; i < m_numel; i++)
-                        m_data[i].~value_type();
-
-                m_numel = new_count;
-            }
-
-            void resize(size_t new_count, const T &value)
-            {
-
-                reserve(new_count);
-
-                if (new_count > m_numel) // copy construct new elements
-                    for (int i = m_numel; i < new_count; i++)
-                        new (&m_data[i]) value_type(value);
-                else if (new_count < m_numel) // destroy excess elements
-                    for (int i = new_count; i < m_numel; i++)
-                        m_data[i].~value_type();
-
-                m_numel = new_count;
-            }
-
-            void reserve(size_type new_cap)
-            {
-                if (new_cap > m_cap)
-                {
-                    value_type *new_data = ippsMalloc<value_type>(new_cap);
-                    if (m_data != nullptr)
-                    {
-                        Copy(m_data, new_data, (int)m_numel);
-                        ippsFree(m_data);
-                    }
-                    m_data = new_data;
-                    m_cap = new_cap;
-                }
-            }
-
-            void set(const_reference value)
-            {
-                for (int i = 0; i < m_numel; i++)
-                    new (&m_data[i]) value_type(value);
-            }
-
-            // Unsafee method, use with caution
-            void set_array(pointer pData)
-            {
-                for (int i = 0; i < m_numel; i++)
-                    m_data[i] = pData[i];
-            }
-
-            pointer data() { return m_data; }
-            const_pointer data() const { return m_data; }
-
-            reference back() { return m_data[m_numel - 1]; }
-            const_reference back() const { return m_data[m_numel - 1]; }
-
-            reference front() { return m_data[0]; }
-
-            const_reference front() const { return m_data[0]; }
-
-            reference at(size_type pos)
-            {
-                if (pos < m_numel && pos >= 0)
-                    return m_data[pos];
-                else
-                    throw std::out_of_range(std::string("tipp::ipps::vector.at Size is ") + std::to_string(m_numel) + std::string(", pos is ") + std::to_string(pos));
-            }
-
-            const_reference at(size_type pos) const
-            {
-                if (pos < m_numel && pos >= 0)
-                    return m_data[pos];
-                else
-                    throw std::out_of_range(std::string("tipp::ipps::vector.at Size is ") + std::to_string(m_numel) + std::string(", pos is ") + std::to_string(pos));
-            }
-
-            reference operator[](size_type pos) { return m_data[pos]; }
-
-            const_reference operator[](size_type pos) const { return m_data[pos]; }
-
-            void push_back(const_reference value)
-            {
-                // check size
-                if (m_numel == m_cap)
-                {
-                    m_cap = m_cap == 0 ? 1 : m_cap; // if cap is 0 (blank ctor then initialise with something small)
-                    reserve(m_cap * 2);             // we double the capacity, similar to how std::vector does it
-                }
-
-                m_data[m_numel] = value;
-                m_numel++;
-            }
-
-            void push_back(T &&value)
-            {
-                // check size
-                if (m_numel == m_cap)
-                {
-                    m_cap = m_cap == 0 ? 1 : m_cap; // if cap is 0 (blank ctor then initialise with something small)
-                    reserve(m_cap * 2);             // we double the capacity, similar to how std::vector does it
-                }
-
-                m_data[m_numel] = value;
-                m_numel++;
-            }
-
-            size_type size() const { return m_numel; }
-
-            size_type capacity() const { return m_cap; }
-
-            void clear() { m_numel = 0; }
-
-            bool empty() const noexcept { return m_numel == 0; }
-
-            // Iterators
-            pointer begin() { return m_data; }
-
-            const_pointer begin() const { return m_data; }
-
-            pointer end() { return m_data + m_numel; }
-
-            const_pointer end() const { return m_data + m_numel; }
-
-            // Const iterators
-            const_pointer cbegin() const { return m_data; }
-
-            const_pointer cend() const { return m_data + m_numel; }
-        };
-
-        // Custom Allocator for use with STL vector
-        template <class T>
-        struct IPPallocator
-        {
-            typedef T value_type;
-            IPPallocator() noexcept {} // default ctor not required by C++ Standard Library
-
-            // A converting copy constructor:
-            template <class U>
-            IPPallocator(const IPPallocator<U> &) noexcept {}
-
-            template <class U>
-            bool operator==(const IPPallocator<U> &) const noexcept { return true; }
-
-            template <class U>
-            bool operator!=(const IPPallocator<U> &) const noexcept { return false; }
-
-            T *allocate(const size_t n) const
-            {
-                return ippsMalloc<T>(n);
-            }
-            void deallocate(T *const p, size_t) const noexcept
-            {
-                ippsFree(p);
-            }
-        };
-
         /* Transforms */
         static inline IppStatus ConjCcs(const Ipp32f *pSrc, Ipp32fc *pDst, int lenDst) { return OptionalAssertNoError(ippsConjCcs_32fc(pSrc, pDst, lenDst)); }
         static inline IppStatus ConjCcs(const Ipp64f *pSrc, Ipp64fc *pDst, int lenDst) { return OptionalAssertNoError(ippsConjCcs_64fc(pSrc, pDst, lenDst)); }
@@ -2043,71 +1379,11 @@ namespace tipp
         static inline IppStatus DFTInv(const Ipp32fc *pSrc, float *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsDFTInv_CCSToR_32f((const float *)pSrc, pDst, (const IppsDFTSpec_R_32f *)pDFTSpec, pBuffer)); }
 
         template <typename T>
-        static inline int get_FwdSize(int nfft) { return nfft; }
+        static inline int DFT_Get_FwdSize(int nfft) { return nfft; }
         template <>
-        static inline int get_FwdSize<float>(int nfft) { return nfft / 2 + 1; }
+        static inline int DFT_Get_FwdSize<float>(int nfft) { return nfft / 2 + 1; }
         template <>
-        static inline int get_FwdSize<double>(int nfft) { return nfft / 2 + 1; }
-
-        // Only 4 types are supported
-        // Trc = Ipp64fc, Tc = Ipp64fc
-        // Trc = Ipp32fc, Tc = Ipp32fc
-        // Trc = Ipp64f, Tc = Ipp64fc
-        // Trc = Ipp32f, Tc = Ipp32fc
-        template <typename Trc, typename Tc>
-        class DFT_Engine
-        {
-        protected:
-            vector<Ipp8u> m_pDFTSpec;
-            vector<Ipp8u> m_pDFTWorkBuf;
-            vector<Ipp8u> m_pDFTInitBuf;
-
-            int m_inNFFT;
-            int m_outNFFT;
-            int m_flag;
-
-        public:
-            DFT_Engine() = default;
-
-            DFT_Engine(const int nfft, const int flag = IPP_FFT_DIV_INV_BY_N) { initialise(nfft, flag); }
-
-            void initialise(const int nfft, const int flag = IPP_FFT_DIV_INV_BY_N)
-            {
-                m_inNFFT = nfft;
-                m_outNFFT = get_FwdSize<Trc>(nfft);
-                m_flag = flag;
-
-                int SizeSpec, SizeInit, SizeBuf;
-                DFTGetSize<Trc>(nfft, flag, &SizeSpec, &SizeInit, &SizeBuf);
-
-                m_pDFTSpec.resize(SizeSpec);
-                m_pDFTWorkBuf.resize(SizeBuf);
-                m_pDFTInitBuf.resize(SizeInit);
-
-                DFTInit<Trc>(m_inNFFT, m_flag, m_pDFTSpec.data(), m_pDFTInitBuf.data());
-            }
-
-            void assertIsInitialised()
-            {
-                if (m_pDFTSpec.empty())
-                    throw std::invalid_argument("DFT not initalized");
-            }
-
-            void Fwd(const Trc *input, Tc *output)
-            {
-                assertIsInitialised();
-                DFTFwd(input, output, m_pDFTSpec.data(), m_pDFTWorkBuf.data());
-            }
-
-            void Inv(const Tc *input, Trc *output)
-            {
-                assertIsInitialised();
-                DFTInv(input, output, m_pDFTSpec.data(), m_pDFTWorkBuf.data());
-            }
-
-            int inSize() const { return m_inNFFT; }
-            int outSize() const { return m_outNFFT; }
-        };
+        static inline int DFT_Get_FwdSize<double>(int nfft) { return nfft / 2 + 1; }
 
         template <typename T>
         static inline IppStatus FFTGetSize(int order, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf);
@@ -2150,71 +1426,6 @@ namespace tipp
         static inline IppStatus FFTInv_I(Ipp64fc *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CToC_64fc_I(pSrcDst, (const IppsFFTSpec_C_64fc *)pFFTSpec, pBuffer)); }
         static inline IppStatus FFTInv_I(Ipp64fc *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CCSToR_64f_I((double *)pSrcDst, (const IppsFFTSpec_R_64f *)pFFTSpec, pBuffer)); }
         static inline IppStatus FFTInv_I(Ipp32fc *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CCSToR_32f_I((float *)pSrcDst, (const IppsFFTSpec_R_32f *)pFFTSpec, pBuffer)); }
-
-        template <typename Trc, typename Tc>
-        class FFT_Engine
-        {
-        protected:
-            vector<Ipp8u> m_pFFTSpec;
-            vector<Ipp8u> m_pFFTWorkBuf;
-            vector<Ipp8u> m_pFFTInitBuf;
-
-            int m_inNFFT;
-            int m_outNFFT;
-            int m_flag;
-
-        public:
-            FFT_Engine() = default;
-
-            FFT_Engine(int order, int flag = IPP_FFT_DIV_INV_BY_N) { initialise(order, flag); }
-
-            void initialise(int order, int flag = IPP_FFT_DIV_INV_BY_N)
-            {
-                int SizeSpec, SizeInit, SizeBuf;
-
-                FFTGetSize<Trc>(order, flag, &SizeSpec, &SizeInit, &SizeBuf);
-
-                m_pFFTSpec.resize(SizeSpec);
-                m_pFFTWorkBuf.resize(SizeBuf);
-                m_pFFTInitBuf.resize(SizeInit);
-
-                FFTInit<Trc>(nfft, flag, m_pFFTSpec.data(), m_pFFTInitBuf.data());
-
-                m_inNFFT = 1 << order;
-                m_outNFFT = get_FwdSize<Trc>(m_inNFFT);
-                m_flag = flag;
-            }
-
-            void assertIsInitialised()
-            {
-                if (m_pFFTInitBuf.empty())
-                    throw std::invalid_argument("FFT not initalized");
-            }
-
-            IppStatus Fwd(const Trc *input, Tc *output)
-            {
-                assertIsInitialised();
-                return OptionalAssertNoError(FFTFwd(input, output, m_pFFTSpec.data(), m_pFFTWorkBuf.data()));
-            }
-            IppStatus Fwd_I(const Trc *input, Tc *output)
-            {
-                assertIsInitialised();
-                return OptionalAssertNoError(FFTFwd_I(input, output, m_pFFTSpec.data(), m_pFFTWorkBuf.data()));
-            }
-            IppStatus Inv(const Tc *input, Trc *output)
-            {
-                assertIsInitialised();
-                return OptionalAssertNoError(FFTInv(input, output, m_pFFTSpec.data(), m_pFFTWorkBuf.data()));
-            }
-            IppStatus Inv_I(const Tc *input, Trc *output)
-            {
-                assertIsInitialised();
-                return OptionalAssertNoError(FFTInv_I(input, output, m_pFFTSpec.data(), m_pFFTWorkBuf.data()));
-            }
-
-            int inSize() const { return m_inNFFT; }
-            int outSize() const { return m_outNFFT; }
-        };
 
         //   ippsPatternMatchGetBufferSize
         //   ippsPatternMatch_8u16u

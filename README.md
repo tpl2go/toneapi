@@ -34,6 +34,6 @@ Instead, this section will describe how to use the second option.
 ## Error checking
 It might be painful to always be checking the error status of a call to ipp. There is an optional MACROS flag `CHECK_IPP_ERROR` to throw a `runtime_error` whenever the return code isnt 0. 
 
-Functions which dont support multiple types are ignored in this library. For example `ippsCountInRange_32s`.
+Functions which dont support multiple types are ignored in this library. For example `ippsCountInRange_32s`, `ippsFindNearestOne_16u`.
 
 Function which offer multiple accuracy levels for the same input type, only the most accurate is selected.
