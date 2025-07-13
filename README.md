@@ -37,3 +37,6 @@ It might be painful to always be checking the error status of a call to ipp. The
 Functions which dont support multiple types are ignored in this library. For example `ippsCountInRange_32s`, `ippsFindNearestOne_16u`.
 
 Function which offer multiple accuracy levels for the same input type, only the most accurate is selected.
+
+## Contributions
+This project welcomes contributions and is keen to hear how it can be tweaked to serve your project needs. Do drop a message under issues if there are requests
