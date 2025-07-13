@@ -1,6 +1,7 @@
 #include "tipps.hpp"
 #include "tipp_error.hpp"
 #include <stdexcept>
+#include <utility>
 
 namespace tipp
 {
@@ -295,7 +296,7 @@ namespace tipp
         protected:
             float mu = 0.001f;
             vector<Ipp8u> m_buffer;
-            IppsFIRLMSState_32f *pState = nullptr; // pointer to a region of memory in buffer
+            IppsFIRLMSState_32f *pState = nullptr; // TODO: change this to vector
 
         public:
             // TODO: add mu as a parameter to the constructor
@@ -491,6 +492,15 @@ namespace tipp
                 assertIsInitialised();
                 return OptionalAssertNoError(Hilbert(pSrc, pDst, (IppsHilbertSpec *)m_spec.data(), m_buffer.data()));
             }
+
+            vector<T> Fwd_V(vector<T> Src)
+            {
+                if (Src.size() != m_length)
+                    throw std::invalid_argument("Input vector size does not match the initialized length");
+                vector<T> output(m_length);
+                Fwd(Src.data(), T * pDst);
+                return output;
+            }
         };
 
         template <typename T>
@@ -528,11 +538,23 @@ namespace tipp
                     throw std::runtime_error("TopK_Engine not initialized");
             }
 
-            IppStatus get_topk(const Ipp32f *pSrc, Ipp64s srcIndex, Ipp64s srcStride, Ipp64s srcLen, Ipp32f *pDstValue, Ipp64s *pDstIndex, Ipp64s dstLen)
+            IppStatus get_topk(const T *pSrc, Ipp64s srcIndex, Ipp64s srcStride, Ipp64s srcLen, T *pDstValue, Ipp64s *pDstIndex)
             {
                 assertIsInitialised();
-                OptionalAssertNoError(TopKInit(pDstValue, pDstIndex, dstLen));
-                return OptionalAssertNoError(TopK(pSrc, srcIndex, srcStride, srcLen, pDstValue, pDstIndex, dstLen, m_hint, m_buffer.data()));
+                OptionalAssertNoError(TopKInit(pDstValue, pDstIndex, m_dstLen));
+                return OptionalAssertNoError(TopK(pSrc, srcIndex, srcStride, srcLen, pDstValue, pDstIndex, m_dstLen, m_hint, m_buffer.data()));
+            }
+
+            std::pair<vector<T>, vector<Ipp64s>> get_topk_V(vector<T> Src)
+            {
+                if (Src.size() != m_srcLen)
+                    throw std::invalid_argument("Input vector size does not match the initialized source length");
+
+                vector<T> DstValue(m_dstLen);
+                vector<Ipp64s> DstIndex(m_dstLen);
+                get_topk(Src.data(), 0, sizeof(T), Src.size(), DstValue.data(), DstIndex.data());
+
+                return std::make_pair(std::move(DstValue), std::move(DstIndex));
             }
         };
 
@@ -547,17 +569,23 @@ namespace tipp
         public:
             AutoCorrNorm_Engine() = default;
 
-            AutoCorrNorm_Engine(int srcLen, int dstLen, IppEnum algType)
+            AutoCorrNorm_Engine(int srcLen, int dstLen = 0, IppEnum algType = (IppEnum)(ippAlgAuto | ippsNormB))
             {
                 initialise(srcLen, dstLen, algType);
             }
 
-            void initialise(int srcLen, int dstLen, IppEnum algType)
+            void initialise(int srcLen, int dstLen = 0, IppEnum algType = (IppEnum)(ippAlgAuto | ippsNormB))
             {
 
                 // algoType : Bit-field mask for the algorithm type definition. Possible values are the results of composition of the IppAlgType and IppsNormOp values.
                 // IppAlgType : ippAlgAuto, ippAlgDirect, ippAlgFFT, ippAlgMask
                 // IppsNormOp : ippsNormNone, ippsNormA, ippsNormB, ippsNormMask
+
+                if (dstLen == 0)
+                {
+                    dstLen = srcLen;
+                }
+
                 int BufferSize;
                 ippsAutoCorrNormGetBufferSize(srcLen, dstLen, GetIppDataType<T>(), algType, &BufferSize);
                 m_buffer.resize(BufferSize);
@@ -572,10 +600,19 @@ namespace tipp
                     throw std::runtime_error("AutoCorrNorm_Engine not initialized");
             }
 
-            IppStatus filter(const Ipp64fc *pSrc, Ipp64fc *pDst)
+            IppStatus filter(const T *pSrc, T *pDst)
             {
                 assertIsInitialised();
                 return OptionalAssertNoError(AutoCorrNorm(pSrc, m_srcLen, pDst, m_dstLen, m_algType, m_buffer.data()));
+            }
+
+            vector<T> filter_V(vector<T> Src)
+            {
+                if (Src.size() != m_srcLen)
+                    throw std::invalid_argument("Input vector size does not match the initialized source length");
+                vector<T> output(m_dstLen);
+                filter(Src.data(), output.data());
+                return output;
             }
         };
 
@@ -623,7 +660,14 @@ namespace tipp
             IppStatus sample(T *output, int len)
             {
                 assertIsInitialised();
-                return OptionalAssertNoError((output, len, m_pRandGaussState.data()));
+                return OptionalAssertNoError(RandGauss(output, len, m_pRandGaussState.data()));
+            }
+
+            vector<T> sample_V(int len)
+            {
+                vector<v> output(len);
+                sample(output.data(), len);
+                return output;
             }
         };
 
@@ -659,7 +703,14 @@ namespace tipp
             IppStatus sample(T *output, int len)
             {
                 assertIsInitialised();
-                return OptionalAssertNoError(RandUniform<T>(output, len, m_pRandUniformState.data()));
+                return OptionalAssertNoError(RandUniform(output, len, m_pRandUniformState.data()));
+            }
+
+            vector<T> sample_V(int len)
+            {
+                vector<v> output(len);
+                sample(output.data(), len);
+                return output;
             }
         };
 
@@ -1014,10 +1065,28 @@ namespace tipp
                 DFTFwd(input, output, m_pDFTSpec.data(), m_pDFTWorkBuf.data());
             }
 
+            vector<Tc> Fwd_V(vector<Trc> input)
+            {
+                if (input.size() != m_inNFFT)
+                    throw std::invalid_argument("Input vector size does not match the initialized input size");
+                vector<Tc> output(m_outNFFT);
+                Fwd(input.data(), output.data());
+                return output;
+            }
+
             void Inv(const Tc *input, Trc *output)
             {
                 assertIsInitialised();
                 DFTInv(input, output, m_pDFTSpec.data(), m_pDFTWorkBuf.data());
+            }
+
+            vector<Trc> Inv_V(const Tc *input)
+            {
+                if (input.size() != m_outNFFT)
+                    throw std::invalid_argument("Input vector size does not match the initialized output size");
+                vector<Trc> output(m_inNFFT);
+                Inv(input, output.data());
+                return output;
             }
 
             int inSize() const { return m_inNFFT; }
