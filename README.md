@@ -40,3 +40,6 @@ Function which offer multiple accuracy levels for the same input type, only the 
 
 ## Contributions
 This project welcomes contributions and is keen to hear how it can be tweaked to serve your project needs. Do drop a message under issues if there are requests
+
+## Installation
+This is a header only library. 

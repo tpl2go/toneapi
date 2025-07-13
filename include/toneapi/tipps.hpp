@@ -877,10 +877,18 @@ namespace tipp
         static inline IppStatus FilterMedian_I(Ipp32f *pSrcDst, int len, int maskSize, const Ipp32f *pDlySrc, Ipp32f *pDlyDst, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFilterMedian_32f_I(pSrcDst, len, maskSize, pDlySrc, pDlyDst, pBuffer)); }
         static inline IppStatus FilterMedian_I(Ipp64f *pSrcDst, int len, int maskSize, const Ipp64f *pDlySrc, Ipp64f *pDlyDst, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFilterMedian_64f_I(pSrcDst, len, maskSize, pDlySrc, pDlyDst, pBuffer)); }
 
-        static inline IppStatus HilbertGetSize(int length, IppHintAlgorithm hint, int *pSpecSize, int *pBufferSize) { return OptionalAssertNoError(ippsHilbertGetSize_32f32fc(length, hint, pSpecSize, pBufferSize)); }
-        static inline IppStatus HilbertGetSize(int length, IppHintAlgorithm hint, int *pSpecSize, int *pBufferSize) { return OptionalAssertNoError(ippsHilbertGetSize_64f64fc(length, hint, pSpecSize, pBufferSize)); }
-        static inline IppStatus HilbertInit(int length, IppHintAlgorithm hint, IppsHilbertSpec *pSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsHilbertInit_32f32fc(length, hint, pSpec, pBuffer)); }
-        static inline IppStatus HilbertInit(int length, IppHintAlgorithm hint, IppsHilbertSpec *pSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsHilbertInit_64f64fc(length, hint, pSpec, pBuffer)); }
+        template <typename Tr>
+        static inline IppStatus HilbertGetSize(int length, IppHintAlgorithm hint, int *pSpecSize, int *pBufferSize);
+        template <>
+        static inline IppStatus HilbertGetSize<Ipp32f>(int length, IppHintAlgorithm hint, int *pSpecSize, int *pBufferSize) { return OptionalAssertNoError(ippsHilbertGetSize_32f32fc(length, hint, pSpecSize, pBufferSize)); }
+        template <>
+        static inline IppStatus HilbertGetSize<Ipp64f>(int length, IppHintAlgorithm hint, int *pSpecSize, int *pBufferSize) { return OptionalAssertNoError(ippsHilbertGetSize_64f64fc(length, hint, pSpecSize, pBufferSize)); }
+        template <typename Tr>
+        static inline IppStatus HilbertInit(int length, IppHintAlgorithm hint, IppsHilbertSpec *pSpec, Ipp8u *pBuffer);
+        template <>
+        static inline IppStatus HilbertInit<Ipp32f>(int length, IppHintAlgorithm hint, IppsHilbertSpec *pSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsHilbertInit_32f32fc(length, hint, pSpec, pBuffer)); }
+        template <>
+        static inline IppStatus HilbertInit<Ipp64f>(int length, IppHintAlgorithm hint, IppsHilbertSpec *pSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsHilbertInit_64f64fc(length, hint, pSpec, pBuffer)); }
         static inline IppStatus Hilbert(const Ipp32f *pSrc, Ipp32fc *pDst, IppsHilbertSpec *pSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsHilbert_32f32fc(pSrc, pDst, pSpec, pBuffer)); }
         static inline IppStatus Hilbert(const Ipp64f *pSrc, Ipp64fc *pDst, IppsHilbertSpec *pSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsHilbert_64f64fc(pSrc, pDst, pSpec, pBuffer)); }
 
@@ -908,10 +916,19 @@ namespace tipp
         static inline IppStatus ResamplePolyphaseFixedInit(int inRate, int outRate, int len, Ipp32f rollf, Ipp32f alpha, IppsResamplingPolyphaseFixed_16s *pSpec, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseFixedInit_16s(inRate, outRate, len, rollf, alpha, pSpec, hint)); }
         static inline IppStatus ResamplePolyphaseFixedInit(int inRate, int outRate, int len, Ipp32f rollf, Ipp32f alpha, IppsResamplingPolyphaseFixed_32f *pSpec, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseFixedInit_32f(inRate, outRate, len, rollf, alpha, pSpec, hint)); }
 
-        static inline IppStatus ResamplePolyphaseGetSize(Ipp32f window, int nStep, int *pSize, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseGetSize_16s(window, nStep, pSize, hint)); }
-        static inline IppStatus ResamplePolyphaseGetSize(Ipp32f window, int nStep, int *pSize, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseGetSize_32f(window, nStep, pSize, hint)); }
-        static inline IppStatus ResamplePolyphaseFixedGetSize(int inRate, int outRate, int len, int *pSize, int *pLen, int *pHeight, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseFixedGetSize_16s(inRate, outRate, len, pSize, pLen, pHeight, hint)); }
-        static inline IppStatus ResamplePolyphaseFixedGetSize(int inRate, int outRate, int len, int *pSize, int *pLen, int *pHeight, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseFixedGetSize_32f(inRate, outRate, len, pSize, pLen, pHeight, hint)); }
+        template <typename T>
+        static inline IppStatus ResamplePolyphaseGetSize(Ipp32f window, int nStep, int *pSize, IppHintAlgorithm hint);
+        template <>
+        static inline IppStatus ResamplePolyphaseGetSize<Ipp16s>(Ipp32f window, int nStep, int *pSize, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseGetSize_16s(window, nStep, pSize, hint)); }
+        template <>
+        static inline IppStatus ResamplePolyphaseGetSize<Ipp32f>(Ipp32f window, int nStep, int *pSize, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseGetSize_32f(window, nStep, pSize, hint)); }
+
+        template <typename T>
+        static inline IppStatus ResamplePolyphaseFixedGetSize(int inRate, int outRate, int len, int *pSize, int *pLen, int *pHeight, IppHintAlgorithm hint);
+        template <>
+        static inline IppStatus ResamplePolyphaseFixedGetSize<Ipp16s>(int inRate, int outRate, int len, int *pSize, int *pLen, int *pHeight, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseFixedGetSize_16s(inRate, outRate, len, pSize, pLen, pHeight, hint)); }
+        template <>
+        static inline IppStatus ResamplePolyphaseFixedGetSize<Ipp32f>(int inRate, int outRate, int len, int *pSize, int *pLen, int *pHeight, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseFixedGetSize_32f(inRate, outRate, len, pSize, pLen, pHeight, hint)); }
 
         static inline IppStatus ResamplePolyphaseSetFixedFilter(const Ipp16s *pSrc, int step, int height, IppsResamplingPolyphaseFixed_16s *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseSetFixedFilter_16s(pSrc, step, height, pSpec)); }
         static inline IppStatus ResamplePolyphaseSetFixedFilter(const Ipp32f *pSrc, int step, int height, IppsResamplingPolyphaseFixed_32f *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseSetFixedFilter_32f(pSrc, step, height, pSpec)); }
@@ -924,8 +941,12 @@ namespace tipp
         static inline IppStatus FIRSparseInit(IppsFIRSparseState_32fc **ppState, const Ipp32fc *pNZTaps, const Ipp32s *pNZTapPos, int nzTapsLen, const Ipp32fc *pDlyLine, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFIRSparseInit_32fc(ppState, pNZTaps, pNZTapPos, nzTapsLen, pDlyLine, pBuffer)); }
         static inline IppStatus FIRSparseSetDlyLine(IppsFIRSparseState_32f *pState, const Ipp32f *pDlyLine) { return OptionalAssertNoError(ippsFIRSparseSetDlyLine_32f(pState, pDlyLine)); }
         static inline IppStatus FIRSparseSetDlyLine(IppsFIRSparseState_32fc *pState, const Ipp32fc *pDlyLine) { return OptionalAssertNoError(ippsFIRSparseSetDlyLine_32fc(pState, pDlyLine)); }
-        static inline IppStatus FIRSparseGetStateSize(int nzTapsLen, int order, int *pStateSize) { return OptionalAssertNoError(ippsFIRSparseGetStateSize_32f(nzTapsLen, order, pStateSize)); }
-        static inline IppStatus FIRSparseGetStateSize(int nzTapsLen, int order, int *pStateSize) { return OptionalAssertNoError(ippsFIRSparseGetStateSize_32fc(nzTapsLen, order, pStateSize)); }
+        template <typename T>
+        static inline IppStatus FIRSparseGetStateSize(int nzTapsLen, int order, int *pStateSize);
+        template <>
+        static inline IppStatus FIRSparseGetStateSize<Ipp32f>(int nzTapsLen, int order, int *pStateSize) { return OptionalAssertNoError(ippsFIRSparseGetStateSize_32f(nzTapsLen, order, pStateSize)); }
+        template <>
+        static inline IppStatus FIRSparseGetStateSize<Ipp32fc>(int nzTapsLen, int order, int *pStateSize) { return OptionalAssertNoError(ippsFIRSparseGetStateSize_32fc(nzTapsLen, order, pStateSize)); }
         static inline IppStatus FIRSparseGetDlyLine(const IppsFIRSparseState_32f *pState, Ipp32f *pDlyLine) { return OptionalAssertNoError(ippsFIRSparseGetDlyLine_32f(pState, pDlyLine)); }
         static inline IppStatus FIRSparseGetDlyLine(const IppsFIRSparseState_32fc *pState, Ipp32fc *pDlyLine) { return OptionalAssertNoError(ippsFIRSparseGetDlyLine_32fc(pState, pDlyLine)); }
 
@@ -1007,36 +1028,68 @@ namespace tipp
         static inline IppStatus IIRInit_BiQuad_DF1(IppsIIRState_32f **ppState, const Ipp32f *pTaps, int numBq, const Ipp32f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_BiQuad_DF1_32f(ppState, pTaps, numBq, pDlyLine, pBuf)); }
 
         // IIRGetStateSize wrappers (Direct Form)
-        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize32f_16s(order, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_16s(order, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_32s(order, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize32fc_16sc(order, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64fc_16sc(order, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64fc_32sc(order, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_32f(order, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_32f(order, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_64f(order, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_32fc(order, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64fc_32fc(order, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_64fc(order, pBufferSize)); }
+        template <typename T1, typename T2>
+        static inline IppStatus IIRGetStateSize(int order, int *pBufferSize);
+        template <>
+        static inline IppStatus IIRGetStateSize<Ipp32f, Ipp16s>(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize32f_16s(order, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize<Ipp64f, Ipp16s>(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_16s(order, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize<Ipp64f, Ipp32s>(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_32s(order, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize<Ipp32fc, Ipp16sc>(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize32fc_16sc(order, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize<Ipp64fc, Ipp16sc>(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64fc_16sc(order, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize<Ipp64fc, Ipp32sc>(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64fc_32sc(order, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize<Ipp32f, Ipp32f>(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_32f(order, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize<Ipp64f, Ipp32f>(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_32f(order, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize<Ipp64f, Ipp64f>(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_64f(order, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize<Ipp32fc, Ipp32fc>(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_32fc(order, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize<Ipp64fc, Ipp32fc>(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64fc_32fc(order, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize<Ipp64fc, Ipp64fc>(int order, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_64fc(order, pBufferSize)); }
 
         // IIRGetStateSize_BiQuad wrappers
-        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize32f_BiQuad_16s(numBq, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_BiQuad_16s(numBq, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_BiQuad_32s(numBq, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize32fc_BiQuad_16sc(numBq, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64fc_BiQuad_16sc(numBq, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64fc_BiQuad_32sc(numBq, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_BiQuad_32f(numBq, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_BiQuad_32f(numBq, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_BiQuad_64f(numBq, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_BiQuad_32fc(numBq, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64fc_BiQuad_32fc(numBq, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_BiQuad_64fc(numBq, pBufferSize)); }
+        template <typename T1, typename T2>
+        static inline IppStatus IIRGetStateSize_BiQuad(int numBq, int *pBufferSize);
+        template <>
+        static inline IppStatus IIRGetStateSize_BiQuad<Ipp32f, Ipp16s>(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize32f_BiQuad_16s(numBq, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize_BiQuad<Ipp64f, Ipp16s>(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_BiQuad_16s(numBq, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize_BiQuad<Ipp64f, Ipp32s>(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_BiQuad_32s(numBq, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize_BiQuad<Ipp32fc, Ipp16sc>(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize32fc_BiQuad_16sc(numBq, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize_BiQuad<Ipp64fc, Ipp16sc>(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64fc_BiQuad_16sc(numBq, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize_BiQuad<Ipp64fc, Ipp32sc>(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64fc_BiQuad_32sc(numBq, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize_BiQuad<Ipp32f, Ipp32f>(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_BiQuad_32f(numBq, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize_BiQuad<Ipp64f, Ipp32f>(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_BiQuad_32f(numBq, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize_BiQuad<Ipp64f, Ipp64f>(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_BiQuad_64f(numBq, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize_BiQuad<Ipp32fc, Ipp32fc>(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_BiQuad_32fc(numBq, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize_BiQuad<Ipp64fc, Ipp32fc>(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64fc_BiQuad_32fc(numBq, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize_BiQuad<Ipp64fc, Ipp64fc>(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_BiQuad_64fc(numBq, pBufferSize)); }
 
         // IIRGetStateSize_BiQuad_DF1 wrappers
-        static inline IppStatus IIRGetStateSize_BiQuad_DF1(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_BiQuad_DF1_32s(numBq, pBufferSize)); }
-        static inline IppStatus IIRGetStateSize_BiQuad_DF1(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_BiQuad_DF1_32f(numBq, pBufferSize)); }
+        template <typename T1, typename T2>
+        static inline IppStatus IIRGetStateSize_BiQuad_DF1(int numBq, int *pBufferSize);
+        template <>
+        static inline IppStatus IIRGetStateSize_BiQuad_DF1<Ipp64f, Ipp32s>(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize64f_BiQuad_DF1_32s(numBq, pBufferSize)); }
+        template <>
+        static inline IppStatus IIRGetStateSize_BiQuad_DF1<Ipp32f, Ipp32f>(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_BiQuad_DF1_32f(numBq, pBufferSize)); }
 
         // IIRGetDlyLine wrappers
         static inline IppStatus IIRGetDlyLine(const IppsIIRState32f_16s *pState, Ipp32f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine32f_16s(pState, pDlyLine)); }
@@ -1203,20 +1256,32 @@ namespace tipp
         static inline IppStatus RandGaussInit(IppsRandGaussState_32f *pRandGaussState, Ipp32f mean, Ipp32f stdDev, unsigned int seed) { return OptionalAssertNoError(ippsRandGaussInit_32f(pRandGaussState, mean, stdDev, seed)); }
         static inline IppStatus RandGaussInit(IppsRandGaussState_64f *pRandGaussState, Ipp64f mean, Ipp64f stdDev, unsigned int seed) { return OptionalAssertNoError(ippsRandGaussInit_64f(pRandGaussState, mean, stdDev, seed)); }
 
-        static inline IppStatus RandGaussGetSize(int *pRandGaussStateSize) { return OptionalAssertNoError(ippsRandGaussGetSize_8u(pRandGaussStateSize)); }
-        static inline IppStatus RandGaussGetSize(int *pRandGaussStateSize) { return OptionalAssertNoError(ippsRandGaussGetSize_32f(pRandGaussStateSize)); }
-        static inline IppStatus RandGaussGetSize(int *pRandGaussStateSize) { return OptionalAssertNoError(ippsRandGaussGetSize_16s(pRandGaussStateSize)); }
-        static inline IppStatus RandGaussGetSize(int *pRandGaussStateSize) { return OptionalAssertNoError(ippsRandGaussGetSize_64f(pRandGaussStateSize)); }
+        template <typename T>
+        static inline IppStatus RandGaussGetSize(int *pRandGaussStateSize);
+        template <>
+        static inline IppStatus RandGaussGetSize<Ipp8u>(int *pRandGaussStateSize) { return OptionalAssertNoError(ippsRandGaussGetSize_8u(pRandGaussStateSize)); }
+        template <>
+        static inline IppStatus RandGaussGetSize<Ipp16s>(int *pRandGaussStateSize) { return OptionalAssertNoError(ippsRandGaussGetSize_16s(pRandGaussStateSize)); }
+        template <>
+        static inline IppStatus RandGaussGetSize<Ipp32f>(int *pRandGaussStateSize) { return OptionalAssertNoError(ippsRandGaussGetSize_32f(pRandGaussStateSize)); }
+        template <>
+        static inline IppStatus RandGaussGetSize<Ipp64f>(int *pRandGaussStateSize) { return OptionalAssertNoError(ippsRandGaussGetSize_64f(pRandGaussStateSize)); }
 
         static inline IppStatus RandGauss(Ipp8u *pDst, int len, IppsRandGaussState_8u *pRandGaussState) { return OptionalAssertNoError(ippsRandGauss_8u(pDst, len, pRandGaussState)); }
         static inline IppStatus RandGauss(Ipp16s *pDst, int len, IppsRandGaussState_16s *pRandGaussState) { return OptionalAssertNoError(ippsRandGauss_16s(pDst, len, pRandGaussState)); }
         static inline IppStatus RandGauss(Ipp32f *pDst, int len, IppsRandGaussState_32f *pRandGaussState) { return OptionalAssertNoError(ippsRandGauss_32f(pDst, len, pRandGaussState)); }
         static inline IppStatus RandGauss(Ipp64f *pDst, int len, IppsRandGaussState_64f *pRandGaussState) { return OptionalAssertNoError(ippsRandGauss_64f(pDst, len, pRandGaussState)); }
 
-        static inline IppStatus RandUniformGetSize(int *pRandUniformStateSize) { return OptionalAssertNoError(ippsRandUniformGetSize_8u(pRandUniformStateSize)); }
-        static inline IppStatus RandUniformGetSize(int *pRandUniformStateSize) { return OptionalAssertNoError(ippsRandUniformGetSize_16s(pRandUniformStateSize)); }
-        static inline IppStatus RandUniformGetSize(int *pRandUniformStateSize) { return OptionalAssertNoError(ippsRandUniformGetSize_32f(pRandUniformStateSize)); }
-        static inline IppStatus RandUniformGetSize(int *pRandUniformStateSize) { return OptionalAssertNoError(ippsRandUniformGetSize_64f(pRandUniformStateSize)); }
+        template <typename T>
+        static inline IppStatus RandUniformGetSize(int *pRandUniformStateSize);
+        template <>
+        static inline IppStatus RandUniformGetSize<Ipp8u>(int *pRandUniformStateSize) { return OptionalAssertNoError(ippsRandUniformGetSize_8u(pRandUniformStateSize)); }
+        template <>
+        static inline IppStatus RandUniformGetSize<Ipp16s>(int *pRandUniformStateSize) { return OptionalAssertNoError(ippsRandUniformGetSize_16s(pRandUniformStateSize)); }
+        template <>
+        static inline IppStatus RandUniformGetSize<Ipp32f>(int *pRandUniformStateSize) { return OptionalAssertNoError(ippsRandUniformGetSize_32f(pRandUniformStateSize)); }
+        template <>
+        static inline IppStatus RandUniformGetSize<Ipp64f>(int *pRandUniformStateSize) { return OptionalAssertNoError(ippsRandUniformGetSize_64f(pRandUniformStateSize)); }
 
         static inline IppStatus RandUniformInit(IppsRandUniState_8u *pRandUniState, Ipp8u low, Ipp8u high, unsigned int seed) { return OptionalAssertNoError(ippsRandUniformInit_8u(pRandUniState, low, high, seed)); }
         static inline IppStatus RandUniformInit(IppsRandUniState_16s *pRandUniState, Ipp16s low, Ipp16s high, unsigned int seed) { return OptionalAssertNoError(ippsRandUniformInit_16s(pRandUniState, low, high, seed)); }
@@ -1397,15 +1462,15 @@ namespace tipp
         static inline IppStatus FFTGetSize<double>(int order, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf) { return OptionalAssertNoError(ippsFFTGetSize_R_64f(order, flag, ippAlgHintNone, pSizeSpec, pSizeInit, pSizeBuf)); }
 
         template <typename T>
-        static inline IppStatus FFTInit(void *ppFFTSpec, int order, int flag, Ipp8u *pDFTSpec, Ipp8u *pSpecBuffer);
+        static inline IppStatus FFTInit(void *ppFFTSpec, int order, int flag, Ipp8u *pSpec, Ipp8u *pSpecBuffer);
         template <>
-        static inline IppStatus FFTInit<Ipp32fc>(void *ppFFTSpec, int order, int flag, Ipp8u *pDFTSpec, Ipp8u *pSpecBuffer) { return OptionalAssertNoError(ippsFFTInit_C_32fc((IppsFFTSpec_C_32fc **)ppFFTSpec, order, flag, ippAlgHintNone, pDFTSpec, pSpecBuffer)); }
+        static inline IppStatus FFTInit<Ipp32fc>(void *ppFFTSpec, int order, int flag, Ipp8u *pSpec, Ipp8u *pSpecBuffer) { return OptionalAssertNoError(ippsFFTInit_C_32fc((IppsFFTSpec_C_32fc **)ppFFTSpec, order, flag, ippAlgHintNone, pSpec, pSpecBuffer)); }
         template <>
-        static inline IppStatus FFTInit<Ipp64fc>(void *ppFFTSpec, int order, int flag, Ipp8u *pDFTSpec, Ipp8u *pSpecBuffer) { return OptionalAssertNoError(ippsFFTInit_C_64fc((IppsFFTSpec_C_64fc **)ppFFTSpec, order, flag, ippAlgHintNone, pDFTSpec, pSpecBuffer)); }
+        static inline IppStatus FFTInit<Ipp64fc>(void *ppFFTSpec, int order, int flag, Ipp8u *pSpec, Ipp8u *pSpecBuffer) { return OptionalAssertNoError(ippsFFTInit_C_64fc((IppsFFTSpec_C_64fc **)ppFFTSpec, order, flag, ippAlgHintNone, pSpec, pSpecBuffer)); }
         template <>
-        static inline IppStatus FFTInit<float>(void *ppFFTSpec, int order, int flag, Ipp8u *pDFTSpec, Ipp8u *pSpecBuffer) { return OptionalAssertNoError(ippsFFTInit_R_32f((IppsFFTSpec_R_32f **)ppFFTSpec, order, flag, ippAlgHintNone, pDFTSpec, pSpecBuffer)); }
+        static inline IppStatus FFTInit<float>(void *ppFFTSpec, int order, int flag, Ipp8u *pSpec, Ipp8u *pSpecBuffer) { return OptionalAssertNoError(ippsFFTInit_R_32f((IppsFFTSpec_R_32f **)ppFFTSpec, order, flag, ippAlgHintNone, pSpec, pSpecBuffer)); }
         template <>
-        static inline IppStatus FFTInit<double>(void *ppFFTSpec, int order, int flag, Ipp8u *pDFTSpec, Ipp8u *pSpecBuffer) { return OptionalAssertNoError(ippsFFTInit_R_64f((IppsFFTSpec_R_64f **)ppFFTSpec, order, flag, ippAlgHintNone, pDFTSpec, pSpecBuffer)); }
+        static inline IppStatus FFTInit<double>(void *ppFFTSpec, int order, int flag, Ipp8u *pSpec, Ipp8u *pSpecBuffer) { return OptionalAssertNoError(ippsFFTInit_R_64f((IppsFFTSpec_R_64f **)ppFFTSpec, order, flag, ippAlgHintNone, pSpec, pSpecBuffer)); }
 
         static inline IppStatus FFTFwd(const Ipp32fc *pSrc, Ipp32fc *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTFwd_CToC_32fc(pSrc, pDst, (const IppsFFTSpec_C_32fc *)pFFTSpec, pBuffer)); }
         static inline IppStatus FFTFwd(const Ipp64fc *pSrc, Ipp64fc *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTFwd_CToC_64fc(pSrc, pDst, (const IppsFFTSpec_C_64fc *)pFFTSpec, pBuffer)); }
@@ -1424,8 +1489,8 @@ namespace tipp
 
         static inline IppStatus FFTInv_I(Ipp32fc *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CToC_32fc_I(pSrcDst, (const IppsFFTSpec_C_32fc *)pFFTSpec, pBuffer)); }
         static inline IppStatus FFTInv_I(Ipp64fc *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CToC_64fc_I(pSrcDst, (const IppsFFTSpec_C_64fc *)pFFTSpec, pBuffer)); }
-        static inline IppStatus FFTInv_I(Ipp64fc *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CCSToR_64f_I((double *)pSrcDst, (const IppsFFTSpec_R_64f *)pFFTSpec, pBuffer)); }
-        static inline IppStatus FFTInv_I(Ipp32fc *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CCSToR_32f_I((float *)pSrcDst, (const IppsFFTSpec_R_32f *)pFFTSpec, pBuffer)); }
+        static inline IppStatus FFTInv_I(Ipp64f *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CCSToR_64f_I((double *)pSrcDst, (const IppsFFTSpec_R_64f *)pFFTSpec, pBuffer)); }
+        static inline IppStatus FFTInv_I(Ipp32f *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CCSToR_32f_I((float *)pSrcDst, (const IppsFFTSpec_R_32f *)pFFTSpec, pBuffer)); }
 
         //   ippsPatternMatchGetBufferSize
         //   ippsPatternMatch_8u16u
