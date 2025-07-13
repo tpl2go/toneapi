@@ -985,7 +985,7 @@ namespace tipp
         static inline IppStatus IIRInit(IppsIIRState64f_32f **ppState, const Ipp64f *pTaps, int order, const Ipp64f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64f_32f(ppState, pTaps, order, pDlyLine, pBuf)); }
         static inline IppStatus IIRInit(IppsIIRState_64f **ppState, const Ipp64f *pTaps, int order, const Ipp64f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_64f(ppState, pTaps, order, pDlyLine, pBuf)); }
         static inline IppStatus IIRInit(IppsIIRState_32fc **ppState, const Ipp32fc *pTaps, int order, const Ipp32fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_32fc(ppState, pTaps, order, pDlyLine, pBuf)); }
-        static inline IppStatus IIRInit(IppsIIRState64fc_32fc **ppState, const Ipp64fc *pTaps, int order, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64fc_32fc(ppState, pTaps, order, pDppState, pBuf)); }
+        static inline IppStatus IIRInit(IppsIIRState64fc_32fc **ppState, const Ipp64fc *pTaps, int order, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64fc_32fc(ppState, pTaps, order, pDlyLine, pBuf)); }
         static inline IppStatus IIRInit(IppsIIRState_64fc **ppState, const Ipp64fc *pTaps, int order, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_64fc(ppState, pTaps, order, pDlyLine, pBuf)); }
 
         // IIRInit_BiQuad wrappers

@@ -1,9 +1,9 @@
+#ifndef TIPP_ERROR
 #include <ipp/ipptypes_l.h>
 #include <ipp/ipptypes.h>
 #include <ipp/ippcore.h>
 #include <stdexcept>
 
-#ifndef TIPP_ERROR
 static inline void AssertNoError(IppStatus status)
 {
     if (status != ippStsNoErr)

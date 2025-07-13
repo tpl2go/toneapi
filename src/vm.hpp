@@ -1,5 +1,6 @@
-#include <ippvm.h>
+#include <ipp/ippvm.h>
 #include "tipp_error.hpp"
+
 namespace tipp
 {
     namespace vectormath
@@ -8,11 +9,11 @@ namespace tipp
         static inline IppStatus Abs(const Ipp64f *pSrc, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsAbs_64f_A53(pSrc, pDst, len)); }
         static inline IppStatus Abs(const Ipp32fc *pSrc, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsAbs_32fc_A24(pSrc, pDst, len)); }
         static inline IppStatus Abs(const Ipp64fc *pSrc, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsAbs_64fc_A53(pSrc, pDst, len)); }
-        
-        static inline IppStatus Add(const Ipp32f* pSrc1, const Ipp32f* pSrc2, Ipp32f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsAdd_32f_A24(pSrc1, pSrc2, pDst, len)); }
-        static inline IppStatus Add(const Ipp64f* pSrc1, const Ipp64f* pSrc2, Ipp64f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsAdd_64f_A53(pSrc1, pSrc2, pDst, len)); }
-        static inline IppStatus Add(const Ipp32fc* pSrc1, const Ipp32fc* pSrc2, Ipp32fc* pDst, Ipp32s len) { return OptionalAssertNoError(ippsAdd_32fc_A24(pSrc1, pSrc2, pDst, len)); }
-        static inline IppStatus Add(const Ipp64fc* pSrc1, const Ipp64fc* pSrc2, Ipp64fc* pDst, Ipp32s len) { return OptionalAssertNoError(ippsAdd_64fc_A53(pSrc1, pSrc2, pDst, len)); }
+
+        static inline IppStatus Add(const Ipp32f *pSrc1, const Ipp32f *pSrc2, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsAdd_32f_A24(pSrc1, pSrc2, pDst, len)); }
+        static inline IppStatus Add(const Ipp64f *pSrc1, const Ipp64f *pSrc2, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsAdd_64f_A53(pSrc1, pSrc2, pDst, len)); }
+        static inline IppStatus Add(const Ipp32fc *pSrc1, const Ipp32fc *pSrc2, Ipp32fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsAdd_32fc_A24(pSrc1, pSrc2, pDst, len)); }
+        static inline IppStatus Add(const Ipp64fc *pSrc1, const Ipp64fc *pSrc2, Ipp64fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsAdd_64fc_A53(pSrc1, pSrc2, pDst, len)); }
 
         static inline IppStatus Cos(const Ipp32f *pSrc, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsCos_32f_A24(pSrc, pDst, len)); }
         static inline IppStatus Cos(const Ipp64f *pSrc, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsCos_64f_A53(pSrc, pDst, len)); }
@@ -75,12 +76,8 @@ namespace tipp
         static inline IppStatus Ceil(const Ipp32f *pSrc, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsCeil_32f(pSrc, pDst, len)); }
         static inline IppStatus Ceil(const Ipp64f *pSrc, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsCeil_64f(pSrc, pDst, len)); }
 
-        static inline IppStatus Conj(const Ipp16sc *pSrc, Ipp16sc *pDst, int len) { return OptionalAssertNoError(ippsConj_16sc(pSrc, pDst, len)); }
-        static inline IppStatus Conj(const Ipp32fc *pSrc, Ipp32fc *pDst, int len) { return OptionalAssertNoError(ippsConj_32fc(pSrc, pDst, len)); }
-        static inline IppStatus Conj(const Ipp64fc *pSrc, Ipp64fc *pDst, int len) { return OptionalAssertNoError(ippsConj_64fc(pSrc, pDst, len)); }
-        static inline IppStatus Conj(Ipp16sc *pSrcDst, int len) { return OptionalAssertNoError(ippsConj_16sc_I(pSrcDst, len)); }
-        static inline IppStatus Conj(Ipp32fc *pSrcDst, int len) { return OptionalAssertNoError(ippsConj_32fc_I(pSrcDst, len)); }
-        static inline IppStatus Conj(Ipp64fc *pSrcDst, int len) { return OptionalAssertNoError(ippsConj_64fc_I(pSrcDst, len)); }
+        static inline IppStatus Conj(const Ipp32fc *pSrc, Ipp32fc *pDst, int len) { return OptionalAssertNoError(ippsConj_32fc_A24(pSrc, pDst, len)); }
+        static inline IppStatus Conj(const Ipp64fc *pSrc, Ipp64fc *pDst, int len) { return OptionalAssertNoError(ippsConj_64fc_A53(pSrc, pDst, len)); }
 
         static inline IppStatus Cos(const Ipp32f *pSrc, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsCos_32f_A24(pSrc, pDst, len)); }
         static inline IppStatus Cos(const Ipp64f *pSrc, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsCos_64f_A53(pSrc, pDst, len)); }
@@ -166,56 +163,55 @@ namespace tipp
         static inline IppStatus Pow(const Ipp32fc *pSrc1, const Ipp32fc *pSrc2, Ipp32fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsPow_32fc_A24(pSrc1, pSrc2, pDst, len)); }
         static inline IppStatus Pow(const Ipp64fc *pSrc1, const Ipp64fc *pSrc2, Ipp64fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsPow_64fc_A53(pSrc1, pSrc2, pDst, len)); }
 
-        static inline IppStatus Powx(const Ipp32f* pSrc1, const Ipp32f ConstValue, Ipp32f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsPowx_32f_A24(pSrc1, ConstValue, pDst, len)); }
-        static inline IppStatus Powx(const Ipp64f* pSrc1, const Ipp64f ConstValue, Ipp64f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsPowx_64f_A53(pSrc1, ConstValue, pDst, len)); }
-        static inline IppStatus Powx(const Ipp32fc* pSrc1, const Ipp32fc ConstValue, Ipp32fc* pDst, Ipp32s len) { return OptionalAssertNoError(ippsPowx_32fc_A24(pSrc1, ConstValue, pDst, len)); }
-        static inline IppStatus Powx(const Ipp64fc* pSrc1, const Ipp64fc ConstValue, Ipp64fc* pDst, Ipp32s len) { return OptionalAssertNoError(ippsPowx_64fc_A53(pSrc1, ConstValue, pDst, len)); }
+        static inline IppStatus Powx(const Ipp32f *pSrc1, const Ipp32f ConstValue, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsPowx_32f_A24(pSrc1, ConstValue, pDst, len)); }
+        static inline IppStatus Powx(const Ipp64f *pSrc1, const Ipp64f ConstValue, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsPowx_64f_A53(pSrc1, ConstValue, pDst, len)); }
+        static inline IppStatus Powx(const Ipp32fc *pSrc1, const Ipp32fc ConstValue, Ipp32fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsPowx_32fc_A24(pSrc1, ConstValue, pDst, len)); }
+        static inline IppStatus Powx(const Ipp64fc *pSrc1, const Ipp64fc ConstValue, Ipp64fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsPowx_64fc_A53(pSrc1, ConstValue, pDst, len)); }
 
-        static inline IppStatus Rint(const Ipp32f* pSrc, Ipp32f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsRint_32f(pSrc, pDst, len)); }
-        static inline IppStatus Rint(const Ipp64f* pSrc, Ipp64f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsRint_64f(pSrc, pDst, len)); }
+        static inline IppStatus Rint(const Ipp32f *pSrc, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsRint_32f(pSrc, pDst, len)); }
+        static inline IppStatus Rint(const Ipp64f *pSrc, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsRint_64f(pSrc, pDst, len)); }
 
-        static inline IppStatus Round(const Ipp32f* pSrc, Ipp32f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsRound_32f(pSrc, pDst, len)); }
-        static inline IppStatus Round(const Ipp64f* pSrc, Ipp64f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsRound_64f(pSrc, pDst, len)); }
+        static inline IppStatus Round(const Ipp32f *pSrc, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsRound_32f(pSrc, pDst, len)); }
+        static inline IppStatus Round(const Ipp64f *pSrc, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsRound_64f(pSrc, pDst, len)); }
 
-        static inline IppStatus SinCos(const Ipp32f* pSrc, Ipp32f* pDst1, Ipp32f* pDst2, Ipp32s len) { return OptionalAssertNoError(ippsSinCos_32f_A24(pSrc, pDst1, pDst2, len)); }
-        static inline IppStatus SinCos(const Ipp64f* pSrc, Ipp64f* pDst1, Ipp64f* pDst2, Ipp32s len) { return OptionalAssertNoError(ippsSinCos_64f_A53(pSrc, pDst1, pDst2, len)); }
+        static inline IppStatus SinCos(const Ipp32f *pSrc, Ipp32f *pDst1, Ipp32f *pDst2, Ipp32s len) { return OptionalAssertNoError(ippsSinCos_32f_A24(pSrc, pDst1, pDst2, len)); }
+        static inline IppStatus SinCos(const Ipp64f *pSrc, Ipp64f *pDst1, Ipp64f *pDst2, Ipp32s len) { return OptionalAssertNoError(ippsSinCos_64f_A53(pSrc, pDst1, pDst2, len)); }
 
-        static inline IppStatus Sin(const Ipp32f* pSrc, Ipp32f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsSin_32f_A24(pSrc, pDst, len)); }
-        static inline IppStatus Sin(const Ipp64f* pSrc, Ipp64f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsSin_64f_A53(pSrc, pDst, len)); }
-        static inline IppStatus Sin(const Ipp32fc* pSrc, Ipp32fc* pDst, Ipp32s len) { return OptionalAssertNoError(ippsSin_32fc_A24(pSrc, pDst, len)); }
-        static inline IppStatus Sin(const Ipp64fc* pSrc, Ipp64fc* pDst, Ipp32s len) { return OptionalAssertNoError(ippsSin_64fc_A53(pSrc, pDst, len)); }
+        static inline IppStatus Sin(const Ipp32f *pSrc, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSin_32f_A24(pSrc, pDst, len)); }
+        static inline IppStatus Sin(const Ipp64f *pSrc, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSin_64f_A53(pSrc, pDst, len)); }
+        static inline IppStatus Sin(const Ipp32fc *pSrc, Ipp32fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSin_32fc_A24(pSrc, pDst, len)); }
+        static inline IppStatus Sin(const Ipp64fc *pSrc, Ipp64fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSin_64fc_A53(pSrc, pDst, len)); }
 
-        static inline IppStatus Sinh(const Ipp32f* pSrc, Ipp32f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsSinh_32f_A24(pSrc, pDst, len)); }
-        static inline IppStatus Sinh(const Ipp64f* pSrc, Ipp64f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsSinh_64f_A53(pSrc, pDst, len)); }
-        static inline IppStatus Sinh(const Ipp32fc* pSrc, Ipp32fc* pDst, Ipp32s len) { return OptionalAssertNoError(ippsSinh_32fc_A24(pSrc, pDst, len)); }
-        static inline IppStatus Sinh(const Ipp64fc* pSrc, Ipp64fc* pDst, Ipp32s len) { return OptionalAssertNoError(ippsSinh_64fc_A53(pSrc, pDst, len)); }
+        static inline IppStatus Sinh(const Ipp32f *pSrc, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSinh_32f_A24(pSrc, pDst, len)); }
+        static inline IppStatus Sinh(const Ipp64f *pSrc, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSinh_64f_A53(pSrc, pDst, len)); }
+        static inline IppStatus Sinh(const Ipp32fc *pSrc, Ipp32fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSinh_32fc_A24(pSrc, pDst, len)); }
+        static inline IppStatus Sinh(const Ipp64fc *pSrc, Ipp64fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSinh_64fc_A53(pSrc, pDst, len)); }
 
-        static inline IppStatus Sqr(const Ipp32f* pSrc, Ipp32f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsSqr_32f_A24(pSrc, pDst, len)); }
-        static inline IppStatus Sqr(const Ipp64f* pSrc, Ipp64f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsSqr_64f_A53(pSrc, pDst, len)); }
+        static inline IppStatus Sqr(const Ipp32f *pSrc, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSqr_32f_A24(pSrc, pDst, len)); }
+        static inline IppStatus Sqr(const Ipp64f *pSrc, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSqr_64f_A53(pSrc, pDst, len)); }
 
-        static inline IppStatus Sqrt(const Ipp32f* pSrc, Ipp32f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsSqrt_32f_A24(pSrc, pDst, len)); }
-        static inline IppStatus Sqrt(const Ipp64f* pSrc, Ipp64f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsSqrt_64f_A53(pSrc, pDst, len)); }
-        static inline IppStatus Sqrt(const Ipp32fc* pSrc, Ipp32fc* pDst, Ipp32s len) { return OptionalAssertNoError(ippsSqrt_32fc_A24(pSrc, pDst, len)); }
-        static inline IppStatus Sqrt(const Ipp64fc* pSrc, Ipp64fc* pDst, Ipp32s len) { return OptionalAssertNoError(ippsSqrt_64fc_A53(pSrc, pDst, len)); }
+        static inline IppStatus Sqrt(const Ipp32f *pSrc, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSqrt_32f_A24(pSrc, pDst, len)); }
+        static inline IppStatus Sqrt(const Ipp64f *pSrc, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSqrt_64f_A53(pSrc, pDst, len)); }
+        static inline IppStatus Sqrt(const Ipp32fc *pSrc, Ipp32fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSqrt_32fc_A24(pSrc, pDst, len)); }
+        static inline IppStatus Sqrt(const Ipp64fc *pSrc, Ipp64fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSqrt_64fc_A53(pSrc, pDst, len)); }
 
-        static inline IppStatus Sub(const Ipp32f* pSrc1, const Ipp32f* pSrc2, Ipp32f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsSub_32f_A24(pSrc1, pSrc2, pDst, len)); }
-        static inline IppStatus Sub(const Ipp64f* pSrc1, const Ipp64f* pSrc2, Ipp64f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsSub_64f_A53(pSrc1, pSrc2, pDst, len)); }
-        static inline IppStatus Sub(const Ipp32fc* pSrc1, const Ipp32fc* pSrc2, Ipp32fc* pDst, Ipp32s len) { return OptionalAssertNoError(ippsSub_32fc_A24(pSrc1, pSrc2, pDst, len)); }
-        static inline IppStatus Sub(const Ipp64fc* pSrc1, const Ipp64fc* pSrc2, Ipp64fc* pDst, Ipp32s len) { return OptionalAssertNoError(ippsSub_64fc_A53(pSrc1, pSrc2, pDst, len)); }
+        static inline IppStatus Sub(const Ipp32f *pSrc1, const Ipp32f *pSrc2, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSub_32f_A24(pSrc1, pSrc2, pDst, len)); }
+        static inline IppStatus Sub(const Ipp64f *pSrc1, const Ipp64f *pSrc2, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSub_64f_A53(pSrc1, pSrc2, pDst, len)); }
+        static inline IppStatus Sub(const Ipp32fc *pSrc1, const Ipp32fc *pSrc2, Ipp32fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSub_32fc_A24(pSrc1, pSrc2, pDst, len)); }
+        static inline IppStatus Sub(const Ipp64fc *pSrc1, const Ipp64fc *pSrc2, Ipp64fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSub_64fc_A53(pSrc1, pSrc2, pDst, len)); }
 
-        static inline IppStatus Tan(const Ipp32f* pSrc, Ipp32f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsTan_32f_A24(pSrc, pDst, len)); }
-        static inline IppStatus Tan(const Ipp64f* pSrc, Ipp64f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsTan_64f_A53(pSrc, pDst, len)); }
-        static inline IppStatus Tan(const Ipp32fc* pSrc, Ipp32fc* pDst, Ipp32s len) { return OptionalAssertNoError(ippsTan_32fc_A24(pSrc, pDst, len)); }
-        static inline IppStatus Tan(const Ipp64fc* pSrc, Ipp64fc* pDst, Ipp32s len) { return OptionalAssertNoError(ippsTan_64fc_A53(pSrc, pDst, len)); }
+        static inline IppStatus Tan(const Ipp32f *pSrc, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsTan_32f_A24(pSrc, pDst, len)); }
+        static inline IppStatus Tan(const Ipp64f *pSrc, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsTan_64f_A53(pSrc, pDst, len)); }
+        static inline IppStatus Tan(const Ipp32fc *pSrc, Ipp32fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsTan_32fc_A24(pSrc, pDst, len)); }
+        static inline IppStatus Tan(const Ipp64fc *pSrc, Ipp64fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsTan_64fc_A53(pSrc, pDst, len)); }
 
-        static inline IppStatus Tanh(const Ipp32f* pSrc, Ipp32f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsTanh_32f_A24(pSrc, pDst, len)); }
-        static inline IppStatus Tanh(const Ipp64f* pSrc, Ipp64f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsTanh_64f_A53(pSrc, pDst, len)); }
-        static inline IppStatus Tanh(const Ipp32fc* pSrc, Ipp32fc* pDst, Ipp32s len) { return OptionalAssertNoError(ippsTanh_32fc_A24(pSrc, pDst, len)); }
-        static inline IppStatus Tanh(const Ipp64fc* pSrc, Ipp64fc* pDst, Ipp32s len) { return OptionalAssertNoError(ippsTanh_64fc_A53(pSrc, pDst, len)); }
+        static inline IppStatus Tanh(const Ipp32f *pSrc, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsTanh_32f_A24(pSrc, pDst, len)); }
+        static inline IppStatus Tanh(const Ipp64f *pSrc, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsTanh_64f_A53(pSrc, pDst, len)); }
+        static inline IppStatus Tanh(const Ipp32fc *pSrc, Ipp32fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsTanh_32fc_A24(pSrc, pDst, len)); }
+        static inline IppStatus Tanh(const Ipp64fc *pSrc, Ipp64fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsTanh_64fc_A53(pSrc, pDst, len)); }
 
-        static inline IppStatus Trunc(const Ipp32f* pSrc, Ipp32f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsTrunc_32f(pSrc, pDst, len)); }
-        static inline IppStatus Trunc(const Ipp64f* pSrc, Ipp64f* pDst, Ipp32s len) { return OptionalAssertNoError(ippsTrunc_64f(pSrc, pDst, len)); }
-
+        static inline IppStatus Trunc(const Ipp32f *pSrc, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsTrunc_32f(pSrc, pDst, len)); }
+        static inline IppStatus Trunc(const Ipp64f *pSrc, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsTrunc_64f(pSrc, pDst, len)); }
 
     }
 }
