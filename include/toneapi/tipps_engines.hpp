@@ -42,13 +42,13 @@ namespace tipp
 
             explicit vector(size_type count)
             {
-                reserve(m_numel);
+                reserve(count);
                 m_numel = count;
             }
 
             vector(size_type count, const value_type &value)
             {
-                reserve(m_numel);
+                reserve(count);
                 m_numel = count;
                 set(value);
             }
