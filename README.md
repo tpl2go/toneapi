@@ -42,4 +42,54 @@ Function which offer multiple accuracy levels for the same input type, only the 
 This project welcomes contributions and is keen to hear how it can be tweaked to serve your project needs. Do drop a message under issues if there are requests
 
 ## Installation
-This is a header only library. 
+This is a header only library and follows standard cmake build procedures.
+
+```
+mkdir build
+cd build
+cmake ..
+cmake --install . 
+```
+
+To install it into a custom user directory, there are two approaches
+
+**Method 1**
+```bash
+cmake -DCMAKE_INSTALL_PREFIX=/path/to/custom/install/directory ..
+cmake --install .
+```
+
+**Method 2**
+```bash
+cmake ..
+cmake --install . --config Release --prefix /path/to/custom/install/directory
+```
+
+## Usage
+`toneapi` offers `.cmake` and `.pc` configuration files for easy inclusion into your C++ projects 
+
+If you are using CMAKE and have a central repository of third party libraries `.cmake` files at `/path/to/central/cmake/repo`, then copy toneapi's `toneapiConfig.cmake` into that folder. In your `CMakeLists.txt`, you can write
+
+```cmake
+find_package(toneapi REQUIRED)
+```
+
+and set `CMAKE_PREFIX_PATH` environment variable to `/path/to/central/cmake/repo`
+
+Typical locations for this central cmake repo is 
+* Windows: `%LOCALAPPDATA%\pkgconfig`
+* Linux: `~/.local/share/pkgconfig`
+* macOS: `~/Library/pkgconfig`
+
+If you are using meson and have a central repository of third party libraries `.pc` files at `~/.cmake`, then copy toneapi's `toneapiConfig.cmake` into that folder. In your `CMakeLists.txt`, you can write
+
+```cmake
+find_package(toneapi REQUIRED)
+```
+
+and set `CMAKE_PREFIX_PATH` environment variable to `~/.cmake`
+
+Typical locations for this central cmake repo is 
+* Windows: `%LOCALAPPDATA%\pkgconfig`
+* Linux: `~/.local/share/pkgconfig`
+* macOS: `~/Library/pkgconfig`

@@ -1,3 +1,4 @@
+#pragma once
 #include <ipp/ippvm.h>
 #include "tipp_error.hpp"
 
@@ -78,11 +79,6 @@ namespace tipp
 
         static inline IppStatus Conj(const Ipp32fc *pSrc, Ipp32fc *pDst, int len) { return OptionalAssertNoError(ippsConj_32fc_A24(pSrc, pDst, len)); }
         static inline IppStatus Conj(const Ipp64fc *pSrc, Ipp64fc *pDst, int len) { return OptionalAssertNoError(ippsConj_64fc_A53(pSrc, pDst, len)); }
-
-        static inline IppStatus Cos(const Ipp32f *pSrc, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsCos_32f_A24(pSrc, pDst, len)); }
-        static inline IppStatus Cos(const Ipp64f *pSrc, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsCos_64f_A53(pSrc, pDst, len)); }
-        static inline IppStatus Cos(const Ipp32fc *pSrc, Ipp32fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsCos_32fc_A24(pSrc, pDst, len)); }
-        static inline IppStatus Cos(const Ipp64fc *pSrc, Ipp64fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsCos_64fc_A53(pSrc, pDst, len)); }
 
         static inline IppStatus Cosh(const Ipp32f *pSrc, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsCosh_32f_A24(pSrc, pDst, len)); }
         static inline IppStatus Cosh(const Ipp64f *pSrc, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsCosh_64f_A53(pSrc, pDst, len)); }
@@ -176,11 +172,6 @@ namespace tipp
 
         static inline IppStatus SinCos(const Ipp32f *pSrc, Ipp32f *pDst1, Ipp32f *pDst2, Ipp32s len) { return OptionalAssertNoError(ippsSinCos_32f_A24(pSrc, pDst1, pDst2, len)); }
         static inline IppStatus SinCos(const Ipp64f *pSrc, Ipp64f *pDst1, Ipp64f *pDst2, Ipp32s len) { return OptionalAssertNoError(ippsSinCos_64f_A53(pSrc, pDst1, pDst2, len)); }
-
-        static inline IppStatus Sin(const Ipp32f *pSrc, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSin_32f_A24(pSrc, pDst, len)); }
-        static inline IppStatus Sin(const Ipp64f *pSrc, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSin_64f_A53(pSrc, pDst, len)); }
-        static inline IppStatus Sin(const Ipp32fc *pSrc, Ipp32fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSin_32fc_A24(pSrc, pDst, len)); }
-        static inline IppStatus Sin(const Ipp64fc *pSrc, Ipp64fc *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSin_64fc_A53(pSrc, pDst, len)); }
 
         static inline IppStatus Sinh(const Ipp32f *pSrc, Ipp32f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSinh_32f_A24(pSrc, pDst, len)); }
         static inline IppStatus Sinh(const Ipp64f *pSrc, Ipp64f *pDst, Ipp32s len) { return OptionalAssertNoError(ippsSinh_64f_A53(pSrc, pDst, len)); }

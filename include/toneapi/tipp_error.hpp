@@ -1,4 +1,4 @@
-#ifndef TIPP_ERROR
+#pragma once
 #include <ipp/ipptypes_l.h>
 #include <ipp/ipptypes.h>
 #include <ipp/ippcore.h>
@@ -18,5 +18,3 @@ static inline IppStatus OptionalAssertNoError(IppStatus status)
 #endif
     return status;
 }
-#define TIPP_ERROR
-#endif

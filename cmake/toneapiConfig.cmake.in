@@ -5,19 +5,17 @@
 include("${CMAKE_CURRENT_LIST_DIR}/toneapiTargets.cmake")
 
 # Set the include directory for the found package
-set(toneapi_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include")
+set(TONEAPI_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include")
 
 message(STATUS "CMAKE_CURRENT_LIST_DIR: ${CMAKE_CURRENT_LIST_DIR}")
-message(STATUS "toneapi_INCLUDE_DIRS: ${toneapi_INCLUDE_DIRS}")
-message(STATUS "toneapi_INSTALL_PREFIX: ${toneapi_INSTALL_PREFIX}")
+message(STATUS "TONEAPI_INCLUDE_DIRS: ${TONEAPI_INCLUDE_DIRS}")
+message(STATUS "TONEAPI_INSTALL_PREFIX: ${TONEAPI_INSTALL_PREFIX}")
 
 
-# Define the imported target for external usage
-# This allows users to simply link against toneapi::toneapi
-# and get the correct include paths.
-if(NOT TARGET toneapi)
-    add_library(toneapi INTERFACE IMPORTED)
-    set_target_properties(toneapi PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${toneapi_INCLUDE_DIRS}"
+# At the moment the target is not defined with a namespace
+if(NOT TARGET TONEAPI)
+    add_library(TONEAPI INTERFACE IMPORTED)
+    set_target_properties(TONEAPI PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${TONEAPI_INCLUDE_DIRS}"
     )
 endif()

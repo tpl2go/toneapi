@@ -1,0 +1,7 @@
+
+if(NOT TARGET TONEAPI)
+    add_library(TONEAPI INTERFACE IMPORTED)
+    set_target_properties(TONEAPI PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/../include"
+    )
+endif()

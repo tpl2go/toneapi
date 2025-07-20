@@ -1,3 +1,4 @@
+#pragma once
 #include "tipps.hpp"
 #include "tipp_error.hpp"
 #include <stdexcept>
@@ -472,7 +473,7 @@ namespace tipp
             void filter(const T *pSrc, T *pDst, int len)
             {
                 assertIsInitialised();
-                FIRSR<T>(pSrc, pDst, len, m_spec.data(), m_dly.data(), m_dlyDst.data(), m_buf.data());
+                FIRSR(pSrc, pDst, len, m_spec.data(), m_dly.data(), m_dlyDst.data(), m_buf.data());
                 swap(m_dly, m_dlyDst);
             }
         };
@@ -525,7 +526,7 @@ namespace tipp
             void filter(const T *pSrc, T *pDst, int len)
             {
                 assertIsInitialised();
-                FIRMR<T>(pSrc, pDst, len, m_spec, m_dly, m_dlyDst, m_buf);
+                FIRMR(pSrc, pDst, len, m_spec, m_dly, m_dlyDst, m_buf);
                 swap(m_dly, m_dlyDst);
             }
         };
@@ -949,7 +950,7 @@ namespace tipp
                 OptionalAssertNoError(RandGaussGetSize<T>(&size));
                 m_pRandGaussState.resize(size);
 
-                OptionalAssertNoError(RandGaussInit<T>(m_pRandGaussState.data(), m_mean, m_stdDev, m_seed));
+                OptionalAssertNoError(RandGaussInit(m_pRandGaussState.data(), m_mean, m_stdDev, m_seed));
             }
 
             void assertIsInitialised()
@@ -994,7 +995,7 @@ namespace tipp
                 OptionalAssertNoError(RandUniformGetSize<T>(&size));
                 m_pRandUniformState.resize(size);
 
-                OptionalAssertNoError(RandUniformInit<T>(m_pRandUniformState.data(), m_low, m_high, m_seed));
+                OptionalAssertNoError(RandUniformInit(m_pRandUniformState.data(), m_low, m_high, m_seed));
             }
             void assertIsInitialised()
             {

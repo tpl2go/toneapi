@@ -1,3 +1,4 @@
+#pragma once
 #include <ipp/ippcore.h>
 #include <ipp/ippvm.h>
 #include <ipp/ipps.h>
@@ -1251,10 +1252,10 @@ namespace tipp
         static inline IppStatus VectorSlope(Ipp32f *pDst, int len, Ipp32f offset, Ipp32f slope) { return OptionalAssertNoError(ippsVectorSlope_32f(pDst, len, offset, slope)); }
         static inline IppStatus VectorSlope(Ipp64f *pDst, int len, Ipp64f offset, Ipp64f slope) { return OptionalAssertNoError(ippsVectorSlope_64f(pDst, len, offset, slope)); }
 
-        static inline IppStatus RandGaussInit(IppsRandGaussState_8u *pRandGaussState, Ipp8u mean, Ipp8u stdDev, unsigned int seed) { return OptionalAssertNoError(ippsRandGaussInit_8u(pRandGaussState, mean, stdDev, seed)); }
-        static inline IppStatus RandGaussInit(IppsRandGaussState_16s *pRandGaussState, Ipp16s mean, Ipp16s stdDev, unsigned int seed) { return OptionalAssertNoError(ippsRandGaussInit_16s(pRandGaussState, mean, stdDev, seed)); }
-        static inline IppStatus RandGaussInit(IppsRandGaussState_32f *pRandGaussState, Ipp32f mean, Ipp32f stdDev, unsigned int seed) { return OptionalAssertNoError(ippsRandGaussInit_32f(pRandGaussState, mean, stdDev, seed)); }
-        static inline IppStatus RandGaussInit(IppsRandGaussState_64f *pRandGaussState, Ipp64f mean, Ipp64f stdDev, unsigned int seed) { return OptionalAssertNoError(ippsRandGaussInit_64f(pRandGaussState, mean, stdDev, seed)); }
+        static inline IppStatus RandGaussInit(void *pRandGaussState, Ipp8u mean, Ipp8u stdDev, unsigned int seed) { return OptionalAssertNoError(ippsRandGaussInit_8u((IppsRandGaussState_8u *)pRandGaussState, mean, stdDev, seed)); }
+        static inline IppStatus RandGaussInit(void *pRandGaussState, Ipp16s mean, Ipp16s stdDev, unsigned int seed) { return OptionalAssertNoError(ippsRandGaussInit_16s((IppsRandGaussState_16s *)pRandGaussState, mean, stdDev, seed)); }
+        static inline IppStatus RandGaussInit(void *pRandGaussState, Ipp32f mean, Ipp32f stdDev, unsigned int seed) { return OptionalAssertNoError(ippsRandGaussInit_32f((IppsRandGaussState_32f *)pRandGaussState, mean, stdDev, seed)); }
+        static inline IppStatus RandGaussInit(void *pRandGaussState, Ipp64f mean, Ipp64f stdDev, unsigned int seed) { return OptionalAssertNoError(ippsRandGaussInit_64f((IppsRandGaussState_64f *)pRandGaussState, mean, stdDev, seed)); }
 
         template <typename T>
         static inline IppStatus RandGaussGetSize(int *pRandGaussStateSize);
@@ -1283,15 +1284,15 @@ namespace tipp
         template <>
         static inline IppStatus RandUniformGetSize<Ipp64f>(int *pRandUniformStateSize) { return OptionalAssertNoError(ippsRandUniformGetSize_64f(pRandUniformStateSize)); }
 
-        static inline IppStatus RandUniformInit(IppsRandUniState_8u *pRandUniState, Ipp8u low, Ipp8u high, unsigned int seed) { return OptionalAssertNoError(ippsRandUniformInit_8u(pRandUniState, low, high, seed)); }
-        static inline IppStatus RandUniformInit(IppsRandUniState_16s *pRandUniState, Ipp16s low, Ipp16s high, unsigned int seed) { return OptionalAssertNoError(ippsRandUniformInit_16s(pRandUniState, low, high, seed)); }
-        static inline IppStatus RandUniformInit(IppsRandUniState_32f *pRandUniState, Ipp32f low, Ipp32f high, unsigned int seed) { return OptionalAssertNoError(ippsRandUniformInit_32f(pRandUniState, low, high, seed)); }
-        static inline IppStatus RandUniformInit(IppsRandUniState_64f *pRandUniState, Ipp64f low, Ipp64f high, unsigned int seed) { return OptionalAssertNoError(ippsRandUniformInit_64f(pRandUniState, low, high, seed)); }
+        static inline IppStatus RandUniformInit(void *pRandUniState, Ipp8u low, Ipp8u high, unsigned int seed) { return OptionalAssertNoError(ippsRandUniformInit_8u((IppsRandUniState_8u *)pRandUniState, low, high, seed)); }
+        static inline IppStatus RandUniformInit(void *pRandUniState, Ipp16s low, Ipp16s high, unsigned int seed) { return OptionalAssertNoError(ippsRandUniformInit_16s((IppsRandUniState_16s *)pRandUniState, low, high, seed)); }
+        static inline IppStatus RandUniformInit(void *pRandUniState, Ipp32f low, Ipp32f high, unsigned int seed) { return OptionalAssertNoError(ippsRandUniformInit_32f((IppsRandUniState_32f *)pRandUniState, low, high, seed)); }
+        static inline IppStatus RandUniformInit(void *pRandUniState, Ipp64f low, Ipp64f high, unsigned int seed) { return OptionalAssertNoError(ippsRandUniformInit_64f((IppsRandUniState_64f *)pRandUniState, low, high, seed)); }
 
-        static inline IppStatus RandUniform(Ipp8u *pDst, int len, IppsRandUniState_8u *pRandUniState) { return OptionalAssertNoError(ippsRandUniform_8u(pDst, len, pRandUniState)); }
-        static inline IppStatus RandUniform(Ipp16s *pDst, int len, IppsRandUniState_16s *pRandUniState) { return OptionalAssertNoError(ippsRandUniform_16s(pDst, len, pRandUniState)); }
-        static inline IppStatus RandUniform(Ipp32f *pDst, int len, IppsRandUniState_32f *pRandUniState) { return OptionalAssertNoError(ippsRandUniform_32f(pDst, len, pRandUniState)); }
-        static inline IppStatus RandUniform(Ipp64f *pDst, int len, IppsRandUniState_64f *pRandUniState) { return OptionalAssertNoError(ippsRandUniform_64f(pDst, len, pRandUniState)); }
+        static inline IppStatus RandUniform(Ipp8u *pDst, int len, void *pRandUniState) { return OptionalAssertNoError(ippsRandUniform_8u(pDst, len, (IppsRandUniState_8u *)pRandUniState)); }
+        static inline IppStatus RandUniform(Ipp16s *pDst, int len, void *pRandUniState) { return OptionalAssertNoError(ippsRandUniform_16s(pDst, len, (IppsRandUniState_16s *)pRandUniState)); }
+        static inline IppStatus RandUniform(Ipp32f *pDst, int len, void *pRandUniState) { return OptionalAssertNoError(ippsRandUniform_32f(pDst, len, (IppsRandUniState_32f *)pRandUniState)); }
+        static inline IppStatus RandUniform(Ipp64f *pDst, int len, void *pRandUniState) { return OptionalAssertNoError(ippsRandUniform_64f(pDst, len, (IppsRandUniState_64f *)pRandUniState)); }
 
         /* Support */
 
