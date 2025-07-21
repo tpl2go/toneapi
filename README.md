@@ -1,7 +1,75 @@
-# Templated Intel Performance Primitives (TIPP)
+# TONEAPI
 
-Ever wanted to use Intel Performance Primitives with templated C++ codes, but realised that every function is typed?
-This wrapper is designed to solve this problem. In addition, it provides class wrappers around operations that requires mallocing a working memory.
+This library provides convenience wrappers around Intel IPP for use in C++ codebases.
+
+Instead of:
+
+```cpp
+IppStatus sts = ippsAbs_32f_A24(pSrc, pDst, len);
+if (sts != 0) throw std::runtime_error();
+```
+
+`TONEAPI` offers
+```cpp
+// implicit error status checking
+// overloaded function so that you dont have to select the Abs function of the correct type
+ipps::Abs(pSrc, pDst, len);
+```
+
+Instead of:
+
+```cpp
+// https://www.intel.com/content/www/us/en/developer/articles/training/how-to-use-intel-ipp-s-1d-fourier-transform-functions.html
+
+// Spec and working buffers
+IppsDFTSpec_C_32fc *pDFTSpec=0;
+Ipp8u  *pDFTInitBuf, *pDFTWorkBuf;
+
+// Query to get buffer sizes
+int sizeDFTSpec,sizeDFTInitBuf,sizeDFTWorkBuf;
+ippsDFTGetSize_C_32fc(N, IPP_FFT_NODIV_BY_ANY, 
+    ippAlgHintAccurate, &sizeDFTSpec, &sizeDFTInitBuf, &sizeDFTWorkBuf);
+
+// Alloc DFT buffers
+pDFTSpec    = (IppsDFTSpec_C_32fc*)ippsMalloc_8u(sizeDFTSpec);
+pDFTInitBuf = ippsMalloc_8u(sizeDFTInitBuf);
+pDFTWorkBuf = ippsMalloc_8u(sizeDFTWorkBuf);
+
+// Initialize DFT
+ippsDFTInit_C_32fc(N, IPP_FFT_NODIV_BY_ANY, 
+    ippAlgHintAccurate, pDFTSpec, pDFTInitBuf);
+if (pDFTInitBuf) ippFree(pDFTInitBuf);
+
+// Do the DFT
+ippsDFTFwd_CToC_32fc(pSrc,pDst,pDFTSpec,pDFTWorkBuf);
+
+// Free DFT buffer
+if (pDFTWorkBuf) ippFree(pDFTWorkBuf);
+if (pDFTSpec) ippFree(pDFTSpec);
+```
+
+`TONEAPI` offers
+```cpp
+ipps::DFT_Engine<Ipp32fc,Ipp32fc> dfteng(128);
+dfteng.Fwd(pSrc, pDst);
+```
+
+Additionally, if using `TONEAPI`'s built-in `vector` container, you dont have to pass around pointers and lengths
+
+```cpp
+ipps::vector<Ipp32fc> src(128);
+ipps::DFT_Engine<Ipp32fc,Ipp32fc> dfteng(128);
+auto dst = dfteng.Fwd_V(src);
+```
+
+## Usage
+
+Namespace alias
+
+```cpp
+namespace ipps=tipp::signal;
+namespace ippvm=tipp::signal;
+```
 
 ## Similar Libraries
 This is not the first library to wrap Intel IPP. The following repositories have similar aims.
@@ -65,31 +133,11 @@ cmake ..
 cmake --install . --config Release --prefix /path/to/custom/install/directory
 ```
 
-## Usage
-`toneapi` offers `.cmake` and `.pc` configuration files for easy inclusion into your C++ projects 
-
-If you are using CMAKE and have a central repository of third party libraries `.cmake` files at `/path/to/central/cmake/repo`, then copy toneapi's `toneapiConfig.cmake` into that folder. In your `CMakeLists.txt`, you can write
+## Consumption by CMAKE projects
+`toneapi` offers `TONEAPIConfig.cmake` file for easy inclusion into your C++ CMAKE projects 
 
 ```cmake
 find_package(toneapi REQUIRED)
 ```
 
-and set `CMAKE_PREFIX_PATH` environment variable to `/path/to/central/cmake/repo`
-
-Typical locations for this central cmake repo is 
-* Windows: `%LOCALAPPDATA%\pkgconfig`
-* Linux: `~/.local/share/pkgconfig`
-* macOS: `~/Library/pkgconfig`
-
-If you are using meson and have a central repository of third party libraries `.pc` files at `~/.cmake`, then copy toneapi's `toneapiConfig.cmake` into that folder. In your `CMakeLists.txt`, you can write
-
-```cmake
-find_package(toneapi REQUIRED)
-```
-
-and set `CMAKE_PREFIX_PATH` environment variable to `~/.cmake`
-
-Typical locations for this central cmake repo is 
-* Windows: `%LOCALAPPDATA%\pkgconfig`
-* Linux: `~/.local/share/pkgconfig`
-* macOS: `~/Library/pkgconfig`
+and set `CMAKE_PREFIX_PATH` environment variable to `/path/to/toneapi/repo/cmake`
