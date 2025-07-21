@@ -217,7 +217,7 @@ namespace tipp
             if (pos < m_numel && pos >= 0)
                 return m_data[pos];
             else
-                throw std::out_of_range(std::string("tipp::ipps::vector.at Size is ") + std::to_string(m_numel) + std::string(", pos is ") + std::to_string(pos));
+                throw std::out_of_range(std::string("tipp::vector.at Size is ") + std::to_string(m_numel) + std::string(", pos is ") + std::to_string(pos));
         }
 
         const_reference at(size_type pos) const
@@ -225,7 +225,7 @@ namespace tipp
             if (pos < m_numel && pos >= 0)
                 return m_data[pos];
             else
-                throw std::out_of_range(std::string("tipp::ipps::vector.at Size is ") + std::to_string(m_numel) + std::string(", pos is ") + std::to_string(pos));
+                throw std::out_of_range(std::string("tipp::vector.at Size is ") + std::to_string(m_numel) + std::string(", pos is ") + std::to_string(pos));
         }
 
         reference operator[](size_type pos) { return m_data[pos]; }

@@ -11,7 +11,7 @@ if (sts != 0) throw std::runtime_error();
 
 `TONEAPI` offers
 ```cpp
-// implicit error status checking
+// implicit error status checking if ASSERT_IPP_NOERROR is defined
 // overloaded function so that you dont have to select the Abs function of the correct type
 ipps::Abs(pSrc, pDst, len);
 ```
