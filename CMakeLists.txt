@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.14)
-project(TONEAPI VERSION 0.0.1 DESCRIPTION "A header-only C++ library wrapping Intel Performance Primitives")
+cmake_minimum_required(VERSION 3.15)
+project(TONEAPI VERSION 0.0.1 DESCRIPTION "A header-only C++ wrapper of Intel Performance Primitives")
 
 # Define the header-only library
 # This is the core of a header-only library. 
@@ -7,17 +7,22 @@ project(TONEAPI VERSION 0.0.1 DESCRIPTION "A header-only C++ library wrapping In
 # They only propagate properties (like include directories) to targets that link against them.
 add_library(TONEAPI INTERFACE)
 
+# GNUInstallDirs helps to set the $CMAKE_INSTALL_INCLUDEDIR variable in a platform-independent way.
 include(GNUInstallDirs)
 
 # Specify the include directory for the public headers
 target_include_directories(TONEAPI INTERFACE
     # This generator expression specifies where the 
     # headers will be found after installation
+    # CMAKE_INSTALL_INCLUDEDIR is a variable defined by GNUInstallDirs
+    # It typically resolves to `include` (relative to the install prefix)
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    # This specifies where the headers are located during 
-    # the build process (i.e., in your source directory). 
-    # This allows users to build and run examples or 
-    # tests against the library before it's installed.
+    # During build process, the headers and source files are kept in the source tree.
+    # This generator expression specifies where the headers will be found during the build.
+    # Build process generally allows you to build test cases or examples to try things out 
+    # before installation into the system directories.
+    # There is no real building of the target since this is a header-only library.
+    # But I am stil specifying it for completeness.
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 #######################
