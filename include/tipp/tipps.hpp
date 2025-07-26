@@ -4,6 +4,7 @@
 #include <ipp/ipps.h>
 #include <complex>
 #include "tipp_error.hpp"
+#include "tipp_type.hpp"
 #include <stdexcept>
 
 namespace tipp
@@ -838,34 +839,6 @@ namespace tipp
     {
         return OptionalAssertNoError(ippsFIRMRInit_64fc(pTaps, tapsLen, upFactor, upPhase, downFactor, downPhase, (IppsFIRSpec_64fc *)pSpec));
     }
-
-    template <typename T>
-    static inline IppDataType GetIppDataType()
-    {
-        throw std::runtime_error("Unsupported data type");
-    }
-    template <>
-    static inline IppDataType GetIppDataType<Ipp32f>() { return ipp32f; }
-    template <>
-    static inline IppDataType GetIppDataType<Ipp64f>() { return ipp64f; }
-    template <>
-    static inline IppDataType GetIppDataType<Ipp32fc>() { return ipp32fc; }
-    template <>
-    static inline IppDataType GetIppDataType<Ipp64fc>() { return ipp64fc; }
-    template <>
-    static inline IppDataType GetIppDataType<Ipp16s>() { return ipp16s; }
-    template <>
-    static inline IppDataType GetIppDataType<Ipp16sc>() { return ipp16sc; }
-    template <>
-    static inline IppDataType GetIppDataType<Ipp8u>() { return ipp8u; }
-    template <>
-    static inline IppDataType GetIppDataType<Ipp32s>() { return ipp32s; }
-    template <>
-    static inline IppDataType GetIppDataType<Ipp32u>() { return ipp32u; }
-    template <>
-    static inline IppDataType GetIppDataType<Ipp64s>() { return ipp64s; }
-    template <>
-    static inline IppDataType GetIppDataType<Ipp64u>() { return ipp64u; }
 
     static inline IppStatus CrossCorrNorm(const Ipp32f *pSrc1, int src1Len, const Ipp32f *pSrc2, int src2Len, Ipp32f *pDst, int dstLen, int lowLag, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsCrossCorrNorm_32f(pSrc1, src1Len, pSrc2, src2Len, pDst, dstLen, lowLag, algType, pBuffer)); }
     static inline IppStatus CrossCorrNorm(const Ipp64f *pSrc1, int src1Len, const Ipp64f *pSrc2, int src2Len, Ipp64f *pDst, int dstLen, int lowLag, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsCrossCorrNorm_64f(pSrc1, src1Len, pSrc2, src2Len, pDst, dstLen, lowLag, algType, pBuffer)); }

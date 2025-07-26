@@ -64,18 +64,14 @@ auto dst = dfteng.Fwd_V(src);
 
 ## Usage
 
-Namespace alias
 
-```cpp
-namespace ipps=tipp::signal;
-namespace ippvm=tipp::signal;
-```
 
 ## Similar Libraries
 This is not the first library to wrap Intel IPP. The following repositories have similar aims.
 * [ipp_ext by icyveins7](https://github.com/icyveins7/ipp_ext)
 * [IPPPlus by Red-Li](https://github.com/Red-Li/IPPPlus)
 
+oneMKL's sycl interface also offers a C++ interface to MKL's routines. But it requires DPC++ compiler. This library is meant to be a simple wrapper around the .libs and .dll files 
 
 ## Design Principles
 1. Instead of returning status codes and requiring the user to check for errors, this library will check every function call and throw a runtime exception if errors are detected
@@ -98,6 +94,8 @@ This library shall provide both options
 
 For the first option, refer to [ipp_ext by icyveins7](https://github.com/icyveins7/ipp_ext) for a possible implementation. 
 Instead, this section will describe how to use the second option.
+
+for Ippi, Ipp1u is not supported
 
 ## Error checking
 It might be painful to always be checking the error status of a call to ipp. There is an optional MACROS flag `CHECK_IPP_ERROR` to throw a `runtime_error` whenever the return code isnt 0. 
