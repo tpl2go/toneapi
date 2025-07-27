@@ -1156,70 +1156,132 @@ namespace tipp
     static inline IppStatus IIRGetStateSize_BiQuad_DF1<Ipp32f, Ipp32f>(int numBq, int *pBufferSize) { return OptionalAssertNoError(ippsIIRGetStateSize_BiQuad_DF1_32f(numBq, pBufferSize)); }
 
     // IIRGetDlyLine wrappers
-    static inline IppStatus IIRGetDlyLine(const IppsIIRState32f_16s *pState, Ipp32f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine32f_16s(pState, pDlyLine)); }
-    static inline IppStatus IIRGetDlyLine(const IppsIIRState64f_16s *pState, Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64f_16s(pState, pDlyLine)); }
-    static inline IppStatus IIRGetDlyLine(const IppsIIRState64f_32s *pState, Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64f_32s(pState, pDlyLine)); }
-    static inline IppStatus IIRGetDlyLine(const IppsIIRState32fc_16sc *pState, Ipp32fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine32fc_16sc(pState, pDlyLine)); }
-    static inline IppStatus IIRGetDlyLine(const IppsIIRState64fc_16sc *pState, Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64fc_16sc(pState, pDlyLine)); }
-    static inline IppStatus IIRGetDlyLine(const IppsIIRState64fc_32sc *pState, Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64fc_32sc(pState, pDlyLine)); }
-    static inline IppStatus IIRGetDlyLine(const IppsIIRState_32f *pState, Ipp32f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine_32f(pState, pDlyLine)); }
-    static inline IppStatus IIRGetDlyLine(const IppsIIRState64f_32f *pState, Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64f_32f(pState, pDlyLine)); }
-    static inline IppStatus IIRGetDlyLine(const IppsIIRState_64f *pState, Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine_64f(pState, pDlyLine)); }
-    static inline IppStatus IIRGetDlyLine(const IppsIIRState_32fc *pState, Ipp32fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine_32fc(pState, pDlyLine)); }
-    static inline IppStatus IIRGetDlyLine(const IppsIIRState64fc_32fc *pState, Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64fc_32fc(pState, pDlyLine)); }
-    static inline IppStatus IIRGetDlyLine(const IppsIIRState_64fc *pState, Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine_64fc(pState, pDlyLine)); }
+
+    template <typename T1, typename T2>
+    static inline IppStatus IIRGetDlyLine(const void *pState, T1 *pDlyLine);
+    template <>
+    static inline IppStatus IIRGetDlyLine<Ipp32f, Ipp16s>(const void *pState, Ipp32f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine32f_16s((const IppsIIRState32f_16s *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRGetDlyLine<Ipp64f, Ipp16s>(const void *pState, Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64f_16s((const IppsIIRState64f_16s *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRGetDlyLine<Ipp64f, Ipp32s>(const void *pState, Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64f_32s((const IppsIIRState64f_32s *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRGetDlyLine<Ipp32fc, Ipp16sc>(const void *pState, Ipp32fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine32fc_16sc((const IppsIIRState32fc_16sc *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRGetDlyLine<Ipp64fc, Ipp16sc>(const void *pState, Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64fc_16sc((const IppsIIRState64fc_16sc *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRGetDlyLine<Ipp64fc, Ipp32sc>(const void *pState, Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64fc_32sc((const IppsIIRState64fc_32sc *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRGetDlyLine<Ipp32f, Ipp32f>(const void *pState, Ipp32f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine_32f((const IppsIIRState_32f *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRGetDlyLine<Ipp64f, Ipp32f>(const void *pState, Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64f_32f((const IppsIIRState64f_32f *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRGetDlyLine<Ipp64f, Ipp64f>(const void *pState, Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine_64f((const IppsIIRState_64f *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRGetDlyLine<Ipp32fc, Ipp32fc>(const void *pState, Ipp32fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine_32fc((const IppsIIRState_32fc *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRGetDlyLine<Ipp64fc, Ipp32fc>(const void *pState, Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64fc_32fc((const IppsIIRState64fc_32fc *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRGetDlyLine<Ipp64fc, Ipp64fc>(const void *pState, Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine_64fc((const IppsIIRState_64fc *)pState, pDlyLine)); }
 
     // IIRGetDlyLine_DF1 wrappers
     static inline IppStatus IIRGetDlyLine_DF1(const IppsIIRState64f_32s *pState, Ipp32s *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64f_DF1_32s(pState, pDlyLine)); }
 
     // IIRSetDlyLine wrappers
-    static inline IppStatus IIRSetDlyLine(IppsIIRState32f_16s *pState, const Ipp32f *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine32f_16s(pState, pDlyLine)); }
-    static inline IppStatus IIRSetDlyLine(IppsIIRState64f_16s *pState, const Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64f_16s(pState, pDlyLine)); }
-    static inline IppStatus IIRSetDlyLine(IppsIIRState64f_32s *pState, const Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64f_32s(pState, pDlyLine)); }
-    static inline IppStatus IIRSetDlyLine(IppsIIRState32fc_16sc *pState, const Ipp32fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine32fc_16sc(pState, pDlyLine)); }
-    static inline IppStatus IIRSetDlyLine(IppsIIRState64fc_16sc *pState, const Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64fc_16sc(pState, pDlyLine)); }
-    static inline IppStatus IIRSetDlyLine(IppsIIRState64fc_32sc *pState, const Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64fc_32sc(pState, pDlyLine)); }
-    static inline IppStatus IIRSetDlyLine(IppsIIRState_32f *pState, const Ipp32f *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine_32f(pState, pDlyLine)); }
-    static inline IppStatus IIRSetDlyLine(IppsIIRState64f_32f *pState, const Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64f_32f(pState, pDlyLine)); }
-    static inline IppStatus IIRSetDlyLine(IppsIIRState_64f *pState, const Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine_64f(pState, pDlyLine)); }
-    static inline IppStatus IIRSetDlyLine(IppsIIRState_32fc *pState, const Ipp32fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine_32fc(pState, pDlyLine)); }
-    static inline IppStatus IIRSetDlyLine(IppsIIRState64fc_32fc *pState, const Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64fc_32fc(pState, pDlyLine)); }
-    static inline IppStatus IIRSetDlyLine(IppsIIRState_64fc *pState, const Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine_64fc(pState, pDlyLine)); }
+    template <typename T1, typename T2>
+    static inline IppStatus IIRSetDlyLine(void *pState, const T1 *pDlyLine);
+    template <>
+    static inline IppStatus IIRSetDlyLine<Ipp32f, Ipp16s>(void *pState, const Ipp32f *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine32f_16s((IppsIIRState32f_16s *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRSetDlyLine<Ipp64f, Ipp16s>(void *pState, const Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64f_16s((IppsIIRState64f_16s *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRSetDlyLine<Ipp64f, Ipp32s>(void *pState, const Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64f_32s((IppsIIRState64f_32s *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRSetDlyLine<Ipp32fc, Ipp16sc>(void *pState, const Ipp32fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine32fc_16sc((IppsIIRState32fc_16sc *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRSetDlyLine<Ipp64fc, Ipp16sc>(void *pState, const Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64fc_16sc((IppsIIRState64fc_16sc *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRSetDlyLine<Ipp64fc, Ipp32sc>(void *pState, const Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64fc_32sc((IppsIIRState64fc_32sc *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRSetDlyLine<Ipp32f, Ipp32f>(void *pState, const Ipp32f *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine_32f((IppsIIRState_32f *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRSetDlyLine<Ipp64f, Ipp32f>(void *pState, const Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64f_32f((IppsIIRState64f_32f *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRSetDlyLine<Ipp64f, Ipp64f>(void *pState, const Ipp64f *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine_64f((IppsIIRState_64f *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRSetDlyLine<Ipp32fc, Ipp32fc>(void *pState, const Ipp32fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine_32fc((IppsIIRState_32fc *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRSetDlyLine<Ipp64fc, Ipp32fc>(void *pState, const Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64fc_32fc((IppsIIRState64fc_32fc *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRSetDlyLine<Ipp64fc, Ipp64fc>(void *pState, const Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine_64fc((IppsIIRState_64fc *)pState, pDlyLine)); }
 
     // IIRSetDlyLine_DF1 wrappers
     static inline IppStatus IIRSetDlyLine_DF1(IppsIIRState64f_32s *pState, const Ipp32s *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64f_DF1_32s(pState, pDlyLine)); }
 
     // IIR (Out-of-place, Sfs) wrappers
-    static inline IppStatus IIR_Sfs(const Ipp16s *pSrc, Ipp16s *pDst, int len, IppsIIRState32f_16s *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR32f_16s_Sfs(pSrc, pDst, len, pState, scaleFactor)); }
-    static inline IppStatus IIR_Sfs(const Ipp16s *pSrc, Ipp16s *pDst, int len, IppsIIRState64f_16s *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64f_16s_Sfs(pSrc, pDst, len, pState, scaleFactor)); }
-    static inline IppStatus IIR_Sfs(const Ipp32s *pSrc, Ipp32s *pDst, int len, IppsIIRState64f_32s *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64f_32s_Sfs(pSrc, pDst, len, pState, scaleFactor)); }
-    static inline IppStatus IIR_Sfs(const Ipp16sc *pSrc, Ipp16sc *pDst, int len, IppsIIRState32fc_16sc *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR32fc_16sc_Sfs(pSrc, pDst, len, pState, scaleFactor)); }
-    static inline IppStatus IIR_Sfs(const Ipp16sc *pSrc, Ipp16sc *pDst, int len, IppsIIRState64fc_16sc *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64fc_16sc_Sfs(pSrc, pDst, len, pState, scaleFactor)); }
-    static inline IppStatus IIR_Sfs(const Ipp32sc *pSrc, Ipp32sc *pDst, int len, IppsIIRState64fc_32sc *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64fc_32sc_Sfs(pSrc, pDst, len, pState, scaleFactor)); }
+    template <typename T1, typename T2>
+    static inline IppStatus IIR_Sfs(const T2 *pSrc, T2 *pDst, int len, void *pState, int scaleFactor);
+    template <>
+    static inline IppStatus IIR_Sfs<Ipp32f, Ipp16s>(const Ipp16s *pSrc, Ipp16s *pDst, int len, void *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR32f_16s_Sfs(pSrc, pDst, len, (IppsIIRState32f_16s *)pState, scaleFactor)); }
+    template <>
+    static inline IppStatus IIR_Sfs<Ipp64f, Ipp16s>(const Ipp16s *pSrc, Ipp16s *pDst, int len, void *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64f_16s_Sfs(pSrc, pDst, len, (IppsIIRState64f_16s *)pState, scaleFactor)); }
+    template <>
+    static inline IppStatus IIR_Sfs<Ipp64f, Ipp32s>(const Ipp32s *pSrc, Ipp32s *pDst, int len, void *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64f_32s_Sfs(pSrc, pDst, len, (IppsIIRState64f_32s *)pState, scaleFactor)); }
+    template <>
+    static inline IppStatus IIR_Sfs<Ipp32fc, Ipp16sc>(const Ipp16sc *pSrc, Ipp16sc *pDst, int len, void *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR32fc_16sc_Sfs(pSrc, pDst, len, (IppsIIRState32fc_16sc *)pState, scaleFactor)); }
+    template <>
+    static inline IppStatus IIR_Sfs<Ipp64fc, Ipp16sc>(const Ipp16sc *pSrc, Ipp16sc *pDst, int len, void *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64fc_16sc_Sfs(pSrc, pDst, len, (IppsIIRState64fc_16sc *)pState, scaleFactor)); }
+    template <>
+    static inline IppStatus IIR_Sfs<Ipp64fc, Ipp32sc>(const Ipp32sc *pSrc, Ipp32sc *pDst, int len, void *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64fc_32sc_Sfs(pSrc, pDst, len, (IppsIIRState64fc_32sc *)pState, scaleFactor)); }
 
     // IIR (Out-of-place, Floating-point) wrappers
-    static inline IppStatus IIR(const Ipp32f *pSrc, Ipp32f *pDst, int len, IppsIIRState_32f *pState) { return OptionalAssertNoError(ippsIIR_32f(pSrc, pDst, len, pState)); }
-    static inline IppStatus IIR(const Ipp64f *pSrc, Ipp64f *pDst, int len, IppsIIRState_64f *pState) { return OptionalAssertNoError(ippsIIR_64f(pSrc, pDst, len, pState)); }
-    static inline IppStatus IIR(const Ipp32f *pSrc, Ipp32f *pDst, int len, IppsIIRState64f_32f *pState) { return OptionalAssertNoError(ippsIIR64f_32f(pSrc, pDst, len, pState)); }
-    static inline IppStatus IIR(const Ipp32fc *pSrc, Ipp32fc *pDst, int len, IppsIIRState_32fc *pState) { return OptionalAssertNoError(ippsIIR_32fc(pSrc, pDst, len, pState)); }
-    static inline IppStatus IIR(const Ipp64fc *pSrc, Ipp64fc *pDst, int len, IppsIIRState_64fc *pState) { return OptionalAssertNoError(ippsIIR_64fc(pSrc, pDst, len, pState)); }
-    static inline IppStatus IIR(const Ipp32fc *pSrc, Ipp32fc *pDst, int len, IppsIIRState64fc_32fc *pState) { return OptionalAssertNoError(ippsIIR64fc_32fc(pSrc, pDst, len, pState)); }
+
+    template <typename T1, typename T2>
+    static inline IppStatus IIR(const T2 *pSrc, T2 *pDst, int len, void *pState);
+    template <>
+    static inline IppStatus IIR<Ipp32f, Ipp32f>(const Ipp32f *pSrc, Ipp32f *pDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR_32f(pSrc, pDst, len, (IppsIIRState_32f *)pState)); }
+    template <>
+    static inline IppStatus IIR<Ipp64f, Ipp64f>(const Ipp64f *pSrc, Ipp64f *pDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR_64f(pSrc, pDst, len, (IppsIIRState_64f *)pState)); }
+    template <>
+    static inline IppStatus IIR<Ipp64f, Ipp32f>(const Ipp32f *pSrc, Ipp32f *pDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR64f_32f(pSrc, pDst, len, (IppsIIRState64f_32f *)pState)); }
+    template <>
+    static inline IppStatus IIR<Ipp32fc, Ipp32fc>(const Ipp32fc *pSrc, Ipp32fc *pDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR_32fc(pSrc, pDst, len, (IppsIIRState_32fc *)pState)); }
+    template <>
+    static inline IppStatus IIR<Ipp64fc, Ipp64fc>(const Ipp64fc *pSrc, Ipp64fc *pDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR_64fc(pSrc, pDst, len, (IppsIIRState_64fc *)pState)); }
+    template <>
+    static inline IppStatus IIR<Ipp64fc, Ipp32fc>(const Ipp32fc *pSrc, Ipp32fc *pDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR64fc_32fc(pSrc, pDst, len, (IppsIIRState64fc_32fc *)pState)); }
 
     // IIR (In-place, Sfs) wrappers
-    static inline IppStatus IIR_ISfs(Ipp16s *pSrcDst, int len, IppsIIRState32f_16s *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR32f_16s_ISfs(pSrcDst, len, pState, scaleFactor)); }
-    static inline IppStatus IIR_ISfs(Ipp16sc *pSrcDst, int len, IppsIIRState32fc_16sc *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR32fc_16sc_ISfs(pSrcDst, len, pState, scaleFactor)); }
-    static inline IppStatus IIR_ISfs(Ipp16s *pSrcDst, int len, IppsIIRState64f_16s *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64f_16s_ISfs(pSrcDst, len, pState, scaleFactor)); }
-    static inline IppStatus IIR_ISfs(Ipp32s *pSrcDst, int len, IppsIIRState64f_32s *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64f_32s_ISfs(pSrcDst, len, pState, scaleFactor)); }
-    static inline IppStatus IIR_ISfs(Ipp16sc *pSrcDst, int len, IppsIIRState64fc_16sc *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64fc_16sc_ISfs(pSrcDst, len, pState, scaleFactor)); }
-    static inline IppStatus IIR_ISfs(Ipp32sc *pSrcDst, int len, IppsIIRState64fc_32sc *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64fc_32sc_ISfs(pSrcDst, len, pState, scaleFactor)); }
+    template <typename T1, typename T2>
+    static inline IppStatus IIR_ISfs(T2 *pSrcDst, int len, void *pState, int scaleFactor);
+    template <>
+    static inline IppStatus IIR_ISfs<Ipp32f, Ipp16s>(Ipp16s *pSrcDst, int len, void *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR32f_16s_ISfs(pSrcDst, len, (IppsIIRState32f_16s *)pState, scaleFactor)); }
+    template <>
+    static inline IppStatus IIR_ISfs<Ipp32fc, Ipp16sc>(Ipp16sc *pSrcDst, int len, void *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR32fc_16sc_ISfs(pSrcDst, len, (IppsIIRState32fc_16sc *)pState, scaleFactor)); }
+    template <>
+    static inline IppStatus IIR_ISfs<Ipp64f, Ipp16s>(Ipp16s *pSrcDst, int len, void *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64f_16s_ISfs(pSrcDst, len, (IppsIIRState64f_16s *)pState, scaleFactor)); }
+    template <>
+    static inline IppStatus IIR_ISfs<Ipp64f, Ipp32s>(Ipp32s *pSrcDst, int len, void *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64f_32s_ISfs(pSrcDst, len, (IppsIIRState64f_32s *)pState, scaleFactor)); }
+    template <>
+    static inline IppStatus IIR_ISfs<Ipp64fc, Ipp16sc>(Ipp16sc *pSrcDst, int len, void *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64fc_16sc_ISfs(pSrcDst, len, (IppsIIRState64fc_16sc *)pState, scaleFactor)); }
+    template <>
+    static inline IppStatus IIR_ISfs<Ipp64fc, Ipp32sc>(Ipp32sc *pSrcDst, int len, void *pState, int scaleFactor) { return OptionalAssertNoError(ippsIIR64fc_32sc_ISfs(pSrcDst, len, (IppsIIRState64fc_32sc *)pState, scaleFactor)); }
 
     // IIR (In-place, Floating-point) wrappers
-    static inline IppStatus IIR_I(Ipp32f *pSrcDst, int len, IppsIIRState_32f *pState) { return OptionalAssertNoError(ippsIIR_32f_I(pSrcDst, len, pState)); }
-    static inline IppStatus IIR_I(Ipp64f *pSrcDst, int len, IppsIIRState_64f *pState) { return OptionalAssertNoError(ippsIIR_64f_I(pSrcDst, len, pState)); }
-    static inline IppStatus IIR_I(Ipp32f *pSrcDst, int len, IppsIIRState64f_32f *pState) { return OptionalAssertNoError(ippsIIR64f_32f_I(pSrcDst, len, pState)); }
-    static inline IppStatus IIR_I(Ipp32fc *pSrcDst, int len, IppsIIRState_32fc *pState) { return OptionalAssertNoError(ippsIIR_32fc_I(pSrcDst, len, pState)); }
-    static inline IppStatus IIR_I(Ipp64fc *pSrcDst, int len, IppsIIRState_64fc *pState) { return OptionalAssertNoError(ippsIIR_64fc_I(pSrcDst, len, pState)); }
-    static inline IppStatus IIR_I(Ipp32fc *pSrcDst, int len, IppsIIRState64fc_32fc *pState) { return OptionalAssertNoError(ippsIIR64fc_32fc_I(pSrcDst, len, pState)); }
+    template <typename T1, typename T2>
+    static inline IppStatus IIR_I(T2 *pSrcDst, int len, void *pState);
+    template <>
+    static inline IppStatus IIR_I<Ipp32f, Ipp32f>(Ipp32f *pSrcDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR_32f_I(pSrcDst, len, (IppsIIRState_32f *)pState)); }
+    template <>
+    static inline IppStatus IIR_I<Ipp64f, Ipp64f>(Ipp64f *pSrcDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR_64f_I(pSrcDst, len, (IppsIIRState_64f *)pState)); }
+    template <>
+    static inline IppStatus IIR_I<Ipp64f, Ipp32f>(Ipp32f *pSrcDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR64f_32f_I(pSrcDst, len, (IppsIIRState64f_32f *)pState)); }
+    template <>
+    static inline IppStatus IIR_I<Ipp32fc, Ipp32fc>(Ipp32fc *pSrcDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR_32fc_I(pSrcDst, len, (IppsIIRState_32fc *)pState)); }
+    template <>
+    static inline IppStatus IIR_I<Ipp64fc, Ipp64fc>(Ipp64fc *pSrcDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR_64fc_I(pSrcDst, len, (IppsIIRState_64fc *)pState)); }
+    template <>
+    static inline IppStatus IIR_I<Ipp64fc, Ipp32fc>(Ipp32fc *pSrcDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR64fc_32fc_I(pSrcDst, len, (IppsIIRState64fc_32fc *)pState)); }
 
     // IIR (Planar/Multi-channel, Out-of-place) wrappers
     static inline IppStatus IIR_P(const Ipp32f **ppSrc, Ipp32f **ppDst, int len, int nChannels, IppsIIRState_32f **ppState) { return OptionalAssertNoError(ippsIIR_32f_P(ppSrc, ppDst, len, nChannels, ppState)); }

@@ -11,7 +11,7 @@ namespace tipp
     class SortRadix_Engine
     {
     protected:
-        vector<T> m_buffer;
+        vector<T> m_Buffer;
         int m_len;
 
     public:
@@ -21,7 +21,7 @@ namespace tipp
 
         void assertIsInitialised()
         {
-            if (m_buffer.empty())
+            if (m_Buffer.empty())
                 throw std::runtime_error("SortRadix_Engine not initialized");
         }
 
@@ -29,19 +29,19 @@ namespace tipp
         {
             int BufferSize;
             SortRadixGetBufferSize<T>(len, &BufferSize);
-            m_buffer.resize(BufferSize);
+            m_Buffer.resize(BufferSize);
             m_len = len;
         }
 
         void sortAscend_I(T *pSrcDst)
         {
             assertIsInitialised;
-            SortRadixAscend_I(pSrcDst, m_len, m_buffer.data());
+            SortRadixAscend_I(pSrcDst, m_len, m_Buffer.data());
         }
         void sortDescend_I(T *pSrcDst)
         {
             assertIsInitialised;
-            SortRadixDescend_I(pSrcDst, m_len, m_buffer.data());
+            SortRadixDescend_I(pSrcDst, m_len, m_Buffer.data());
         }
     };
 
@@ -49,7 +49,7 @@ namespace tipp
     class SortRadix_L_Engine
     {
     protected:
-        vector<T> m_buffer;
+        vector<T> m_Buffer;
         int m_len;
 
     public:
@@ -59,7 +59,7 @@ namespace tipp
 
         void assertIsInitialised()
         {
-            if (m_buffer.empty())
+            if (m_Buffer.empty())
                 throw std::runtime_error("SortRadix_L_Engine not initialized");
         }
 
@@ -67,19 +67,19 @@ namespace tipp
         {
             int BufferSize;
             SortRadixGetBufferSize_L<T>(len, &BufferSize);
-            m_buffer.resize(BufferSize);
+            m_Buffer.resize(BufferSize);
             m_len = len;
         }
 
         void sortAscend_I(T *pSrcDst)
         {
             assertIsInitialised();
-            SortRadixAscend_I_L(pSrcDst, m_len, m_buffer.data());
+            SortRadixAscend_I_L(pSrcDst, m_len, m_Buffer.data());
         }
         void sortDescend_I(T *pSrcDst)
         {
             assertIsInitialised();
-            SortRadixDescend_I_L(pSrcDst, m_len, m_buffer.data());
+            SortRadixDescend_I_L(pSrcDst, m_len, m_Buffer.data());
         }
     };
 
@@ -87,7 +87,7 @@ namespace tipp
     class SortRadixIndex_Engine
     {
     protected:
-        vector<T> m_buffer;
+        vector<T> m_Buffer;
         int m_len;
 
     public:
@@ -99,25 +99,25 @@ namespace tipp
         {
             int BufferSize;
             SortRadixIndexGetBufferSize<T>(len, &BufferSize);
-            m_buffer.resize(BufferSize);
+            m_Buffer.resize(BufferSize);
             m_len = len;
         }
 
         void assertIsInitialised()
         {
-            if (m_buffer.empty())
+            if (m_Buffer.empty())
                 throw std::runtime_error("SortRadixIndex_Engine not initialized");
         }
 
         IppStatus sortAscend_I(T *pSrcDst)
         {
             assertIsInitialised();
-            return OptionalAssertNoError(SortRadixIndexAscend_I(pSrcDst, m_len, m_buffer.data()));
+            return OptionalAssertNoError(SortRadixIndexAscend_I(pSrcDst, m_len, m_Buffer.data()));
         }
         IppStatus sortDescend_I(T *pSrcDst)
         {
             assertIsInitialised();
-            return OptionalAssertNoError(SortRadixIndexDescend_I(pSrcDst, m_len, m_buffer.data()));
+            return OptionalAssertNoError(SortRadixIndexDescend_I(pSrcDst, m_len, m_Buffer.data()));
         }
     };
 
@@ -127,11 +127,11 @@ namespace tipp
     protected:
         vector<T> m_taps;
 
-        vector<T> m_dly;
+        vector<T> m_DlySrc;
         vector<T> m_dlyDst;
 
-        vector<Ipp8u> m_spec;
-        vector<Ipp8u> m_buf;
+        vector<Ipp8u> m_Spec;
+        vector<Ipp8u> m_Buffer;
 
         IppAlgType m_algType;
 
@@ -144,17 +144,17 @@ namespace tipp
         {
             m_algType = algType;
             int dlyLen = taplen - 1;
-            m_dly.resize(dlyLen);
+            m_DlySrc.resize(dlyLen);
             m_dlyDst.resize(dlyLen);
 
             int specSize, bufSize;
 
             FIRSRGetSize<T>(taplen, &specSize, &bufSize);
 
-            m_spec.resize(specSize);
-            m_buf.resize(bufSize);
+            m_Spec.resize(specSize);
+            m_Buffer.resize(bufSize);
 
-            FIRSRInit<T>(m_taps, taplen, m_algType, m_spec);
+            FIRSRInit<T>(m_taps, taplen, m_algType, m_Spec);
 
             m_taps.resize(taplen);
             Copy(taps, m_taps, taplen);
@@ -162,15 +162,15 @@ namespace tipp
 
         void assertIsInitialised()
         {
-            if (m_spec.empty() || m_buf.empty())
+            if (m_Spec.empty() || m_Buffer.empty())
                 throw std::runtime_error("FIRSR not initialized");
         }
 
         void filter(const T *pSrc, T *pDst, int len)
         {
             assertIsInitialised();
-            FIRSR(pSrc, pDst, len, m_spec.data(), m_dly.data(), m_dlyDst.data(), m_buf.data());
-            swap(m_dly, m_dlyDst);
+            FIRSR(pSrc, pDst, len, m_Spec.data(), m_DlySrc.data(), m_dlyDst.data(), m_Buffer.data());
+            swap(m_DlySrc, m_dlyDst);
         }
     };
 
@@ -178,13 +178,14 @@ namespace tipp
     class FIRMR_Engine
     {
     protected:
+        int m_dlyLen;
         vector<T> m_taps;
 
-        vector<T> m_dly;
-        vector<T> m_dlyDst;
+        vector<T> m_DlySrc;
+        vector<T> m_DlyDst;
 
-        vector<Ipp8u> m_spec;
-        vector<Ipp8u> m_buf;
+        vector<Ipp8u> m_Spec;
+        vector<Ipp8u> m_Buffer;
 
         IppAlgType m_algType;
 
@@ -200,30 +201,30 @@ namespace tipp
             int specSize, bufSize;
             FIRMRGetSize<T>(taplen, &specSize, &bufSize);
 
-            m_spec.resize(specSize);
-            m_buf.resize(bufSize);
+            m_Spec.resize(specSize);
+            m_Buffer.resize(bufSize);
 
-            FIRMRInit<T>(m_taps.data(), taplen, m_algType, m_spec.data());
+            FIRMRInit<T>(m_taps.data(), taplen, m_algType, m_Spec.data());
 
             m_taps.resize(taplen);
             Copy(taps, m_taps, taplen);
 
             int m_dlyLen = taplen - 1;
-            m_dly.resize(m_dlyLen);
-            m_dlyDst.resize(m_dlyLen);
+            m_DlySrc.resize(m_dlyLen);
+            m_DlyDst.resize(m_dlyLen);
         }
 
         void assertIsInitialised()
         {
-            if (m_spec.empty())
+            if (m_Spec.empty())
                 throw std::runtime_error("FIRMR not initialized");
         }
 
         void filter(const T *pSrc, T *pDst, int len)
         {
             assertIsInitialised();
-            FIRMR(pSrc, pDst, len, m_spec, m_dly, m_dlyDst, m_buf);
-            swap(m_dly, m_dlyDst);
+            FIRMR(pSrc, pDst, len, m_Spec.data(), m_DlySrc.data(), m_DlyDst.data(), m_Buffer.data());
+            swap(m_DlySrc, m_DlyDst);
         }
     };
 
@@ -231,8 +232,10 @@ namespace tipp
     class FIRGen_Engine
     {
     protected:
-        vector<T> m_buffer;
+        vector<T> m_Buffer;
         int m_tapsLen;
+        IppWinType m_winType; // ippWinBartlett,ippWinBlackman,ippWinHamming,ippWinHann,ippWinRect
+        IppBool m_doNormal;
 
     public:
         FIRGen_Engine() = default;
@@ -241,50 +244,49 @@ namespace tipp
             initialise(tapsLen);
         }
 
-        void initialise(int tapsLen)
+        void initialise(int tapsLen, IppWinType winType, IppBool doNormal)
         {
             m_tapsLen = tapsLen;
+            m_winType = winType;
+            m_doNormal = doNormal;
+
             int bufSize;
             OptionalAssertNoError(ippsFIRGenGetBufferSize(tapsLen, &bufSize));
-            m_buffer.resize(bufSize);
+            m_Buffer.resize(bufSize);
         }
 
         void assertIsInitialised()
         {
-            if (m_buffer.empty())
+            if (m_Buffer.empty())
                 throw std::runtime_error("FIRGen not initialized");
         }
 
-        IppStatus highpass(Ipp64f rFreq, Ipp64f *pTaps, IppWinType winType, IppBool doNormal)
+        IppStatus highpass(Ipp64f rFreq, Ipp64f *pTaps)
         {
             assertIsInitialised();
-            // winType: ippWinBartlett,ippWinBlackman,ippWinHamming,ippWinHann,ippWinRect
             return OptionalAssertNoError(
-                ippsFIRGenHighpass_64f(rFreq, pTaps, m_tapsLen, winType, doNormal, m_buffer.data()));
+                ippsFIRGenHighpass_64f(rFreq, pTaps, m_tapsLen, m_winType, m_doNormal, m_Buffer.data()));
         }
 
-        IppStatus lowpass(Ipp64f rFreq, Ipp64f *pTaps, IppWinType winType, IppBool doNormal)
+        IppStatus lowpass(Ipp64f rFreq, Ipp64f *pTaps)
         {
             assertIsInitialised();
-            // winType: ippWinBartlett,ippWinBlackman,ippWinHamming,ippWinHann,ippWinRect
             return OptionalAssertNoError(
-                ippsFIRGenLowpass_64f(rFreq, pTaps, m_tapsLen, winType, doNormal, m_buffer.data()));
+                ippsFIRGenLowpass_64f(rFreq, pTaps, m_tapsLen, m_winType, m_doNormal, m_Buffer.data()));
         }
 
-        IppStatus bandpass(Ipp64f rLowFreq, Ipp64f rHighFreq, Ipp64f *pTaps, IppWinType winType, IppBool doNormal)
+        IppStatus bandpass(Ipp64f rLowFreq, Ipp64f rHighFreq, Ipp64f *pTaps)
         {
             assertIsInitialised();
-            // winType: ippWinBartlett,ippWinBlackman,ippWinHamming,ippWinHann,ippWinRect
             return OptionalAssertNoError(
-                ippsFIRGenBandpass_64f(rLowFreq, rHighFreq, pTaps, m_tapsLen, winType, doNormal, m_buffer.data()));
+                ippsFIRGenBandpass_64f(rLowFreq, rHighFreq, pTaps, m_tapsLen, m_winType, m_doNormal, m_Buffer.data()));
         }
 
-        IppStatus bandstop(Ipp64f rLowFreq, Ipp64f rHighFreq, Ipp64f *pTaps, IppWinType winType, IppBool doNormal)
+        IppStatus bandstop(Ipp64f rLowFreq, Ipp64f rHighFreq, Ipp64f *pTaps)
         {
             assertIsInitialised();
-            // winType: ippWinBartlett,ippWinBlackman,ippWinHamming,ippWinHann,ippWinRect
             return OptionalAssertNoError(
-                ippsFIRGenBandstop_64f(rLowFreq, rHighFreq, pTaps, m_tapsLen, winType, doNormal, m_buffer.data()));
+                ippsFIRGenBandstop_64f(rLowFreq, rHighFreq, pTaps, m_tapsLen, m_winType, m_doNormal, m_Buffer.data()));
         }
     };
 
@@ -293,7 +295,7 @@ namespace tipp
     {
     protected:
         float mu = 0.001f;
-        vector<Ipp8u> m_buffer;
+        vector<Ipp8u> m_Buffer;
         IppsFIRLMSState_32f *pState = nullptr; // TODO: change this to vector
 
     public:
@@ -306,9 +308,9 @@ namespace tipp
         {
             int BufferSize;
             OptionalAssertNoError(ippsFIRLMSGetStateSize_32f(tapsLen, 0, &BufferSize));
-            m_buffer.resize(BufferSize);
+            m_Buffer.resize(BufferSize);
             // zero initialise taps and delay line
-            OptionalAssertNoError(ippsFIRLMSInit_32f(&pState, nullptr, tapsLen, nullptr, 0, m_buffer.data()));
+            OptionalAssertNoError(ippsFIRLMSInit_32f(&pState, nullptr, tapsLen, nullptr, 0, m_Buffer.data()));
         }
 
         IppStatus filter(const Ipp32f *pSrc, const Ipp32f *pRef, Ipp32f *pDst, int len)
@@ -337,7 +339,7 @@ namespace tipp
     class CrossCorrNorm_Engine
     {
     protected:
-        vector<Ipp8u> m_buffer;
+        vector<Ipp8u> m_Buffer;
         int m_src1Len, m_src2Len, m_dstLen, m_lowLag;
         int m_algType;
 
@@ -348,7 +350,7 @@ namespace tipp
 
         void assertIsInitialised()
         {
-            if (m_buffer.empty())
+            if (m_Buffer.empty())
                 throw std::runtime_error("CrossCorrNorm not initialized");
         }
 
@@ -360,7 +362,7 @@ namespace tipp
 
             int BufferSize;
             ippsCrossCorrNormGetBufferSize(src1Len, src2Len, dstLen, lowLag, GetIppDataType<T>(), algType, &BufferSize);
-            m_buffer.resize(BufferSize);
+            m_Buffer.resize(BufferSize);
             m_src1Len = src1Len;
             m_src2Len = src2Len;
             m_dstLen = dstLen;
@@ -371,7 +373,7 @@ namespace tipp
         void filter(const Ipp64fc *pSrc1, int src1Len, const Ipp64fc *pSrc2, int src2Len, Ipp64fc *pDst, int dstLen, int lowLag)
         {
             assertIsInitialised();
-            CrossCorrNorm(pSrc1, src1Len, pSrc2, src2Len, pDst, dstLen, lowLag, m_algType, m_buffer.data());
+            CrossCorrNorm(pSrc1, src1Len, pSrc2, src2Len, pDst, dstLen, lowLag, m_algType, m_Buffer.data());
         }
     };
 
@@ -379,9 +381,9 @@ namespace tipp
     class FilterMedian_Engine
     {
     protected:
-        vector<Ipp8u> m_buffer;
-        vector<T> m_srcDly;
-        vector<T> m_dstDly;
+        vector<Ipp8u> m_Buffer;
+        vector<T> m_DlySrc;
+        vector<T> m_DlyDst;
         int m_maskSize;
 
     public:
@@ -399,49 +401,49 @@ namespace tipp
             m_maskSize = maskSize;
             int bufferSize;
             OptionalAssertNoError(ippsFilterMedianGetBufferSize(maskSize, GetIppDataType<T>(), &bufferSize));
-            m_buffer.resize(bufferSize);
+            m_Buffer.resize(bufferSize);
 
             int dlyLen = maskSize - 1;
-            m_srcDly.resize(dlyLen);
-            m_dstDly.resize(dlyLen);
+            m_DlySrc.resize(dlyLen);
+            m_DlyDst.resize(dlyLen);
         }
 
         void assertIsInitialised()
         {
-            if (m_buffer.empty())
+            if (m_Buffer.empty())
                 throw std::runtime_error("FilterMedian not initialized");
         }
 
         IppStatus filter(const T *pSrc, T *pDst, int len)
         {
             assertIsInitialised();
-            return OptionalAssertNoError(ippsFilterMedian(pSrc, pDst, len, m_maskSize, m_srcDly.data(), m_dstDly.data(), m_buffer.data()));
+            return OptionalAssertNoError(ippsFilterMedian(pSrc, pDst, len, m_maskSize, m_DlySrc.data(), m_DlyDst.data(), m_Buffer.data()));
         }
 
         IppStatus filter_I(const T *pSrcDst, int len)
         {
             assertIsInitialised();
-            return OptionalAssertNoError(ippsFilterMedian_I(pSrcDst, len, m_maskSize, m_srcDly.data(), m_dstDly.data(), m_buffer.data()));
+            return OptionalAssertNoError(ippsFilterMedian_I(pSrcDst, len, m_maskSize, m_DlySrc.data(), m_DlyDst.data(), m_Buffer.data()));
         }
 
         void getSrcDlyLine(T *pDlyLine)
         {
-            Copy(m_srcDly.data(), pDlyLine, m_srcDly.size());
+            Copy(m_DlySrc.data(), pDlyLine, m_DlySrc.size());
         }
 
         void setSrcDlyLine(const T *pDlyLine)
         {
-            Copy(pDlyLine, m_srcDly.data(), m_srcDly.size());
+            Copy(pDlyLine, m_DlySrc.data(), m_DlySrc.size());
         }
 
         void getDstDlyLine(T *pDlyLine)
         {
-            Copy(m_dstDly.data(), pDlyLine, m_dstDly.size());
+            Copy(m_DlyDst.data(), pDlyLine, m_DlyDst.size());
         }
 
         void setDstDlyLine(const T *pDlyLine)
         {
-            Copy(pDlyLine, m_dstDly.data(), m_dstDly.size());
+            Copy(pDlyLine, m_DlyDst.data(), m_DlyDst.size());
         }
     };
 
@@ -449,8 +451,8 @@ namespace tipp
     class IIR_Engine
     {
     protected:
-        vector<Ipp8u> m_buffer;
-        void *m_pState = nullptr; // will this leak memory?
+        vector<Ipp8u> m_Buffer;
+        void *m_State = nullptr; // will this leak memory?
         vector<internalType> m_DlyLine;
         int m_order;
 
@@ -468,47 +470,49 @@ namespace tipp
             m_order = order;
             int bufferSize;
             OptionalAssertNoError(IIRGetStateSize<internalType, externalType>(order, &bufferSize));
-            m_buffer.resize(bufferSize);
+            m_Buffer.resize(bufferSize);
             m_DlyLine.resize(order);
-            IIRInit<internalType, externalType>(&m_pState, pTaps, order, m_DlyLine.data(), m_buffer.data());
+            IIRInit<internalType, externalType>(&m_State, pTaps, order, m_DlyLine.data(), m_Buffer.data());
         }
 
         void assertIsInitialised()
         {
-            if (m_buffer.empty())
+            if (m_Buffer.empty())
                 throw std::runtime_error("Buffer not initialized");
         }
 
-        IppStatus apply(const T *pSrc, T *pDst, int len)
+        IppStatus apply(const externalType *pSrc, externalType *pDst, int len)
         {
             assertIsInitialised();
-            return OptionalAssertNoError(ippsFilterMedian(pSrc, pDst, len, m_maskSize, m_srcDly.data(), m_dstDly.data(), m_buffer.data()));
+            return OptionalAssertNoError(IIR(pSrc, pDst, len, m_State));
         }
 
-        IppStatus apply_I(const T *pSrcDst, int len)
+        IppStatus apply_I(const externalType *pSrcDst, int len)
         {
             assertIsInitialised();
-            return OptionalAssertNoError(ippsFilterMedian_I(pSrcDst, len, m_maskSize, m_srcDly.data(), m_dstDly.data(), m_buffer.data()));
+            return OptionalAssertNoError(IIR_I(pSrcDst, len, m_State));
         }
 
-        void getSrcDlyLine(T *pDlyLine)
+        IppStatus apply_Sfs(const externalType *pSrc, externalType *pDst, int len, int scaleFactor)
         {
-            Copy(m_srcDly.data(), pDlyLine, m_srcDly.size());
+            assertIsInitialised();
+            return OptionalAssertNoError(IIR_Sfs(pSrc, pDst, len, m_State, scaleFactor));
         }
 
-        void setSrcDlyLine(const T *pDlyLine)
+        IppStatus apply_ISfs(const externalType *pSrcDst, externalType *pDst, int len, int scaleFactor)
         {
-            Copy(pDlyLine, m_srcDly.data(), m_srcDly.size());
+            assertIsInitialised();
+            return OptionalAssertNoError(IIR_Sfs(pSrcDst, len, m_State, scaleFactor));
         }
 
-        void getDstDlyLine(T *pDlyLine)
+        void getDlyLine(internalType *pDlyLine)
         {
-            Copy(m_dstDly.data(), pDlyLine, m_dstDly.size());
+            IIRGetDlyLine(m_State.data(), pDlyLine);
         }
 
-        void setDstDlyLine(const T *pDlyLine)
+        void setDlyLine(const internalType *pDlyLine)
         {
-            Copy(pDlyLine, m_dstDly.data(), m_dstDly.size());
+            IIRSetDlyLine(m_State.data(), pDlyLine);
         }
     };
 
@@ -516,8 +520,8 @@ namespace tipp
     class Hilbert_Engine
     {
     protected:
-        vector<Ipp8u> m_buffer;
-        vector<Ipp8u> m_spec;
+        vector<Ipp8u> m_Buffer;
+        vector<Ipp8u> m_Spec;
         int m_length;
 
     public:
@@ -534,22 +538,22 @@ namespace tipp
             int bufferSize;
             int specSize;
             OptionalAssertNoError(HilbertGetSize<T>(length, ippAlgHintAccurate, &specSize, &bufferSize));
-            m_buffer.resize(bufferSize);
-            m_spec.resize(specSize);
+            m_Buffer.resize(bufferSize);
+            m_Spec.resize(specSize);
 
-            OptionalAssertNoError(HilbertInit<T>(length, ippAlgHintAccurate, (IppsHilbertSpec *)m_spec.data(), m_buffer.data()));
+            OptionalAssertNoError(HilbertInit<T>(length, ippAlgHintAccurate, (IppsHilbertSpec *)m_Spec.data(), m_Buffer.data()));
         }
 
         void assertIsInitialised()
         {
-            if (m_buffer.empty())
+            if (m_Buffer.empty())
                 throw std::runtime_error("Hilbert_Engine not initialized");
         }
 
         IppStatus Fwd(const T *pSrc, T *pDst)
         {
             assertIsInitialised();
-            return OptionalAssertNoError(Hilbert(pSrc, pDst, (IppsHilbertSpec *)m_spec.data(), m_buffer.data()));
+            return OptionalAssertNoError(Hilbert(pSrc, pDst, (IppsHilbertSpec *)m_Spec.data(), m_Buffer.data()));
         }
 
         vector<T> Fwd_V(vector<T> Src)
@@ -566,7 +570,7 @@ namespace tipp
     class TopK_Engine
     {
     protected:
-        vector<Ipp8u> m_buffer;
+        vector<Ipp8u> m_Buffer;
         int m_srcLen;
         int m_dstLen;
         IppTopKMode m_hint; // ippTopKAuto, ippTopKDirect, ippTopKRadix
@@ -588,12 +592,12 @@ namespace tipp
             m_hint = hint;
             int bufferSize;
             OptionalAssertNoError(ippsTopKGetBufferSize(srcLen, dstLen, GetIppDataType<T>(), hint, &bufferSize));
-            m_buffer.resize(bufferSize);
+            m_Buffer.resize(bufferSize);
         }
 
         void assertIsInitialised()
         {
-            if (m_buffer.empty())
+            if (m_Buffer.empty())
                 throw std::runtime_error("TopK_Engine not initialized");
         }
 
@@ -601,7 +605,7 @@ namespace tipp
         {
             assertIsInitialised();
             OptionalAssertNoError(TopKInit(pDstValue, pDstIndex, m_dstLen));
-            return OptionalAssertNoError(TopK(pSrc, srcIndex, srcStride, srcLen, pDstValue, pDstIndex, m_dstLen, m_hint, m_buffer.data()));
+            return OptionalAssertNoError(TopK(pSrc, srcIndex, srcStride, srcLen, pDstValue, pDstIndex, m_dstLen, m_hint, m_Buffer.data()));
         }
 
         std::pair<vector<T>, vector<Ipp64s>> get_topk_V(vector<T> Src)
@@ -621,7 +625,7 @@ namespace tipp
     class AutoCorrNorm_Engine
     {
     protected:
-        vector<Ipp8u> m_buffer;
+        vector<Ipp8u> m_Buffer;
         int m_srcLen, m_dstLen;
         IppEnum m_algType;
 
@@ -647,7 +651,7 @@ namespace tipp
 
             int BufferSize;
             ippsAutoCorrNormGetBufferSize(srcLen, dstLen, GetIppDataType<T>(), algType, &BufferSize);
-            m_buffer.resize(BufferSize);
+            m_Buffer.resize(BufferSize);
             m_srcLen = srcLen;
             m_dstLen = dstLen;
             m_algType = algType;
@@ -655,14 +659,14 @@ namespace tipp
 
         void assertIsInitialised()
         {
-            if (m_buffer.empty())
+            if (m_Buffer.empty())
                 throw std::runtime_error("AutoCorrNorm_Engine not initialized");
         }
 
         IppStatus filter(const T *pSrc, T *pDst)
         {
             assertIsInitialised();
-            return OptionalAssertNoError(AutoCorrNorm(pSrc, m_srcLen, pDst, m_dstLen, m_algType, m_buffer.data()));
+            return OptionalAssertNoError(AutoCorrNorm(pSrc, m_srcLen, pDst, m_dstLen, m_algType, m_Buffer.data()));
         }
 
         vector<T> filter_V(vector<T> Src)
@@ -750,7 +754,6 @@ namespace tipp
     };
 
     // TODO: Create Engine for FIRSparse
-    // TODO: Create Engine for IIR
     // TODO: Create Engine for PatternMatch
 
     template <typename T>
