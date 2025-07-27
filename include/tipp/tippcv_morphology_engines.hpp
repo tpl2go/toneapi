@@ -1,6 +1,6 @@
 #pragma once
-#include <ipp/ippi.h>
 #include <ipp/ippcv.h>
+#include <ipp/ippcv_l.h>
 #include "tipp_error.hpp"
 #include "tipp_vector.hpp"
 

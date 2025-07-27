@@ -885,16 +885,13 @@ namespace tipp
 
     static inline IppStatus ResamplePolyphase(const Ipp16s *pSrc, int len, Ipp16s *pDst, Ipp64f factor, Ipp32f norm, Ipp64f *pTime, int *pOutlen, const IppsResamplingPolyphase_16s *pSpec) { return OptionalAssertNoError(ippsResamplePolyphase_16s(pSrc, len, pDst, factor, norm, pTime, pOutlen, pSpec)); }
     static inline IppStatus ResamplePolyphase(const Ipp32f *pSrc, int len, Ipp32f *pDst, Ipp64f factor, Ipp32f norm, Ipp64f *pTime, int *pOutlen, const IppsResamplingPolyphase_32f *pSpec) { return OptionalAssertNoError(ippsResamplePolyphase_32f(pSrc, len, pDst, factor, norm, pTime, pOutlen, pSpec)); }
-    static inline IppStatus ResamplePolyphaseFixed(const Ipp16s *pSrc, int len, Ipp16s *pDst, Ipp32f norm, Ipp64f *pTime, int *pOutlen, const IppsResamplingPolyphaseFixed_16s *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseFixed_16s(pSrc, len, pDst, norm, pTime, pOutlen, pSpec)); }
-    static inline IppStatus ResamplePolyphaseFixed(const Ipp32f *pSrc, int len, Ipp32f *pDst, Ipp32f norm, Ipp64f *pTime, int *pOutlen, const IppsResamplingPolyphaseFixed_32f *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseFixed_32f(pSrc, len, pDst, norm, pTime, pOutlen, pSpec)); }
 
-    static inline IppStatus ResamplePolyphaseGetFixedFilter(Ipp16s *pDst, int step, int height, const IppsResamplingPolyphaseFixed_16s *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseGetFixedFilter_16s(pDst, step, height, pSpec)); }
-    static inline IppStatus ResamplePolyphaseGetFixedFilter(Ipp32f *pDst, int step, int height, const IppsResamplingPolyphaseFixed_32f *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseGetFixedFilter_32f(pDst, step, height, pSpec)); }
-
-    static inline IppStatus ResamplePolyphaseInit(Ipp32f window, int nStep, Ipp32f rollf, Ipp32f alpha, IppsResamplingPolyphase_16s *pSpec, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseInit_16s(window, nStep, rollf, alpha, pSpec, hint)); }
-    static inline IppStatus ResamplePolyphaseInit(Ipp32f window, int nStep, Ipp32f rollf, Ipp32f alpha, IppsResamplingPolyphase_32f *pSpec, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseInit_32f(window, nStep, rollf, alpha, pSpec, hint)); }
-    static inline IppStatus ResamplePolyphaseFixedInit(int inRate, int outRate, int len, Ipp32f rollf, Ipp32f alpha, IppsResamplingPolyphaseFixed_16s *pSpec, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseFixedInit_16s(inRate, outRate, len, rollf, alpha, pSpec, hint)); }
-    static inline IppStatus ResamplePolyphaseFixedInit(int inRate, int outRate, int len, Ipp32f rollf, Ipp32f alpha, IppsResamplingPolyphaseFixed_32f *pSpec, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseFixedInit_32f(inRate, outRate, len, rollf, alpha, pSpec, hint)); }
+    template <typename T>
+    static inline IppStatus ResamplePolyphaseInit(Ipp32f window, int nStep, Ipp32f rollf, Ipp32f alpha, void *pSpec, IppHintAlgorithm hint);
+    template <>
+    static inline IppStatus ResamplePolyphaseInit<Ipp16s>(Ipp32f window, int nStep, Ipp32f rollf, Ipp32f alpha, void *pSpec, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseInit_16s(window, nStep, rollf, alpha, (IppsResamplingPolyphase_16s *)pSpec, hint)); }
+    template <>
+    static inline IppStatus ResamplePolyphaseInit<Ipp32f>(Ipp32f window, int nStep, Ipp32f rollf, Ipp32f alpha, void *pSpec, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseInit_32f(window, nStep, rollf, alpha, (IppsResamplingPolyphase_32f *)pSpec, hint)); }
 
     template <typename T>
     static inline IppStatus ResamplePolyphaseGetSize(Ipp32f window, int nStep, int *pSize, IppHintAlgorithm hint);
@@ -904,14 +901,39 @@ namespace tipp
     static inline IppStatus ResamplePolyphaseGetSize<Ipp32f>(Ipp32f window, int nStep, int *pSize, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseGetSize_32f(window, nStep, pSize, hint)); }
 
     template <typename T>
+    static inline IppStatus ResamplePolyphaseFixedInit(int inRate, int outRate, int len, Ipp32f rollf, Ipp32f alpha, void *pSpec, IppHintAlgorithm hint);
+    template <>
+    static inline IppStatus ResamplePolyphaseFixedInit<Ipp16s>(int inRate, int outRate, int len, Ipp32f rollf, Ipp32f alpha, void *pSpec, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseFixedInit_16s(inRate, outRate, len, rollf, alpha, (IppsResamplingPolyphaseFixed_16s *)pSpec, hint)); }
+    template <>
+    static inline IppStatus ResamplePolyphaseFixedInit<Ipp32f>(int inRate, int outRate, int len, Ipp32f rollf, Ipp32f alpha, void *pSpec, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseFixedInit_32f(inRate, outRate, len, rollf, alpha, (IppsResamplingPolyphaseFixed_32f *)pSpec, hint)); }
+
+    template <typename T>
+    static inline IppStatus ResamplePolyphaseFixed(const T *pSrc, int len, T *pDst, Ipp32f norm, Ipp64f *pTime, int *pOutlen, const void *pSpec);
+    template <>
+    static inline IppStatus ResamplePolyphaseFixed<Ipp16s>(const Ipp16s *pSrc, int len, Ipp16s *pDst, Ipp32f norm, Ipp64f *pTime, int *pOutlen, const void *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseFixed_16s(pSrc, len, pDst, norm, pTime, pOutlen, (const IppsResamplingPolyphaseFixed_16s *)pSpec)); }
+    template <>
+    static inline IppStatus ResamplePolyphaseFixed<Ipp32f>(const Ipp32f *pSrc, int len, Ipp32f *pDst, Ipp32f norm, Ipp64f *pTime, int *pOutlen, const void *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseFixed_32f(pSrc, len, pDst, norm, pTime, pOutlen, (const IppsResamplingPolyphaseFixed_32f *)pSpec)); }
+
+    template <typename T>
+    static inline IppStatus ResamplePolyphaseGetFixedFilter(T *pDst, int step, int height, const void *pSpec);
+    template <>
+    static inline IppStatus ResamplePolyphaseGetFixedFilter<Ipp16s>(Ipp16s *pDst, int step, int height, const void *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseGetFixedFilter_16s(pDst, step, height, (const IppsResamplingPolyphaseFixed_16s *)pSpec)); }
+    template <>
+    static inline IppStatus ResamplePolyphaseGetFixedFilter<Ipp32f>(Ipp32f *pDst, int step, int height, const void *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseGetFixedFilter_32f(pDst, step, height, (const IppsResamplingPolyphaseFixed_32f *)pSpec)); }
+
+    template <typename T>
     static inline IppStatus ResamplePolyphaseFixedGetSize(int inRate, int outRate, int len, int *pSize, int *pLen, int *pHeight, IppHintAlgorithm hint);
     template <>
     static inline IppStatus ResamplePolyphaseFixedGetSize<Ipp16s>(int inRate, int outRate, int len, int *pSize, int *pLen, int *pHeight, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseFixedGetSize_16s(inRate, outRate, len, pSize, pLen, pHeight, hint)); }
     template <>
     static inline IppStatus ResamplePolyphaseFixedGetSize<Ipp32f>(int inRate, int outRate, int len, int *pSize, int *pLen, int *pHeight, IppHintAlgorithm hint) { return OptionalAssertNoError(ippsResamplePolyphaseFixedGetSize_32f(inRate, outRate, len, pSize, pLen, pHeight, hint)); }
 
-    static inline IppStatus ResamplePolyphaseSetFixedFilter(const Ipp16s *pSrc, int step, int height, IppsResamplingPolyphaseFixed_16s *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseSetFixedFilter_16s(pSrc, step, height, pSpec)); }
-    static inline IppStatus ResamplePolyphaseSetFixedFilter(const Ipp32f *pSrc, int step, int height, IppsResamplingPolyphaseFixed_32f *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseSetFixedFilter_32f(pSrc, step, height, pSpec)); }
+    template <typename T>
+    static inline IppStatus ResamplePolyphaseSetFixedFilter(const T *pSrc, int step, int height, void *pSpec);
+    template <>
+    static inline IppStatus ResamplePolyphaseSetFixedFilter<Ipp16s>(const Ipp16s *pSrc, int step, int height, void *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseSetFixedFilter_16s(pSrc, step, height, (IppsResamplingPolyphaseFixed_16s *)pSpec)); }
+    template <>
+    static inline IppStatus ResamplePolyphaseSetFixedFilter<Ipp32f>(const Ipp32f *pSrc, int step, int height, void *pSpec) { return OptionalAssertNoError(ippsResamplePolyphaseSetFixedFilter_32f(pSrc, step, height, (IppsResamplingPolyphaseFixed_32f *)pSpec)); }
 
     // TODO: Create Engine for ResamplePolyphase
 
@@ -931,63 +953,125 @@ namespace tipp
     static inline IppStatus FIRSparseGetDlyLine(const IppsFIRSparseState_32fc *pState, Ipp32fc *pDlyLine) { return OptionalAssertNoError(ippsFIRSparseGetDlyLine_32fc(pState, pDlyLine)); }
 
     // TODO: Create Engine for FIRSparse
+    template <typename T>
+    static inline IppStatus WTFwdGetSize(int lenLow, int offsLow, int lenHigh, int offsHigh, int *pStateSize) { return OptionalAssertNoError(ippsWTFwdGetSize(GetIppDataType<T>(), lenLow, offsLow, lenHigh, offsHigh, pStateSize)); }
+    template <typename T>
+    inline IppStatus WTInvGetSize(int lenLow, int offsLow, int lenHigh, int offsHigh, int *pStateSize) { return OptionalAssertNoError(ippsWTInvGetSize(GetIppDataType<T>(), lenLow, offsLow, lenHigh, offsHigh, pStateSize)); }
 
-    static inline IppStatus WTFwdGetSize(IppDataType srcType, int lenLow, int offsLow, int lenHigh, int offsHigh, int *pStateSize) { return OptionalAssertNoError(ippsWTFwdGetSize(srcType, lenLow, offsLow, lenHigh, offsHigh, pStateSize)); }
-    static inline IppStatus WTInvGetSize(IppDataType dstType, int lenLow, int offsLow, int lenHigh, int offsHigh, int *pStateSize) { return OptionalAssertNoError(ippsWTInvGetSize(dstType, lenLow, offsLow, lenHigh, offsHigh, pStateSize)); }
-    static inline IppStatus WTFwdInit(IppsWTFwdState_32f *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTFwdInit_32f(pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
-    static inline IppStatus WTFwdInit(IppsWTFwdState_8u32f *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTFwdInit_8u32f(pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
-    static inline IppStatus WTFwdInit(IppsWTFwdState_16s32f *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTFwdInit_16s32f(pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
-    static inline IppStatus WTFwdInit(IppsWTFwdState_16u32f *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTFwdInit_16u32f(pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
-    static inline IppStatus WTInvInit(IppsWTInvState_32f *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTInvInit_32f(pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
-    static inline IppStatus WTInvInit(IppsWTInvState_32f8u *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTInvInit_32f8u(pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
-    static inline IppStatus WTInvInit(IppsWTInvState_32f16s *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTInvInit_32f16s(pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
-    static inline IppStatus WTInvInit(IppsWTInvState_32f16u *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTInvInit_32f16u(pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
+    template <typename T>
+    static inline IppStatus WTFwdInit(void *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh);
+    template <>
+    static inline IppStatus WTFwdInit<Ipp32f>(void *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTFwdInit_32f((IppsWTFwdState_32f *)pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
+    template <>
+    static inline IppStatus WTFwdInit<Ipp8u>(void *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTFwdInit_8u32f((IppsWTFwdState_8u32f *)pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
+    template <>
+    static inline IppStatus WTFwdInit<Ipp16s>(void *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTFwdInit_16s32f((IppsWTFwdState_16s32f *)pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
+    template <>
+    static inline IppStatus WTFwdInit<Ipp16u>(void *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTFwdInit_16u32f((IppsWTFwdState_16u32f *)pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
 
-    static inline IppStatus WTFwd(const Ipp32f *pSrc, Ipp32f *pDstLow, Ipp32f *pDstHigh, int dstLen, IppsWTFwdState_32f *pState) { return OptionalAssertNoError(ippsWTFwd_32f(pSrc, pDstLow, pDstHigh, dstLen, pState)); }
-    static inline IppStatus WTFwd(const Ipp8u *pSrc, Ipp32f *pDstLow, Ipp32f *pDstHigh, int dstLen, IppsWTFwdState_8u32f *pState) { return OptionalAssertNoError(ippsWTFwd_8u32f(pSrc, pDstLow, pDstHigh, dstLen, pState)); }
-    static inline IppStatus WTFwd(const Ipp16s *pSrc, Ipp32f *pDstLow, Ipp32f *pDstHigh, int dstLen, IppsWTFwdState_16s32f *pState) { return OptionalAssertNoError(ippsWTFwd_16s32f(pSrc, pDstLow, pDstHigh, dstLen, pState)); }
-    static inline IppStatus WTFwd(const Ipp16u *pSrc, Ipp32f *pDstLow, Ipp32f *pDstHigh, int dstLen, IppsWTFwdState_16u32f *pState) { return OptionalAssertNoError(ippsWTFwd_16u32f(pSrc, pDstLow, pDstHigh, dstLen, pState)); }
+    template <typename T>
+    static inline IppStatus WTInvInit(void *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh);
+    template <>
+    static inline IppStatus WTInvInit<Ipp32f>(void *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTInvInit_32f((IppsWTInvState_32f *)pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
+    template <>
+    static inline IppStatus WTInvInit<Ipp8u>(void *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTInvInit_32f8u((IppsWTInvState_32f8u *)pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
+    template <>
+    static inline IppStatus WTInvInit<Ipp16s>(void *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTInvInit_32f16s((IppsWTInvState_32f16s *)pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
+    template <>
+    static inline IppStatus WTInvInit<Ipp16u>(void *pState, const Ipp32f *pTapsLow, int lenLow, int offsLow, const Ipp32f *pTapsHigh, int lenHigh, int offsHigh) { return OptionalAssertNoError(ippsWTInvInit_32f16u((IppsWTInvState_32f16u *)pState, pTapsLow, lenLow, offsLow, pTapsHigh, lenHigh, offsHigh)); }
 
-    static inline IppStatus WTFwdSetDlyLine(IppsWTFwdState_32f *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdSetDlyLine_32f(pState, pDlyLow, pDlyHigh)); }
-    static inline IppStatus WTFwdSetDlyLine(IppsWTFwdState_8u32f *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdSetDlyLine_8u32f(pState, pDlyLow, pDlyHigh)); }
-    static inline IppStatus WTFwdSetDlyLine(IppsWTFwdState_16s32f *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdSetDlyLine_16s32f(pState, pDlyLow, pDlyHigh)); }
-    static inline IppStatus WTFwdSetDlyLine(IppsWTFwdState_16u32f *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdSetDlyLine_16u32f(pState, pDlyLow, pDlyHigh)); }
+    static inline IppStatus WTFwd(const Ipp32f *pSrc, Ipp32f *pDstLow, Ipp32f *pDstHigh, int dstLen, void *pState) { return OptionalAssertNoError(ippsWTFwd_32f(pSrc, pDstLow, pDstHigh, dstLen, (IppsWTFwdState_32f *)pState)); }
+    static inline IppStatus WTFwd(const Ipp8u *pSrc, Ipp32f *pDstLow, Ipp32f *pDstHigh, int dstLen, void *pState) { return OptionalAssertNoError(ippsWTFwd_8u32f(pSrc, pDstLow, pDstHigh, dstLen, (IppsWTFwdState_8u32f *)pState)); }
+    static inline IppStatus WTFwd(const Ipp16s *pSrc, Ipp32f *pDstLow, Ipp32f *pDstHigh, int dstLen, void *pState) { return OptionalAssertNoError(ippsWTFwd_16s32f(pSrc, pDstLow, pDstHigh, dstLen, (IppsWTFwdState_16s32f *)pState)); }
+    static inline IppStatus WTFwd(const Ipp16u *pSrc, Ipp32f *pDstLow, Ipp32f *pDstHigh, int dstLen, void *pState) { return OptionalAssertNoError(ippsWTFwd_16u32f(pSrc, pDstLow, pDstHigh, dstLen, (IppsWTFwdState_16u32f *)pState)); }
 
-    static inline IppStatus WTFwdGetDlyLine(IppsWTFwdState_32f *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdGetDlyLine_32f(pState, pDlyLow, pDlyHigh)); }
-    static inline IppStatus WTFwdGetDlyLine(IppsWTFwdState_8u32f *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdGetDlyLine_8u32f(pState, pDlyLow, pDlyHigh)); }
-    static inline IppStatus WTFwdGetDlyLine(IppsWTFwdState_16s32f *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdGetDlyLine_16s32f(pState, pDlyLow, pDlyHigh)); }
-    static inline IppStatus WTFwdGetDlyLine(IppsWTFwdState_16u32f *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdGetDlyLine_16u32f(pState, pDlyLow, pDlyHigh)); }
+    template <typename T>
+    static inline IppStatus WTFwdSetDlyLine(void *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh);
+    template <>
+    static inline IppStatus WTFwdSetDlyLine<Ipp32f>(void *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdSetDlyLine_32f((IppsWTFwdState_32f *)pState, pDlyLow, pDlyHigh)); }
+    template <>
+    static inline IppStatus WTFwdSetDlyLine<Ipp8u>(void *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdSetDlyLine_8u32f((IppsWTFwdState_8u32f *)pState, pDlyLow, pDlyHigh)); }
+    template <>
+    static inline IppStatus WTFwdSetDlyLine<Ipp16s>(void *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdSetDlyLine_16s32f((IppsWTFwdState_16s32f *)pState, pDlyLow, pDlyHigh)); }
+    template <>
+    static inline IppStatus WTFwdSetDlyLine<Ipp16u>(void *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdSetDlyLine_16u32f((IppsWTFwdState_16u32f *)pState, pDlyLow, pDlyHigh)); }
 
-    static inline IppStatus WTInv(const Ipp32f *pSrcLow, const Ipp32f *pSrcHigh, int srcLen, Ipp32f *pDst, IppsWTInvState_32f *pState) { return OptionalAssertNoError(ippsWTInv_32f(pSrcLow, pSrcHigh, srcLen, pDst, pState)); }
-    static inline IppStatus WTInv(const Ipp32f *pSrcLow, const Ipp32f *pSrcHigh, int srcLen, Ipp8u *pDst, IppsWTInvState_32f8u *pState) { return OptionalAssertNoError(ippsWTInv_32f8u(pSrcLow, pSrcHigh, srcLen, pDst, pState)); }
-    static inline IppStatus WTInv(const Ipp32f *pSrcLow, const Ipp32f *pSrcHigh, int srcLen, Ipp16s *pDst, IppsWTInvState_32f16s *pState) { return OptionalAssertNoError(ippsWTInv_32f16s(pSrcLow, pSrcHigh, srcLen, pDst, pState)); }
-    static inline IppStatus WTInv(const Ipp32f *pSrcLow, const Ipp32f *pSrcHigh, int srcLen, Ipp16u *pDst, IppsWTInvState_32f16u *pState) { return OptionalAssertNoError(ippsWTInv_32f16u(pSrcLow, pSrcHigh, srcLen, pDst, pState)); }
+    template <typename T>
+    static inline IppStatus WTFwdGetDlyLine(void *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh);
+    template <>
+    static inline IppStatus WTFwdGetDlyLine<Ipp32f>(void *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdGetDlyLine_32f((IppsWTFwdState_32f *)pState, pDlyLow, pDlyHigh)); }
+    template <>
+    static inline IppStatus WTFwdGetDlyLine<Ipp8u>(void *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdGetDlyLine_8u32f((IppsWTFwdState_8u32f *)pState, pDlyLow, pDlyHigh)); }
+    template <>
+    static inline IppStatus WTFwdGetDlyLine<Ipp16s>(void *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdGetDlyLine_16s32f((IppsWTFwdState_16s32f *)pState, pDlyLow, pDlyHigh)); }
+    template <>
+    static inline IppStatus WTFwdGetDlyLine<Ipp16u>(void *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTFwdGetDlyLine_16u32f((IppsWTFwdState_16u32f *)pState, pDlyLow, pDlyHigh)); }
 
-    static inline IppStatus WTInvSetDlyLine(IppsWTInvState_32f *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvSetDlyLine_32f(pState, pDlyLow, pDlyHigh)); }
-    static inline IppStatus WTInvSetDlyLine(IppsWTInvState_32f8u *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvSetDlyLine_32f8u(pState, pDlyLow, pDlyHigh)); }
-    static inline IppStatus WTInvSetDlyLine(IppsWTInvState_32f16s *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvSetDlyLine_32f16s(pState, pDlyLow, pDlyHigh)); }
-    static inline IppStatus WTInvSetDlyLine(IppsWTInvState_32f16u *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvSetDlyLine_32f16u(pState, pDlyLow, pDlyHigh)); }
+    template <typename T>
+    static inline IppStatus WTInv(const Ipp32f *pSrcLow, const Ipp32f *pSrcHigh, int srcLen, T *pDst, void *pState);
+    template <>
+    static inline IppStatus WTInv<Ipp32f>(const Ipp32f *pSrcLow, const Ipp32f *pSrcHigh, int srcLen, Ipp32f *pDst, void *pState) { return OptionalAssertNoError(ippsWTInv_32f(pSrcLow, pSrcHigh, srcLen, pDst, (IppsWTInvState_32f *)pState)); }
+    template <>
+    static inline IppStatus WTInv<Ipp8u>(const Ipp32f *pSrcLow, const Ipp32f *pSrcHigh, int srcLen, Ipp8u *pDst, void *pState) { return OptionalAssertNoError(ippsWTInv_32f8u(pSrcLow, pSrcHigh, srcLen, pDst, (IppsWTInvState_32f8u *)pState)); }
+    template <>
+    static inline IppStatus WTInv<Ipp16s>(const Ipp32f *pSrcLow, const Ipp32f *pSrcHigh, int srcLen, Ipp16s *pDst, void *pState) { return OptionalAssertNoError(ippsWTInv_32f16s(pSrcLow, pSrcHigh, srcLen, pDst, (IppsWTInvState_32f16s *)pState)); }
+    template <>
+    static inline IppStatus WTInv<Ipp16u>(const Ipp32f *pSrcLow, const Ipp32f *pSrcHigh, int srcLen, Ipp16u *pDst, void *pState) { return OptionalAssertNoError(ippsWTInv_32f16u(pSrcLow, pSrcHigh, srcLen, pDst, (IppsWTInvState_32f16u *)pState)); }
 
-    static inline IppStatus WTInvGetDlyLine(IppsWTInvState_32f *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvGetDlyLine_32f(pState, pDlyLow, pDlyHigh)); }
-    static inline IppStatus WTInvGetDlyLine(IppsWTInvState_32f8u *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvGetDlyLine_32f8u(pState, pDlyLow, pDlyHigh)); }
-    static inline IppStatus WTInvGetDlyLine(IppsWTInvState_32f16s *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvGetDlyLine_32f16s(pState, pDlyLow, pDlyHigh)); }
-    static inline IppStatus WTInvGetDlyLine(IppsWTInvState_32f16u *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvGetDlyLine_32f16u(pState, pDlyLow, pDlyHigh)); }
+    template <typename T>
+    static inline IppStatus WTInvSetDlyLine(void *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh);
+    template <>
+    static inline IppStatus WTInvSetDlyLine<Ipp32f>(void *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvSetDlyLine_32f((IppsWTInvState_32f *)pState, pDlyLow, pDlyHigh)); }
+    template <>
+    static inline IppStatus WTInvSetDlyLine<Ipp8u>(void *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvSetDlyLine_32f8u((IppsWTInvState_32f8u *)pState, pDlyLow, pDlyHigh)); }
+    template <>
+    static inline IppStatus WTInvSetDlyLine<Ipp16s>(void *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvSetDlyLine_32f16s((IppsWTInvState_32f16s *)pState, pDlyLow, pDlyHigh)); }
+    template <>
+    static inline IppStatus WTInvSetDlyLine<Ipp16u>(void *pState, const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvSetDlyLine_32f16u((IppsWTInvState_32f16u *)pState, pDlyLow, pDlyHigh)); }
 
-    // TODO: Create Engine for WT
+    template <typename T>
+    static inline IppStatus WTInvGetDlyLine(void *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh);
+    template <>
+    static inline IppStatus WTInvGetDlyLine<Ipp32f>(void *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvGetDlyLine_32f((IppsWTInvState_32f *)pState, pDlyLow, pDlyHigh)); }
+    template <>
+    static inline IppStatus WTInvGetDlyLine<Ipp8u>(void *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvGetDlyLine_32f8u((IppsWTInvState_32f8u *)pState, pDlyLow, pDlyHigh)); }
+    template <>
+    static inline IppStatus WTInvGetDlyLine<Ipp16s>(void *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvGetDlyLine_32f16s((IppsWTInvState_32f16s *)pState, pDlyLow, pDlyHigh)); }
+    template <>
+    static inline IppStatus WTInvGetDlyLine<Ipp16u>(void *pState, Ipp32f *pDlyLow, Ipp32f *pDlyHigh) { return OptionalAssertNoError(ippsWTInvGetDlyLine_32f16u((IppsWTInvState_32f16u *)pState, pDlyLow, pDlyHigh)); }
+
+    static inline IppStatus WTHaarFwd(const Ipp32f *pSrc, int len, Ipp32f *pDstLow, Ipp32f *pDstHigh) { return OptionalAssertNoError(ippsWTHaarFwd_32f(pSrc, len, pDstLow, pDstHigh)); }
+    static inline IppStatus WTHaarFwd(const Ipp64f *pSrc, int len, Ipp64f *pDstLow, Ipp64f *pDstHigh) { return OptionalAssertNoError(ippsWTHaarFwd_64f(pSrc, len, pDstLow, pDstHigh)); }
+    static inline IppStatus WTHaarInv(const Ipp32f *pSrcLow, const Ipp32f *pSrcHigh, Ipp32f *pDst, int len) { return OptionalAssertNoError(ippsWTHaarInv_32f(pSrcLow, pSrcHigh, pDst, len)); }
+    static inline IppStatus WTHaarInv(const Ipp64f *pSrcLow, const Ipp64f *pSrcHigh, Ipp64f *pDst, int len) { return OptionalAssertNoError(ippsWTHaarInv_64f(pSrcLow, pSrcHigh, pDst, len)); }
 
     // IIRInit wrappers (Direct Form)
-    static inline IppStatus IIRInit(IppsIIRState32f_16s **ppState, const Ipp32f *pTaps, int order, const Ipp32f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit32f_16s(ppState, pTaps, order, pDlyLine, pBuf)); }
-    static inline IppStatus IIRInit(IppsIIRState64f_16s **ppState, const Ipp64f *pTaps, int order, const Ipp64f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64f_16s(ppState, pTaps, order, pDlyLine, pBuf)); }
-    static inline IppStatus IIRInit(IppsIIRState64f_32s **ppState, const Ipp64f *pTaps, int order, const Ipp64f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64f_32s(ppState, pTaps, order, pDlyLine, pBuf)); }
-    static inline IppStatus IIRInit(IppsIIRState32fc_16sc **ppState, const Ipp32fc *pTaps, int order, const Ipp32fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit32fc_16sc(ppState, pTaps, order, pDlyLine, pBuf)); }
-    static inline IppStatus IIRInit(IppsIIRState64fc_16sc **ppState, const Ipp64fc *pTaps, int order, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64fc_16sc(ppState, pTaps, order, pDlyLine, pBuf)); }
-    static inline IppStatus IIRInit(IppsIIRState64fc_32sc **ppState, const Ipp64fc *pTaps, int order, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64fc_32sc(ppState, pTaps, order, pDlyLine, pBuf)); }
-    static inline IppStatus IIRInit(IppsIIRState_32f **ppState, const Ipp32f *pTaps, int order, const Ipp32f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_32f(ppState, pTaps, order, pDlyLine, pBuf)); }
-    static inline IppStatus IIRInit(IppsIIRState64f_32f **ppState, const Ipp64f *pTaps, int order, const Ipp64f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64f_32f(ppState, pTaps, order, pDlyLine, pBuf)); }
-    static inline IppStatus IIRInit(IppsIIRState_64f **ppState, const Ipp64f *pTaps, int order, const Ipp64f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_64f(ppState, pTaps, order, pDlyLine, pBuf)); }
-    static inline IppStatus IIRInit(IppsIIRState_32fc **ppState, const Ipp32fc *pTaps, int order, const Ipp32fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_32fc(ppState, pTaps, order, pDlyLine, pBuf)); }
-    static inline IppStatus IIRInit(IppsIIRState64fc_32fc **ppState, const Ipp64fc *pTaps, int order, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64fc_32fc(ppState, pTaps, order, pDlyLine, pBuf)); }
-    static inline IppStatus IIRInit(IppsIIRState_64fc **ppState, const Ipp64fc *pTaps, int order, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_64fc(ppState, pTaps, order, pDlyLine, pBuf)); }
+    template <typename T1, typename T2>
+    static inline IppStatus IIRInit(void **ppState, const T1 *pTaps, int order, const T1 *pDlyLine, Ipp8u *pBuf);
+    template <>
+    static inline IppStatus IIRInit<Ipp32f, Ipp16s>(void **ppState, const Ipp32f *pTaps, int order, const Ipp32f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit32f_16s((IppsIIRState32f_16s **)ppState, pTaps, order, pDlyLine, pBuf)); }
+    template <>
+    static inline IppStatus IIRInit<Ipp64f, Ipp16s>(void **ppState, const Ipp64f *pTaps, int order, const Ipp64f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64f_16s((IppsIIRState64f_16s **)ppState, pTaps, order, pDlyLine, pBuf)); }
+    template <>
+    static inline IppStatus IIRInit<Ipp64f, Ipp32s>(void **ppState, const Ipp64f *pTaps, int order, const Ipp64f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64f_32s((IppsIIRState64f_32s **)ppState, pTaps, order, pDlyLine, pBuf)); }
+    template <>
+    static inline IppStatus IIRInit<Ipp32fc, Ipp16sc>(void **ppState, const Ipp32fc *pTaps, int order, const Ipp32fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit32fc_16sc((IppsIIRState32fc_16sc **)ppState, pTaps, order, pDlyLine, pBuf)); }
+    template <>
+    static inline IppStatus IIRInit<Ipp64fc, Ipp16sc>(void **ppState, const Ipp64fc *pTaps, int order, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64fc_16sc((IppsIIRState64fc_16sc **)ppState, pTaps, order, pDlyLine, pBuf)); }
+    template <>
+    static inline IppStatus IIRInit<Ipp64fc, Ipp32sc>(void **ppState, const Ipp64fc *pTaps, int order, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64fc_32sc((IppsIIRState64fc_32sc **)ppState, pTaps, order, pDlyLine, pBuf)); }
+    template <>
+    static inline IppStatus IIRInit<Ipp32f, Ipp32f>(void **ppState, const Ipp32f *pTaps, int order, const Ipp32f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_32f((IppsIIRState_32f **)ppState, pTaps, order, pDlyLine, pBuf)); }
+    template <>
+    static inline IppStatus IIRInit<Ipp64f, Ipp32f>(void **ppState, const Ipp64f *pTaps, int order, const Ipp64f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64f_32f((IppsIIRState64f_32f **)ppState, pTaps, order, pDlyLine, pBuf)); }
+    template <>
+    static inline IppStatus IIRInit<Ipp64f, Ipp64f>(void **ppState, const Ipp64f *pTaps, int order, const Ipp64f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_64f((IppsIIRState_64f **)ppState, pTaps, order, pDlyLine, pBuf)); }
+    template <>
+    static inline IppStatus IIRInit<Ipp32fc, Ipp32fc>(void **ppState, const Ipp32fc *pTaps, int order, const Ipp32fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_32fc((IppsIIRState_32fc **)ppState, pTaps, order, pDlyLine, pBuf)); }
+    template <>
+    static inline IppStatus IIRInit<Ipp64fc, Ipp32fc>(void **ppState, const Ipp64fc *pTaps, int order, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64fc_32fc((IppsIIRState64fc_32fc **)ppState, pTaps, order, pDlyLine, pBuf)); }
+    template <>
+    static inline IppStatus IIRInit<Ipp64fc, Ipp64fc>(void **ppState, const Ipp64fc *pTaps, int order, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_64fc((IppsIIRState_64fc **)ppState, pTaps, order, pDlyLine, pBuf)); }
 
     // IIRInit_BiQuad wrappers
     static inline IppStatus IIRInit_BiQuad(IppsIIRState32f_16s **ppState, const Ipp32f *pTaps, int numBq, const Ipp32f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit32f_BiQuad_16s(ppState, pTaps, numBq, pDlyLine, pBuf)); }
@@ -1475,63 +1559,6 @@ namespace tipp
     //   ippsPatternMatchGetBufferSize
     //   ippsPatternMatch_8u16u
 
-    //   ippsResamplePolyphaseFixedGetSize_16s
-    //   ippsResamplePolyphaseFixedGetSize_32f
-    //   ippsResamplePolyphaseFixedInit_16s
-    //   ippsResamplePolyphaseFixedInit_32f
-    //   ippsResamplePolyphaseFixed_16s
-    //   ippsResamplePolyphaseFixed_32f
-    //   ippsResamplePolyphaseGetFixedFilter_16s
-    //   ippsResamplePolyphaseGetFixedFilter_32f
-    //   ippsResamplePolyphaseGetSize_16s
-    //   ippsResamplePolyphaseGetSize_32f
-    //   ippsResamplePolyphaseInit_16s
-    //   ippsResamplePolyphaseInit_32f
-    //   ippsResamplePolyphaseSetFixedFilter_16s
-    //   ippsResamplePolyphaseSetFixedFilter_32f
-    //   ippsResamplePolyphase_16s
-    //   ippsResamplePolyphase_32f
-
-    //   ippsWTFwdGetDlyLine_16s32f
-    //   ippsWTFwdGetDlyLine_16u32f
-    //   ippsWTFwdGetDlyLine_32f
-    //   ippsWTFwdGetDlyLine_8u32f
-    //   ippsWTFwdGetSize
-    //   ippsWTFwdInit_16s32f
-    //   ippsWTFwdInit_16u32f
-    //   ippsWTFwdInit_32f
-    //   ippsWTFwdInit_8u32f
-    //   ippsWTFwdSetDlyLine_16s32f
-    //   ippsWTFwdSetDlyLine_16u32f
-    //   ippsWTFwdSetDlyLine_32f
-    //   ippsWTFwdSetDlyLine_8u32f
-    //   ippsWTFwd_16s32f
-    //   ippsWTFwd_16u32f
-    //   ippsWTFwd_32f
-    //   ippsWTFwd_8u32f
-    //   ippsWTHaarFwd_16s_Sfs
-    //   ippsWTHaarFwd_32f
-    //   ippsWTHaarFwd_64f
-    //   ippsWTHaarInv_16s_Sfs
-    //   ippsWTHaarInv_32f
-    //   ippsWTHaarInv_64f
-    //   ippsWTInvGetDlyLine_32f
-    //   ippsWTInvGetDlyLine_32f16s
-    //   ippsWTInvGetDlyLine_32f16u
-    //   ippsWTInvGetDlyLine_32f8u
-    //   ippsWTInvGetSize
-    //   ippsWTInvInit_32f
-    //   ippsWTInvInit_32f16s
-    //   ippsWTInvInit_32f16u
-    //   ippsWTInvInit_32f8u
-    //   ippsWTInvSetDlyLine_32f
-    //   ippsWTInvSetDlyLine_32f16s
-    //   ippsWTInvSetDlyLine_32f16u
-    //   ippsWTInvSetDlyLine_32f8u
-    //   ippsWTInv_32f
-    //   ippsWTInv_32f16s
-    //   ippsWTInv_32f16u
-    //   ippsWTInv_32f8u
     static inline IppStatus WinBartlett(const Ipp16s *pSrc, Ipp16s *pDst, int len) { return OptionalAssertNoError(ippsWinBartlett_16s(pSrc, pDst, len)); }
     static inline IppStatus WinBartlett(const Ipp32f *pSrc, Ipp32f *pDst, int len) { return OptionalAssertNoError(ippsWinBartlett_32f(pSrc, pDst, len)); }
     static inline IppStatus WinBartlett(const Ipp64f *pSrc, Ipp64f *pDst, int len) { return OptionalAssertNoError(ippsWinBartlett_64f(pSrc, pDst, len)); }

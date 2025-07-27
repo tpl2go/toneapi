@@ -426,28 +426,89 @@ namespace tipp
 
         void getSrcDlyLine(T *pDlyLine)
         {
-            for (int i = 0; i < m_srcDly.size(); ++i)
-            {
-                pDlyLine[i] = m_srcDly[i];
-            }
+            Copy(m_srcDly.data(), pDlyLine, m_srcDly.size());
         }
 
-        IppStatus setSrcDlyLine(const T *pDlyLine)
+        void setSrcDlyLine(const T *pDlyLine)
         {
-            m_srcDly.set_array(pDlyLine);
+            Copy(pDlyLine, m_srcDly.data(), m_srcDly.size());
         }
 
         void getDstDlyLine(T *pDlyLine)
         {
-            for (int i = 0; i < m_dstDly.size(); ++i)
-            {
-                pDlyLine[i] = m_dstDly[i];
-            }
+            Copy(m_dstDly.data(), pDlyLine, m_dstDly.size());
         }
 
-        IppStatus setDstDlyLine(const T *pDlyLine)
+        void setDstDlyLine(const T *pDlyLine)
         {
-            m_dstDly.set_array(pDlyLine);
+            Copy(pDlyLine, m_dstDly.data(), m_dstDly.size());
+        }
+    };
+
+    template <typename internalType, typename externalType>
+    class IIR_Engine
+    {
+    protected:
+        vector<Ipp8u> m_buffer;
+        void *m_pState = nullptr; // will this leak memory?
+        vector<internalType> m_DlyLine;
+        int m_order;
+
+    public:
+        IIR_Engine() = default;
+
+        explicit IIR_Engine(int order, internalType *pTaps)
+        {
+            initialise(order);
+        }
+
+        void initialise(int order, internalType *pTaps)
+        {
+            // pTaps is of length 2*( order + 1)
+            m_order = order;
+            int bufferSize;
+            OptionalAssertNoError(IIRGetStateSize<internalType, externalType>(order, &bufferSize));
+            m_buffer.resize(bufferSize);
+            m_DlyLine.resize(order);
+            IIRInit<internalType, externalType>(&m_pState, pTaps, order, m_DlyLine.data(), m_buffer.data());
+        }
+
+        void assertIsInitialised()
+        {
+            if (m_buffer.empty())
+                throw std::runtime_error("Buffer not initialized");
+        }
+
+        IppStatus apply(const T *pSrc, T *pDst, int len)
+        {
+            assertIsInitialised();
+            return OptionalAssertNoError(ippsFilterMedian(pSrc, pDst, len, m_maskSize, m_srcDly.data(), m_dstDly.data(), m_buffer.data()));
+        }
+
+        IppStatus apply_I(const T *pSrcDst, int len)
+        {
+            assertIsInitialised();
+            return OptionalAssertNoError(ippsFilterMedian_I(pSrcDst, len, m_maskSize, m_srcDly.data(), m_dstDly.data(), m_buffer.data()));
+        }
+
+        void getSrcDlyLine(T *pDlyLine)
+        {
+            Copy(m_srcDly.data(), pDlyLine, m_srcDly.size());
+        }
+
+        void setSrcDlyLine(const T *pDlyLine)
+        {
+            Copy(pDlyLine, m_srcDly.data(), m_srcDly.size());
+        }
+
+        void getDstDlyLine(T *pDlyLine)
+        {
+            Copy(m_dstDly.data(), pDlyLine, m_dstDly.size());
+        }
+
+        void setDstDlyLine(const T *pDlyLine)
+        {
+            Copy(pDlyLine, m_dstDly.data(), m_dstDly.size());
         }
     };
 
@@ -614,11 +675,81 @@ namespace tipp
         }
     };
 
-    // TODO: Create Engine for ResamplePolyphase
+    template <typename T>
+    class ResamplePolyphase_Engine
+    {
+    protected:
+        vector<T> m_State;
+        T m_window;
+        T m_nStep;
+
+    public:
+        ResamplePolyphase_Engine() = default;
+
+        ResamplePolyphase_Engine(Ipp32f window, int nStep, Ipp32f rollf, Ipp32f alpha, IppHintAlgorithm hint) { initialise(window, nStep, rollf, alpha, hint); }
+
+        void initialise(Ipp32f window, int nStep, Ipp32f rollf, Ipp32f alpha, IppHintAlgorithm hint)
+        {
+            int specSize;
+            OptionalAssertNoError(ResamplePolyphaseGetSize<T>(window, nStep, &specSize, hint));
+            m_State.resize(specSize);
+            OptionalAssertNoError(ResamplePolyphaseInit<T>(window, nStep, rollf, alpha, m_State.data(), hint));
+        }
+
+        void assertIsInitialised()
+        {
+            if (m_State.empty())
+                throw std::runtime_error("Buffer not initalized");
+        }
+
+        IppStatus apply(const T *pSrc, int len, T *pDst, Ipp64f factor, Ipp32f norm, Ipp64f *pTime, int *pOutlen)
+        {
+            assertIsInitialised();
+            return OptionalAssertNoError(ResamplePolyphase(pSrc, len, pDst, factor, norm, *pTime, pOutlen, m_State.data()));
+        }
+    };
+
+    template <typename T>
+    class ResamplePolyphaseFixed_Engine
+    {
+    protected:
+        vector<T> m_State;
+        int m_inRate;
+        int m_outRate;
+        int m_filterLength, m_numFilters;
+        Ipp32f m_rollf, m_alpha;
+
+    public:
+        ResamplePolyphaseFixed_Engine() = default;
+
+        ResamplePolyphaseFixed_Engine(int inRate, int outRate, int len, Ipp32f rollf, Ipp32f alpha, IppHintAlgorithm hint) { initialise(inRate, outRate, len, rollf, alpha, hint); }
+
+        void initialise(int inRate, int outRate, int len, Ipp32f rollf, Ipp32f alpha, IppHintAlgorithm hint)
+        {
+            int specSize;
+            OptionalAssertNoError(ResamplePolyphaseFixedGetSize<T>(inRate, outRate, len, &specSize, &m_filterLength, &m_numFilters, hint));
+            m_State.resize(specSize);
+            OptionalAssertNoError(ResamplePolyphaseFixedInit<T>(inRate, outRate, m_filterLength, rollf, alpha, m_State.data(), hint));
+            m_inRate = inRate;
+            m_outRate = outRate;
+            m_rollf = rollf;
+            m_alpha = alpha;
+        }
+
+        void assertIsInitialised()
+        {
+            if (m_State.empty())
+                throw std::runtime_error("Buffer not initalized");
+        }
+
+        IppStatus apply(const T *pSrc, int len, T *pDst, Ipp32f norm, Ipp64f *pTime, int *pOutlen)
+        {
+            assertIsInitialised();
+            return OptionalAssertNoError(ResamplePolyphaseFixed(pSrc, len, pDst, norm, pTime, pOutlen, m_State.data()));
+        }
+    };
 
     // TODO: Create Engine for FIRSparse
-
-    // TODO: Create Engine for WT
     // TODO: Create Engine for IIR
     // TODO: Create Engine for PatternMatch
 
@@ -626,7 +757,7 @@ namespace tipp
     class RandGauss_Engine
     {
     protected:
-        vector<T> m_pRandGaussState;
+        vector<T> m_RandGaussState;
         T m_mean;
         T m_stdDev;
         unsigned int m_seed;
@@ -644,21 +775,21 @@ namespace tipp
 
             int size;
             OptionalAssertNoError(RandGaussGetSize<T>(&size));
-            m_pRandGaussState.resize(size);
+            m_RandGaussState.resize(size);
 
-            OptionalAssertNoError(RandGaussInit(m_pRandGaussState.data(), m_mean, m_stdDev, m_seed));
+            OptionalAssertNoError(RandGaussInit(m_RandGaussState.data(), m_mean, m_stdDev, m_seed));
         }
 
         void assertIsInitialised()
         {
-            if (m_pRandGaussState.empty())
+            if (m_RandGaussState.empty())
                 throw std::runtime_error("RandGauss_Engine not initalized");
         }
 
         IppStatus sample(T *output, int len)
         {
             assertIsInitialised();
-            return OptionalAssertNoError(RandGauss(output, len, m_pRandGaussState.data()));
+            return OptionalAssertNoError(RandGauss(output, len, m_RandGaussState.data()));
         }
 
         vector<T> sample_V(int len)
@@ -855,6 +986,89 @@ namespace tipp
 
         int inSize() const { return m_inNFFT; }
         int outSize() const { return m_outNFFT; }
+    };
+
+    template <typename T>
+    class WT_Engine
+    {
+    protected:
+        vector<Ipp8u> m_Fwd_State;
+        vector<Ipp8u> m_Inv_State;
+
+        vector<T> m_High_dlyLine;
+        vector<T> m_Low_dlyLine;
+
+        int m_lenLow;
+        int m_offsLow;
+        int m_lenHigh;
+        int m_offsHigh;
+        int m_dlyLowLen;
+        int m_dlyHighLen;
+
+        bool m_Is_Fwd_Initialised = false;
+        bool m_Is_Inv_Initialised = false;
+
+    public:
+        WT_Engine() = default;
+
+        WT_Engine(int lenLow, int offsLow, int lenHigh, int offsHigh) { initialise(lenLow, offsLow, lenHigh, offsHigh, ); }
+
+        void initialise(int lenLow, int offsLow, int lenHigh, int offsHigh)
+        {
+
+            m_lenLow = lenLow;
+            m_offsLow = offsLow;
+            m_lenHigh = lenHigh;
+            m_offsHigh = offsHigh;
+
+            m_dlyLowLen = lenLow + offsLow - 1;
+            m_dlyHighLen = lenHigh + offsHigh - 1;
+
+            int FwdStateSize;
+            int InvStateSize;
+            WTFwdGetSize<T>(lenLow, offsLow, lenHigh, offsHigh, &FwdStateSize);
+            WTInvGetSize<T>(lenLow, offsLow, lenHigh, offsHigh, &InvStateSize);
+
+            m_Fwd_State.resize(FwdStateSize);
+            m_Inv_State.resize(InvStateSize);
+
+            m_High_dlyLine.resize(m_dlyHighLen);
+            m_Low_dlyLine.resize(m_dlyLowLen);
+        }
+
+        IppStatus Fwd(const T *input, Ipp32f *pDstLow, Ipp32f *pDstHigh, int dstLen)
+        {
+            if (m_Fwd_State.empty())
+                throw std::runtime_error("Buffer not initalized");
+            return OptionalAssertNoError(WTFwd(input, pDstLow, pDstHigh, dstLen, m_Fwd_State.data()));
+        }
+
+        IppStatus inv(const Ipp32f *input, Ipp32f *pSrcHigh, int srcLen, T *pDst)
+        {
+            if (m_Inv_State.empty())
+                throw std::runtime_error("Buffer not initalized");
+            return OptionalAssertNoError(WTInv(input, pSrcHigh, srcLen, pDst, m_Inv_State.data()));
+        }
+
+        IppStatus InvGetDlyLine(Ipp32f *pDlyLow, Ipp32f *pDlyHigh)
+        {
+            return OptionalAssertNoError(WTInvGetDlyLine<T>(m_Inv_State.data(), pDlyLow, pDlyHigh));
+        }
+
+        IppStatus InvSetDlyLine(const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh)
+        {
+            return OptionalAssertNoError(WTInvSetDlyLine<T>(m_Inv_State.data(), pDlyLow, pDlyHigh));
+        }
+
+        IppStatus FwdGetDlyLine(Ipp32f *pDlyLow, Ipp32f *pDlyHigh)
+        {
+            return OptionalAssertNoError(WTFwdGetDlyLine<T>(m_Inv_State.data(), pDlyLow, pDlyHigh));
+        }
+
+        IppStatus FwdSetDlyLine(const Ipp32f *pDlyLow, const Ipp32f *pDlyHigh)
+        {
+            return OptionalAssertNoError(WTFwdSetDlyLine<T>(m_Inv_State.data(), pDlyLow, pDlyHigh));
+        }
     };
 
 }

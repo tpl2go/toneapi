@@ -195,13 +195,6 @@ namespace tipp
                 new (&m_data[i]) value_type(value);
         }
 
-        // Unsafee method, use with caution
-        void set_array(pointer pData)
-        {
-            for (int i = 0; i < m_numel; i++)
-                m_data[i] = pData[i];
-        }
-
         pointer data() { return m_data; }
         const_pointer data() const { return m_data; }
 
