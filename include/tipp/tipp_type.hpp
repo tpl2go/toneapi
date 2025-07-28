@@ -1,6 +1,7 @@
 #pragma once
 #include <ipp/ipptypes.h>
 #include <ipp/ippcore.h>
+#include <complex>
 
 namespace tipp
 {
@@ -28,4 +29,8 @@ namespace tipp
     static inline IppDataType GetIppDataType<Ipp64s>() { return ipp64s; }
     template <>
     static inline IppDataType GetIppDataType<Ipp64u>() { return ipp64u; }
+    template <>
+    static inline IppDataType GetIppDataType<std::complex<float>>() { return ipp32fc; }
+    template <>
+    static inline IppDataType GetIppDataType<std::complex<double>>() { return ipp64fc; }
 }
