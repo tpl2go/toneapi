@@ -44,17 +44,17 @@ namespace tipp
     {
         return OptionalAssertNoError(ippsFIRSR_16sc(pSrc, pDst, numIters, (IppsFIRSpec_32fc *)pSpec, pDlySrc, pDlyDst, pBuf));
     }
+    static inline IppStatus FIRSR(const std::complex<float> *pSrc, std::complex<float> *pDst, int numIters, Ipp8u *pSpec, const std::complex<float> *pDlySrc, std::complex<float> *pDlyDst, Ipp8u *pBuf)
+    {
+        return OptionalAssertNoError(ippsFIRSR_32fc((Ipp32fc *)pSrc, (Ipp32fc *)pDst, numIters, (IppsFIRSpec_32fc *)pSpec, (Ipp32fc *)pDlySrc, (Ipp32fc *)pDlyDst, pBuf));
+    }
 
-    template <typename T>
-    static inline IppStatus FIRSRGetSize(int tapsLen, int *pSpecSize, int *pBufSize);
-    template <>
-    static inline IppStatus FIRSRGetSize<Ipp32f>(int tapsLen, int *pSpecSize, int *pBufSize) { return OptionalAssertNoError(ippsFIRSRGetSize(tapsLen, IppDataType::ipp32f, pSpecSize, pBufSize)); }
-    template <>
-    static inline IppStatus FIRSRGetSize<Ipp32fc>(int tapsLen, int *pSpecSize, int *pBufSize) { return OptionalAssertNoError(ippsFIRSRGetSize(tapsLen, IppDataType::ipp32fc, pSpecSize, pBufSize)); }
-    template <>
-    static inline IppStatus FIRSRGetSize<Ipp64f>(int tapsLen, int *pSpecSize, int *pBufSize) { return OptionalAssertNoError(ippsFIRSRGetSize(tapsLen, IppDataType::ipp64f, pSpecSize, pBufSize)); }
-    template <>
-    static inline IppStatus FIRSRGetSize<Ipp64fc>(int tapsLen, int *pSpecSize, int *pBufSize) { return OptionalAssertNoError(ippsFIRSRGetSize(tapsLen, IppDataType::ipp64fc, pSpecSize, pBufSize)); }
+    static inline IppStatus FIRSR(const std::complex<double> *pSrc, std::complex<double> *pDst, int numIters, Ipp8u *pSpec, const std::complex<double> *pDlySrc, std::complex<double> *pDlyDst, Ipp8u *pBuf)
+    {
+        return OptionalAssertNoError(ippsFIRSR_64fc((Ipp64fc *)pSrc, (Ipp64fc *)pDst, numIters, (IppsFIRSpec_64fc *)pSpec, (Ipp64fc *)pDlySrc, (Ipp64fc *)pDlyDst, pBuf));
+    }
+
+    // FIRSRGetSize doesnt need wrapper
 
     template <typename T>
     static inline IppStatus FIRSRInit(const T *pTaps, int tapsLen, IppAlgType algType, Ipp8u *pSpec);
@@ -66,82 +66,34 @@ namespace tipp
     static inline IppStatus FIRSRInit<Ipp64f>(const Ipp64f *pTaps, int tapsLen, IppAlgType algType, Ipp8u *pSpec) { return OptionalAssertNoError(ippsFIRSRInit_64f(pTaps, tapsLen, algType, (IppsFIRSpec_64f *)pSpec)); }
     template <>
     static inline IppStatus FIRSRInit<Ipp64fc>(const Ipp64fc *pTaps, int tapsLen, IppAlgType algType, Ipp8u *pSpec) { return OptionalAssertNoError(ippsFIRSRInit_64fc(pTaps, tapsLen, algType, (IppsFIRSpec_64fc *)pSpec)); }
-
-    static inline IppStatus FIRMR(const Ipp32f *pSrc, Ipp32f *pDst, int numIters, Ipp8u *pSpec, const Ipp32f *pDlySrc, Ipp32f *pDlyDst, Ipp8u *pBuf)
-    {
-        return OptionalAssertNoError(ippsFIRMR_32f(pSrc, pDst, numIters, (IppsFIRSpec_32f *)pSpec, pDlySrc, pDlyDst, pBuf));
-    }
-
-    static inline IppStatus FIRMR(const Ipp64f *pSrc, Ipp64f *pDst, int numIters, Ipp8u *pSpec, const Ipp64f *pDlySrc, Ipp64f *pDlyDst, Ipp8u *pBuf)
-    {
-        return OptionalAssertNoError(ippsFIRMR_64f(pSrc, pDst, numIters, (IppsFIRSpec_64f *)pSpec, pDlySrc, pDlyDst, pBuf));
-    }
-
-    static inline IppStatus FIRMR(const Ipp32fc *pSrc, Ipp32fc *pDst, int numIters, Ipp8u *pSpec, const Ipp32fc *pDlySrc, Ipp32fc *pDlyDst, Ipp8u *pBuf)
-    {
-        return OptionalAssertNoError(ippsFIRMR_32fc(pSrc, pDst, numIters, (IppsFIRSpec_32fc *)pSpec, pDlySrc, pDlyDst, pBuf));
-    }
-
-    static inline IppStatus FIRMR(const Ipp64fc *pSrc, Ipp64fc *pDst, int numIters, Ipp8u *pSpec, const Ipp64fc *pDlySrc, Ipp64fc *pDlyDst, Ipp8u *pBuf)
-    {
-        return OptionalAssertNoError(ippsFIRMR_64fc(pSrc, pDst, numIters, (IppsFIRSpec_64fc *)pSpec, pDlySrc, pDlyDst, pBuf));
-    }
-
-    static inline IppStatus FIRMR(const Ipp16s *pSrc, Ipp16s *pDst, int numIters, Ipp8u *pSpec, const Ipp16s *pDlySrc, Ipp16s *pDlyDst, Ipp8u *pBuf)
-    {
-        return OptionalAssertNoError(ippsFIRMR_16s(pSrc, pDst, numIters, (IppsFIRSpec_32f *)pSpec, pDlySrc, pDlyDst, pBuf));
-    }
-
-    static inline IppStatus FIRMR(const Ipp16sc *pSrc, Ipp16sc *pDst, int numIters, Ipp8u *pSpec, const Ipp16sc *pDlySrc, Ipp16sc *pDlyDst, Ipp8u *pBuf)
-    {
-        return OptionalAssertNoError(ippsFIRMR_16sc(pSrc, pDst, numIters, (IppsFIRSpec_32fc *)pSpec, pDlySrc, pDlyDst, pBuf));
-    }
-
-    template <typename T>
-    static inline IppStatus FIRMRGetSize(int tapsLen, int upFactor, int downFactor, int *pSpecSize, int *pBufSize);
     template <>
-    static inline IppStatus FIRMRGetSize<Ipp32f>(int tapsLen, int upFactor, int downFactor, int *pSpecSize, int *pBufSize)
-    {
-        return OptionalAssertNoError(ippsFIRMRGetSize(tapsLen, upFactor, downFactor, IppDataType::ipp32f, pSpecSize, pBufSize));
-    }
+    static inline IppStatus FIRSRInit<std::complex<double>>(const std::complex<double> *pTaps, int tapsLen, IppAlgType algType, Ipp8u *pSpec) { return OptionalAssertNoError(ippsFIRSRInit_64fc((Ipp64fc *)pTaps, tapsLen, algType, (IppsFIRSpec_64fc *)pSpec)); }
     template <>
-    static inline IppStatus FIRMRGetSize<Ipp64f>(int tapsLen, int upFactor, int downFactor, int *pSpecSize, int *pBufSize)
-    {
-        return OptionalAssertNoError(ippsFIRMRGetSize(tapsLen, upFactor, downFactor, IppDataType::ipp64f, pSpecSize, pBufSize));
-    }
-    template <>
-    static inline IppStatus FIRMRGetSize<Ipp32fc>(int tapsLen, int upFactor, int downFactor, int *pSpecSize, int *pBufSize)
-    {
-        return OptionalAssertNoError(ippsFIRMRGetSize(tapsLen, upFactor, downFactor, IppDataType::ipp32fc, pSpecSize, pBufSize));
-    }
-    template <>
-    static inline IppStatus FIRMRGetSize<Ipp64fc>(int tapsLen, int upFactor, int downFactor, int *pSpecSize, int *pBufSize)
-    {
-        return OptionalAssertNoError(ippsFIRMRGetSize(tapsLen, upFactor, downFactor, IppDataType::ipp64fc, pSpecSize, pBufSize));
-    }
+    static inline IppStatus FIRSRInit<std::complex<float>>(const std::complex<float> *pTaps, int tapsLen, IppAlgType algType, Ipp8u *pSpec) { return OptionalAssertNoError(ippsFIRSRInit_32fc((Ipp32fc *)pTaps, tapsLen, algType, (IppsFIRSpec_64fc *)pSpec)); }
+
+    static inline IppStatus FIRMR(const Ipp32f *pSrc, Ipp32f *pDst, int numIters, Ipp8u *pSpec, const Ipp32f *pDlySrc, Ipp32f *pDlyDst, Ipp8u *pBuf) { return OptionalAssertNoError(ippsFIRMR_32f(pSrc, pDst, numIters, (IppsFIRSpec_32f *)pSpec, pDlySrc, pDlyDst, pBuf)); }
+    static inline IppStatus FIRMR(const Ipp64f *pSrc, Ipp64f *pDst, int numIters, Ipp8u *pSpec, const Ipp64f *pDlySrc, Ipp64f *pDlyDst, Ipp8u *pBuf) { return OptionalAssertNoError(ippsFIRMR_64f(pSrc, pDst, numIters, (IppsFIRSpec_64f *)pSpec, pDlySrc, pDlyDst, pBuf)); }
+    static inline IppStatus FIRMR(const Ipp32fc *pSrc, Ipp32fc *pDst, int numIters, Ipp8u *pSpec, const Ipp32fc *pDlySrc, Ipp32fc *pDlyDst, Ipp8u *pBuf) { return OptionalAssertNoError(ippsFIRMR_32fc(pSrc, pDst, numIters, (IppsFIRSpec_32fc *)pSpec, pDlySrc, pDlyDst, pBuf)); }
+    static inline IppStatus FIRMR(const Ipp64fc *pSrc, Ipp64fc *pDst, int numIters, Ipp8u *pSpec, const Ipp64fc *pDlySrc, Ipp64fc *pDlyDst, Ipp8u *pBuf) { return OptionalAssertNoError(ippsFIRMR_64fc(pSrc, pDst, numIters, (IppsFIRSpec_64fc *)pSpec, pDlySrc, pDlyDst, pBuf)); }
+    static inline IppStatus FIRMR(const Ipp16s *pSrc, Ipp16s *pDst, int numIters, Ipp8u *pSpec, const Ipp16s *pDlySrc, Ipp16s *pDlyDst, Ipp8u *pBuf) { return OptionalAssertNoError(ippsFIRMR_16s(pSrc, pDst, numIters, (IppsFIRSpec_32f *)pSpec, pDlySrc, pDlyDst, pBuf)); }
+    static inline IppStatus FIRMR(const Ipp16sc *pSrc, Ipp16sc *pDst, int numIters, Ipp8u *pSpec, const Ipp16sc *pDlySrc, Ipp16sc *pDlyDst, Ipp8u *pBuf) { return OptionalAssertNoError(ippsFIRMR_16sc(pSrc, pDst, numIters, (IppsFIRSpec_32fc *)pSpec, pDlySrc, pDlyDst, pBuf)); }
+    static inline IppStatus FIRMR(const std::complex<float> *pSrc, std::complex<float> *pDst, int numIters, Ipp8u *pSpec, const std::complex<float> *pDlySrc, std::complex<float> *pDlyDst, Ipp8u *pBuf) { return OptionalAssertNoError(ippsFIRMR_32fc((Ipp32fc *)pSrc, (Ipp32fc *)pDst, numIters, (IppsFIRSpec_32fc *)pSpec, (Ipp32fc *)pDlySrc, (Ipp32fc *)pDlyDst, pBuf)); }
+    static inline IppStatus FIRMR(const std::complex<double> *pSrc, std::complex<double> *pDst, int numIters, Ipp8u *pSpec, const std::complex<double> *pDlySrc, std::complex<double> *pDlyDst, Ipp8u *pBuf) { return OptionalAssertNoError(ippsFIRMR_64fc((Ipp64fc *)pSrc, (Ipp64fc *)pDst, numIters, (IppsFIRSpec_64fc *)pSpec, (Ipp64fc *)pDlySrc, (Ipp64fc *)pDlyDst, pBuf)); }
 
     template <typename T>
     static inline IppStatus FIRMRInit(const T *pTaps, int tapsLen, int upFactor, int upPhase, int downFactor, int downPhase, Ipp8u *pSpec);
     template <>
-    static inline IppStatus FIRMRInit<Ipp32f>(const Ipp32f *pTaps, int tapsLen, int upFactor, int upPhase, int downFactor, int downPhase, Ipp8u *pSpec)
-    {
-        return OptionalAssertNoError(ippsFIRMRInit_32f(pTaps, tapsLen, upFactor, upPhase, downFactor, downPhase, (IppsFIRSpec_32f *)pSpec));
-    }
+    static inline IppStatus FIRMRInit<Ipp32f>(const Ipp32f *pTaps, int tapsLen, int upFactor, int upPhase, int downFactor, int downPhase, Ipp8u *pSpec) { return OptionalAssertNoError(ippsFIRMRInit_32f(pTaps, tapsLen, upFactor, upPhase, downFactor, downPhase, (IppsFIRSpec_32f *)pSpec)); }
     template <>
-    static inline IppStatus FIRMRInit<Ipp64f>(const Ipp64f *pTaps, int tapsLen, int upFactor, int upPhase, int downFactor, int downPhase, Ipp8u *pSpec)
-    {
-        return OptionalAssertNoError(ippsFIRMRInit_64f(pTaps, tapsLen, upFactor, upPhase, downFactor, downPhase, (IppsFIRSpec_64f *)pSpec));
-    }
+    static inline IppStatus FIRMRInit<Ipp64f>(const Ipp64f *pTaps, int tapsLen, int upFactor, int upPhase, int downFactor, int downPhase, Ipp8u *pSpec) { return OptionalAssertNoError(ippsFIRMRInit_64f(pTaps, tapsLen, upFactor, upPhase, downFactor, downPhase, (IppsFIRSpec_64f *)pSpec)); }
     template <>
-    static inline IppStatus FIRMRInit<Ipp32fc>(const Ipp32fc *pTaps, int tapsLen, int upFactor, int upPhase, int downFactor, int downPhase, Ipp8u *pSpec)
-    {
-        return OptionalAssertNoError(ippsFIRMRInit_32fc(pTaps, tapsLen, upFactor, upPhase, downFactor, downPhase, (IppsFIRSpec_32fc *)pSpec));
-    }
+    static inline IppStatus FIRMRInit<Ipp32fc>(const Ipp32fc *pTaps, int tapsLen, int upFactor, int upPhase, int downFactor, int downPhase, Ipp8u *pSpec) { return OptionalAssertNoError(ippsFIRMRInit_32fc(pTaps, tapsLen, upFactor, upPhase, downFactor, downPhase, (IppsFIRSpec_32fc *)pSpec)); }
     template <>
-    static inline IppStatus FIRMRInit<Ipp64fc>(const Ipp64fc *pTaps, int tapsLen, int upFactor, int upPhase, int downFactor, int downPhase, Ipp8u *pSpec)
-    {
-        return OptionalAssertNoError(ippsFIRMRInit_64fc(pTaps, tapsLen, upFactor, upPhase, downFactor, downPhase, (IppsFIRSpec_64fc *)pSpec));
-    }
+    static inline IppStatus FIRMRInit<Ipp64fc>(const Ipp64fc *pTaps, int tapsLen, int upFactor, int upPhase, int downFactor, int downPhase, Ipp8u *pSpec) { return OptionalAssertNoError(ippsFIRMRInit_64fc(pTaps, tapsLen, upFactor, upPhase, downFactor, downPhase, (IppsFIRSpec_64fc *)pSpec)); }
+    template <>
+    static inline IppStatus FIRMRInit<std::complex<float>>(const std::complex<float> *pTaps, int tapsLen, int upFactor, int upPhase, int downFactor, int downPhase, Ipp8u *pSpec) { return OptionalAssertNoError(ippsFIRMRInit_32fc((Ipp32fc *)pTaps, tapsLen, upFactor, upPhase, downFactor, downPhase, (IppsFIRSpec_32fc *)pSpec)); }
+    template <>
+    static inline IppStatus FIRMRInit<std::complex<double>>(const std::complex<double> *pTaps, int tapsLen, int upFactor, int upPhase, int downFactor, int downPhase, Ipp8u *pSpec) { return OptionalAssertNoError(ippsFIRMRInit_64fc((Ipp64fc *)pTaps, tapsLen, upFactor, upPhase, downFactor, downPhase, (IppsFIRSpec_64fc *)pSpec)); }
 
     static inline IppStatus Convolve(const Ipp32f *pSrc1, int src1Len, const Ipp32f *pSrc2, int src2Len, Ipp32f *pDst, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsConvolve_32f(pSrc1, src1Len, pSrc2, src2Len, pDst, algType, pBuffer)); }
     static inline IppStatus Convolve(const Ipp64f *pSrc1, int src1Len, const Ipp64f *pSrc2, int src2Len, Ipp64f *pDst, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsConvolve_64f(pSrc1, src1Len, pSrc2, src2Len, pDst, algType, pBuffer)); }
@@ -150,6 +102,8 @@ namespace tipp
     static inline IppStatus CrossCorrNorm(const Ipp64f *pSrc1, int src1Len, const Ipp64f *pSrc2, int src2Len, Ipp64f *pDst, int dstLen, int lowLag, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsCrossCorrNorm_64f(pSrc1, src1Len, pSrc2, src2Len, pDst, dstLen, lowLag, algType, pBuffer)); }
     static inline IppStatus CrossCorrNorm(const Ipp32fc *pSrc1, int src1Len, const Ipp32fc *pSrc2, int src2Len, Ipp32fc *pDst, int dstLen, int lowLag, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsCrossCorrNorm_32fc(pSrc1, src1Len, pSrc2, src2Len, pDst, dstLen, lowLag, algType, pBuffer)); }
     static inline IppStatus CrossCorrNorm(const Ipp64fc *pSrc1, int src1Len, const Ipp64fc *pSrc2, int src2Len, Ipp64fc *pDst, int dstLen, int lowLag, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsCrossCorrNorm_64fc(pSrc1, src1Len, pSrc2, src2Len, pDst, dstLen, lowLag, algType, pBuffer)); }
+    static inline IppStatus CrossCorrNorm(const std::complex<float> *pSrc1, int src1Len, const std::complex<float> *pSrc2, int src2Len, std::complex<float> *pDst, int dstLen, int lowLag, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsCrossCorrNorm_32fc((Ipp32fc *)pSrc1, src1Len, (Ipp32fc *)pSrc2, src2Len, (Ipp32fc *)pDst, dstLen, lowLag, algType, pBuffer)); }
+    static inline IppStatus CrossCorrNorm(const std::complex<double> *pSrc1, int src1Len, const std::complex<double> *pSrc2, int src2Len, std::complex<double> *pDst, int dstLen, int lowLag, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsCrossCorrNorm_64fc((Ipp64fc *)pSrc1, src1Len, (Ipp64fc *)pSrc2, src2Len, (Ipp64fc *)pDst, dstLen, lowLag, algType, pBuffer)); }
 
     static inline IppStatus FilterMedian(const Ipp8u *pSrc, Ipp8u *pDst, int len, int maskSize, const Ipp8u *pDlySrc, Ipp8u *pDlyDst, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFilterMedian_8u(pSrc, pDst, len, maskSize, pDlySrc, pDlyDst, pBuffer)); }
     static inline IppStatus FilterMedian(const Ipp16s *pSrc, Ipp16s *pDst, int len, int maskSize, const Ipp16s *pDlySrc, Ipp16s *pDlyDst, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFilterMedian_16s(pSrc, pDst, len, maskSize, pDlySrc, pDlyDst, pBuffer)); }
@@ -167,6 +121,8 @@ namespace tipp
     static inline IppStatus AutoCorrNorm(const Ipp64f *pSrc, int srcLen, Ipp64f *pDst, int dstLen, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsAutoCorrNorm_64f(pSrc, srcLen, pDst, dstLen, algType, pBuffer)); }
     static inline IppStatus AutoCorrNorm(const Ipp32fc *pSrc, int srcLen, Ipp32fc *pDst, int dstLen, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsAutoCorrNorm_32fc(pSrc, srcLen, pDst, dstLen, algType, pBuffer)); }
     static inline IppStatus AutoCorrNorm(const Ipp64fc *pSrc, int srcLen, Ipp64fc *pDst, int dstLen, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsAutoCorrNorm_64fc(pSrc, srcLen, pDst, dstLen, algType, pBuffer)); }
+    static inline IppStatus AutoCorrNorm(const std::complex<float> *pSrc, int srcLen, std::complex<float> *pDst, int dstLen, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsAutoCorrNorm_32fc((Ipp32fc *)pSrc, srcLen, (Ipp32fc *)pDst, dstLen, algType, pBuffer)); }
+    static inline IppStatus AutoCorrNorm(const std::complex<double> *pSrc, int srcLen, std::complex<double> *pDst, int dstLen, IppEnum algType, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsAutoCorrNorm_64fc((Ipp64fc *)pSrc, srcLen, (Ipp64fc *)pDst, dstLen, algType, pBuffer)); }
 
     static inline IppStatus ResamplePolyphase(const Ipp16s *pSrc, int len, Ipp16s *pDst, Ipp64f factor, Ipp32f norm, Ipp64f *pTime, int *pOutlen, const IppsResamplingPolyphase_16s *pSpec) { return OptionalAssertNoError(ippsResamplePolyphase_16s(pSrc, len, pDst, factor, norm, pTime, pOutlen, pSpec)); }
     static inline IppStatus ResamplePolyphase(const Ipp32f *pSrc, int len, Ipp32f *pDst, Ipp64f factor, Ipp32f norm, Ipp64f *pTime, int *pOutlen, const IppsResamplingPolyphase_32f *pSpec) { return OptionalAssertNoError(ippsResamplePolyphase_32f(pSrc, len, pDst, factor, norm, pTime, pOutlen, pSpec)); }
@@ -263,6 +219,10 @@ namespace tipp
     static inline IppStatus IIRInit<Ipp64fc, Ipp32fc>(void **ppState, const Ipp64fc *pTaps, int order, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64fc_32fc((IppsIIRState64fc_32fc **)ppState, pTaps, order, pDlyLine, pBuf)); }
     template <>
     static inline IppStatus IIRInit<Ipp64fc, Ipp64fc>(void **ppState, const Ipp64fc *pTaps, int order, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_64fc((IppsIIRState_64fc **)ppState, pTaps, order, pDlyLine, pBuf)); }
+    template <>
+    static inline IppStatus IIRInit<std::complex<float>, std::complex<float>>(void **ppState, const std::complex<float> *pTaps, int order, const std::complex<float> *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_32fc((IppsIIRState_32fc **)ppState, (Ipp32fc *)pTaps, order, (Ipp32fc *)pDlyLine, pBuf)); }
+    template <>
+    static inline IppStatus IIRInit<std::complex<double>, std::complex<double>>(void **ppState, const std::complex<double> *pTaps, int order, const std::complex<double> *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_64fc((IppsIIRState_64fc **)ppState, (Ipp64fc *)pTaps, order, (Ipp64fc *)pDlyLine, pBuf)); }
 
     // IIRInit_BiQuad wrappers
     static inline IppStatus IIRInit_BiQuad(IppsIIRState32f_16s **ppState, const Ipp32f *pTaps, int numBq, const Ipp32f *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit32f_BiQuad_16s(ppState, pTaps, numBq, pDlyLine, pBuf)); }
@@ -277,6 +237,8 @@ namespace tipp
     static inline IppStatus IIRInit_BiQuad(IppsIIRState_32fc **ppState, const Ipp32fc *pTaps, int numBq, const Ipp32fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_BiQuad_32fc(ppState, pTaps, numBq, pDlyLine, pBuf)); }
     static inline IppStatus IIRInit_BiQuad(IppsIIRState64fc_32fc **ppState, const Ipp64fc *pTaps, int numBq, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64fc_BiQuad_32fc(ppState, pTaps, numBq, pDlyLine, pBuf)); }
     static inline IppStatus IIRInit_BiQuad(IppsIIRState_64fc **ppState, const Ipp64fc *pTaps, int numBq, const Ipp64fc *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_BiQuad_64fc(ppState, pTaps, numBq, pDlyLine, pBuf)); }
+    static inline IppStatus IIRInit_BiQuad(IppsIIRState_32fc **ppState, const std::complex<float> *pTaps, int numBq, const std::complex<float> *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_BiQuad_32fc(ppState, (Ipp32fc *)pTaps, numBq, (Ipp32fc *)pDlyLine, pBuf)); }
+    static inline IppStatus IIRInit_BiQuad(IppsIIRState_64fc **ppState, const std::complex<double> *pTaps, int numBq, const std::complex<double> *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit_BiQuad_64fc(ppState, (Ipp64fc *)pTaps, numBq, (Ipp64fc *)pDlyLine, pBuf)); }
 
     // IIRInit_BiQuad_DF1 wrappers
     static inline IppStatus IIRInit_BiQuad_DF1(IppsIIRState64f_32s **ppState, const Ipp64f *pTaps, int numBq, const Ipp32s *pDlyLine, Ipp8u *pBuf) { return OptionalAssertNoError(ippsIIRInit64f_BiQuad_DF1_32s(ppState, pTaps, numBq, pDlyLine, pBuf)); }
@@ -374,6 +336,10 @@ namespace tipp
     static inline IppStatus IIRGetDlyLine<Ipp64fc, Ipp32fc>(const void *pState, Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64fc_32fc((const IppsIIRState64fc_32fc *)pState, pDlyLine)); }
     template <>
     static inline IppStatus IIRGetDlyLine<Ipp64fc, Ipp64fc>(const void *pState, Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine_64fc((const IppsIIRState_64fc *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRGetDlyLine<std::complex<float>, std::complex<float>>(const void *pState, std::complex<float> *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine_32fc((const IppsIIRState_32fc *)pState, (Ipp32fc *)pDlyLine)); }
+    template <>
+    static inline IppStatus IIRGetDlyLine<std::complex<double>, std::complex<double>>(const void *pState, std::complex<double> *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine_64fc((const IppsIIRState_64fc *)pState, (Ipp64fc *)pDlyLine)); }
 
     // IIRGetDlyLine_DF1 wrappers
     static inline IppStatus IIRGetDlyLine_DF1(const IppsIIRState64f_32s *pState, Ipp32s *pDlyLine) { return OptionalAssertNoError(ippsIIRGetDlyLine64f_DF1_32s(pState, pDlyLine)); }
@@ -405,6 +371,10 @@ namespace tipp
     static inline IppStatus IIRSetDlyLine<Ipp64fc, Ipp32fc>(void *pState, const Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64fc_32fc((IppsIIRState64fc_32fc *)pState, pDlyLine)); }
     template <>
     static inline IppStatus IIRSetDlyLine<Ipp64fc, Ipp64fc>(void *pState, const Ipp64fc *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine_64fc((IppsIIRState_64fc *)pState, pDlyLine)); }
+    template <>
+    static inline IppStatus IIRSetDlyLine<std::complex<float>, std::complex<float>>(void *pState, const std::complex<float> *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine_32fc((IppsIIRState_32fc *)pState, (Ipp32fc *)pDlyLine)); }
+    template <>
+    static inline IppStatus IIRSetDlyLine<std::complex<double>, std::complex<double>>(void *pState, const std::complex<double> *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine_64fc((IppsIIRState_64fc *)pState, (Ipp64fc *)pDlyLine)); }
 
     // IIRSetDlyLine_DF1 wrappers
     static inline IppStatus IIRSetDlyLine_DF1(IppsIIRState64f_32s *pState, const Ipp32s *pDlyLine) { return OptionalAssertNoError(ippsIIRSetDlyLine64f_DF1_32s(pState, pDlyLine)); }
@@ -441,6 +411,10 @@ namespace tipp
     static inline IppStatus IIR<Ipp64fc, Ipp64fc>(const Ipp64fc *pSrc, Ipp64fc *pDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR_64fc(pSrc, pDst, len, (IppsIIRState_64fc *)pState)); }
     template <>
     static inline IppStatus IIR<Ipp64fc, Ipp32fc>(const Ipp32fc *pSrc, Ipp32fc *pDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR64fc_32fc(pSrc, pDst, len, (IppsIIRState64fc_32fc *)pState)); }
+    template <>
+    static inline IppStatus IIR<std::complex<float>, std::complex<float>>(const std::complex<float> *pSrc, std::complex<float> *pDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR_32fc((Ipp32fc *)pSrc, (Ipp32fc *)pDst, len, (IppsIIRState_32fc *)pState)); }
+    template <>
+    static inline IppStatus IIR<std::complex<double>, std::complex<double>>(const std::complex<double> *pSrc, std::complex<double> *pDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR_64fc((Ipp64fc *)pSrc, (Ipp64fc *)pDst, len, (IppsIIRState_64fc *)pState)); }
 
     // IIR (In-place, Sfs) wrappers
     template <typename T1, typename T2>
@@ -473,6 +447,10 @@ namespace tipp
     static inline IppStatus IIR_I<Ipp64fc, Ipp64fc>(Ipp64fc *pSrcDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR_64fc_I(pSrcDst, len, (IppsIIRState_64fc *)pState)); }
     template <>
     static inline IppStatus IIR_I<Ipp64fc, Ipp32fc>(Ipp32fc *pSrcDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR64fc_32fc_I(pSrcDst, len, (IppsIIRState64fc_32fc *)pState)); }
+    template <>
+    static inline IppStatus IIR_I<std::complex<float>, std::complex<float>>(std::complex<float> *pSrcDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR_32fc_I((Ipp32fc *)pSrcDst, len, (IppsIIRState_32fc *)pState)); }
+    template <>
+    static inline IppStatus IIR_I<std::complex<double>, std::complex<double>>(std::complex<double> *pSrcDst, int len, void *pState) { return OptionalAssertNoError(ippsIIR_64fc_I((Ipp64fc *)pSrcDst, len, (IppsIIRState_64fc *)pState)); }
 
     // IIR (Planar/Multi-channel, Out-of-place) wrappers
     static inline IppStatus IIR_P(const Ipp32f **ppSrc, Ipp32f **ppDst, int len, int nChannels, IppsIIRState_32f **ppState) { return OptionalAssertNoError(ippsIIR_32f_P(ppSrc, ppDst, len, nChannels, ppState)); }

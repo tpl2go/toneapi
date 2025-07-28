@@ -1,5 +1,5 @@
 #pragma once
-#include "s_conversion.hpp"
+#include "s_filtering.hpp"
 #include "tipp_vector.hpp"
 #include "tipp_error.hpp"
 #include <stdexcept>
@@ -36,7 +36,7 @@ namespace tipp
 
             int specSize, bufSize;
 
-            FIRSRGetSize<T>(taplen, &specSize, &bufSize);
+            ippsFIRSRGetSize(taplen, GetIppDataType<T>(), &specSize, &bufSize);
 
             m_Spec.resize(specSize);
             m_Buffer.resize(bufSize);
@@ -76,19 +76,22 @@ namespace tipp
 
         IppAlgType m_algType;
 
+        int m_upFactor;
+        int m_downFactor;
+
     public:
         FIRMR_Engine() = default;
 
-        FIRMR_Engine(T *taps, int taplen, IppAlgType algType = IppAlgType::ippAlgDirect) { initialise(taps, taplen, algType); }
+        FIRMR_Engine(T *taps, int taplen, int upFactor, int downFactor, ppAlgType algType = IppAlgType::ippAlgDirect) { initialise(taps, taplen, upFactor, downFactor, algType); }
 
-        void initialise(T *taps, int taplen, IppAlgType algType = IppAlgType::ippAlgDirect)
+        void initialise(T *taps, int taplen, int upFactor, int downFactor, IppAlgType algType = IppAlgType::ippAlgDirect)
         {
             m_algType = algType;
 
             int specSize, bufSize;
-            FIRMRGetSize<T>(taplen, &specSize, &bufSize);
+            ippsFIRMRGetSize(taplen, upFactor, downFactor, GetIppDataType<T>(), &specSize, &bufSize)
 
-            m_Spec.resize(specSize);
+                m_Spec.resize(specSize);
             m_Buffer.resize(bufSize);
 
             FIRMRInit<T>(m_taps.data(), taplen, m_algType, m_Spec.data());
@@ -96,9 +99,11 @@ namespace tipp
             m_taps.resize(taplen);
             Copy(taps, m_taps, taplen);
 
-            int m_dlyLen = taplen - 1;
+            m_dlyLen = taplen - 1;
             m_DlySrc.resize(m_dlyLen);
             m_DlyDst.resize(m_dlyLen);
+            m_upFactor = upFactor;
+            m_downFactor = downFactor;
         }
 
         void assertIsInitialised()

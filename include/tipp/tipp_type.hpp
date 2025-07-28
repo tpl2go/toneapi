@@ -5,10 +5,7 @@
 namespace tipp
 {
     template <typename T>
-    static inline IppDataType GetIppDataType()
-    {
-        throw std::runtime_error("Unsupported data type");
-    }
+    static inline IppDataType GetIppDataType();
     template <>
     static inline IppDataType GetIppDataType<Ipp32f>() { return ipp32f; }
     template <>

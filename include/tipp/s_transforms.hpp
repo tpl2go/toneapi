@@ -1,11 +1,8 @@
 #pragma once
-#include <ipp/ippcore.h>
-#include <ipp/ippvm.h>
 #include <ipp/ipps.h>
 #include <complex>
 #include "tipp_error.hpp"
 #include "tipp_type.hpp"
-#include <stdexcept>
 
 namespace tipp
 {
@@ -120,6 +117,10 @@ namespace tipp
     template <typename T>
     static inline IppStatus DFTGetSize(int length, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf);
     template <>
+    static inline IppStatus DFTGetSize<std::complex<float>>(int length, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf) { return OptionalAssertNoError(ippsDFTGetSize_C_32fc(length, flag, ippAlgHintNone, pSizeSpec, pSizeInit, pSizeBuf)); }
+    template <>
+    static inline IppStatus DFTGetSize<std::complex<double>>(int length, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf) { return OptionalAssertNoError(ippsDFTGetSize_C_64fc(length, flag, ippAlgHintNone, pSizeSpec, pSizeInit, pSizeBuf)); }
+    template <>
     static inline IppStatus DFTGetSize<Ipp32fc>(int length, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf) { return OptionalAssertNoError(ippsDFTGetSize_C_32fc(length, flag, ippAlgHintNone, pSizeSpec, pSizeInit, pSizeBuf)); }
     template <>
     static inline IppStatus DFTGetSize<Ipp64fc>(int length, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf) { return OptionalAssertNoError(ippsDFTGetSize_C_64fc(length, flag, ippAlgHintNone, pSizeSpec, pSizeInit, pSizeBuf)); }
@@ -138,16 +139,28 @@ namespace tipp
     static inline IppStatus DFTInit<float>(int length, int flag, Ipp8u *pDFTSpec, Ipp8u *pMemInit) { return OptionalAssertNoError(ippsDFTInit_R_32f(length, flag, ippAlgHintNone, (IppsDFTSpec_R_32f *)pDFTSpec, pMemInit)); }
     template <>
     static inline IppStatus DFTInit<double>(int length, int flag, Ipp8u *pDFTSpec, Ipp8u *pMemInit) { return OptionalAssertNoError(ippsDFTInit_R_64f(length, flag, ippAlgHintNone, (IppsDFTSpec_R_64f *)pDFTSpec, pMemInit)); }
+    template <>
+    static inline IppStatus DFTInit<std::complex<float>>(int length, int flag, Ipp8u *pDFTSpec, Ipp8u *pMemInit) { return OptionalAssertNoError(ippsDFTInit_C_32fc(length, flag, ippAlgHintNone, (IppsDFTSpec_C_32fc *)pDFTSpec, pMemInit)); }
+    template <>
+    static inline IppStatus DFTInit<std::complex<double>>(int length, int flag, Ipp8u *pDFTSpec, Ipp8u *pMemInit) { return OptionalAssertNoError(ippsDFTInit_C_64fc(length, flag, ippAlgHintNone, (IppsDFTSpec_C_64fc *)pDFTSpec, pMemInit)); }
 
     static inline IppStatus DFTFwd(const Ipp32fc *pSrc, Ipp32fc *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsDFTFwd_CToC_32fc(pSrc, pDst, (const IppsDFTSpec_C_32fc *)pDFTSpec, pBuffer)); }
     static inline IppStatus DFTFwd(const Ipp64fc *pSrc, Ipp64fc *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsDFTFwd_CToC_64fc(pSrc, pDst, (const IppsDFTSpec_C_64fc *)pDFTSpec, pBuffer)); }
     static inline IppStatus DFTFwd(const float *pSrc, Ipp32fc *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsDFTFwd_RToCCS_32f(pSrc, (float *)pDst, (const IppsDFTSpec_R_32f *)pDFTSpec, pBuffer)); }
     static inline IppStatus DFTFwd(const double *pSrc, Ipp64fc *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsDFTFwd_RToCCS_64f(pSrc, (double *)pDst, (const IppsDFTSpec_R_64f *)pDFTSpec, pBuffer)); }
+    static inline IppStatus DFTFwd(const std::complex<float> *pSrc, std::complex<float> *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsDFTFwd_CToC_32fc(reinterpret_cast<const Ipp32fc *>(pSrc), reinterpret_cast<Ipp32fc *>(pDst), (const IppsDFTSpec_C_32fc *)pDFTSpec, pBuffer)); }
+    static inline IppStatus DFTFwd(const std::complex<double> *pSrc, std::complex<double> *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsDFTFwd_CToC_64fc(reinterpret_cast<const Ipp64fc *>(pSrc), reinterpret_cast<Ipp64fc *>(pDst), (const IppsDFTSpec_C_64fc *)pDFTSpec, pBuffer)); }
+    static inline IppStatus DFTFwd(const float *pSrc, std::complex<float> *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsDFTFwd_RToCCS_32f(pSrc, (float *)pDst, (const IppsDFTSpec_R_32f *)pDFTSpec, pBuffer)); }
+    static inline IppStatus DFTFwd(const double *pSrc, std::complex<double> *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsDFTFwd_RToCCS_64f(pSrc, (double *)pDst, (const IppsDFTSpec_R_64f *)pDFTSpec, pBuffer)); }
 
     static inline IppStatus DFTInv(const Ipp32fc *pSrc, Ipp32fc *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsDFTInv_CToC_32fc(pSrc, pDst, (const IppsDFTSpec_C_32fc *)pDFTSpec, pBuffer)); }
     static inline IppStatus DFTInv(const Ipp64fc *pSrc, Ipp64fc *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsDFTInv_CToC_64fc(pSrc, pDst, (const IppsDFTSpec_C_64fc *)pDFTSpec, pBuffer)); }
     static inline IppStatus DFTInv(const Ipp64fc *pSrc, double *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsDFTInv_CCSToR_64f((const double *)pSrc, pDst, (const IppsDFTSpec_R_64f *)pDFTSpec, pBuffer)); }
     static inline IppStatus DFTInv(const Ipp32fc *pSrc, float *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsDFTInv_CCSToR_32f((const float *)pSrc, pDst, (const IppsDFTSpec_R_32f *)pDFTSpec, pBuffer)); }
+    static inline IppStatus DFTInv(const std::complex<float> *pSrc, std::complex<float> *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsDFTInv_CToC_32fc(reinterpret_cast<const Ipp32fc *>(pSrc), reinterpret_cast<Ipp32fc *>(pDst), (const IppsDFTSpec_C_32fc *)pDFTSpec, pBuffer)); }
+    static inline IppStatus DFTInv(const std::complex<double> *pSrc, std::complex<double> *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsDFTInv_CToC_64fc(reinterpret_cast<const Ipp64fc *>(pSrc), reinterpret_cast<Ipp64fc *>(pDst), (const IppsDFTSpec_C_64fc *)pDFTSpec, pBuffer)); }
+    static inline IppStatus DFTInv(const std::complex<double> *pSrc, double *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsDFTInv_CCSToR_64f((const double *)pSrc, pDst, (const IppsDFTSpec_R_64f *)pDFTSpec, pBuffer)); }
+    static inline IppStatus DFTInv(const std::complex<float> *pSrc, float *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsDFTInv_CCSToR_32f((const float *)pSrc, pDst, (const IppsDFTSpec_R_32f *)pDFTSpec, pBuffer)); }
 
     template <typename T>
     static inline int DFT_Get_FwdSize(int nfft) { return nfft; }
@@ -166,6 +179,10 @@ namespace tipp
     static inline IppStatus FFTGetSize<float>(int order, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf) { return OptionalAssertNoError(ippsFFTGetSize_R_32f(order, flag, ippAlgHintNone, pSizeSpec, pSizeInit, pSizeBuf)); }
     template <>
     static inline IppStatus FFTGetSize<double>(int order, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf) { return OptionalAssertNoError(ippsFFTGetSize_R_64f(order, flag, ippAlgHintNone, pSizeSpec, pSizeInit, pSizeBuf)); }
+    template <>
+    static inline IppStatus FFTGetSize<std::complex<float>>(int order, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf) { return OptionalAssertNoError(ippsFFTGetSize_C_32fc(order, flag, ippAlgHintNone, pSizeSpec, pSizeInit, pSizeBuf)); }
+    template <>
+    static inline IppStatus FFTGetSize<std::complex<double>>(int order, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf) { return OptionalAssertNoError(ippsFFTGetSize_C_64fc(order, flag, ippAlgHintNone, pSizeSpec, pSizeInit, pSizeBuf)); }
 
     template <typename T>
     static inline IppStatus FFTInit(void *ppFFTSpec, int order, int flag, Ipp8u *pSpec, Ipp8u *pSpecBuffer);
@@ -177,25 +194,37 @@ namespace tipp
     static inline IppStatus FFTInit<float>(void *ppFFTSpec, int order, int flag, Ipp8u *pSpec, Ipp8u *pSpecBuffer) { return OptionalAssertNoError(ippsFFTInit_R_32f((IppsFFTSpec_R_32f **)ppFFTSpec, order, flag, ippAlgHintNone, pSpec, pSpecBuffer)); }
     template <>
     static inline IppStatus FFTInit<double>(void *ppFFTSpec, int order, int flag, Ipp8u *pSpec, Ipp8u *pSpecBuffer) { return OptionalAssertNoError(ippsFFTInit_R_64f((IppsFFTSpec_R_64f **)ppFFTSpec, order, flag, ippAlgHintNone, pSpec, pSpecBuffer)); }
+    template <>
+    static inline IppStatus FFTInit<std::complex<float>>(void *ppFFTSpec, int order, int flag, Ipp8u *pSpec, Ipp8u *pSpecBuffer) { return OptionalAssertNoError(ippsFFTInit_C_32fc((IppsFFTSpec_C_32fc **)ppFFTSpec, order, flag, ippAlgHintNone, pSpec, pSpecBuffer)); }
+    template <>
+    static inline IppStatus FFTInit<std::complex<double>>(void *ppFFTSpec, int order, int flag, Ipp8u *pSpec, Ipp8u *pSpecBuffer) { return OptionalAssertNoError(ippsFFTInit_C_64fc((IppsFFTSpec_C_64fc **)ppFFTSpec, order, flag, ippAlgHintNone, pSpec, pSpecBuffer)); }
 
     static inline IppStatus FFTFwd(const Ipp32fc *pSrc, Ipp32fc *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTFwd_CToC_32fc(pSrc, pDst, (const IppsFFTSpec_C_32fc *)pFFTSpec, pBuffer)); }
     static inline IppStatus FFTFwd(const Ipp64fc *pSrc, Ipp64fc *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTFwd_CToC_64fc(pSrc, pDst, (const IppsFFTSpec_C_64fc *)pFFTSpec, pBuffer)); }
     static inline IppStatus FFTFwd(const float *pSrc, Ipp32fc *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTFwd_RToCCS_32f(pSrc, (float *)pDst, (const IppsFFTSpec_R_32f *)pFFTSpec, pBuffer)); }
     static inline IppStatus FFTFwd(const double *pSrc, Ipp64fc *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTFwd_RToCCS_64f(pSrc, (double *)pDst, (const IppsFFTSpec_R_64f *)pFFTSpec, pBuffer)); }
+    static inline IppStatus FFTFwd(const std::complex<float> *pSrc, std::complex<float> *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTFwd_CToC_32fc(reinterpret_cast<const Ipp32fc *>(pSrc), reinterpret_cast<Ipp32fc *>(pDst), (const IppsFFTSpec_C_32fc *)pFFTSpec, pBuffer)); }
+    static inline IppStatus FFTFwd(const std::complex<double> *pSrc, std::complex<double> *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTFwd_CToC_64fc(reinterpret_cast<const Ipp64fc *>(pSrc), reinterpret_cast<Ipp64fc *>(pDst), (const IppsFFTSpec_C_64fc *)pFFTSpec, pBuffer)); }
 
     static inline IppStatus FFTInv(const Ipp32fc *pSrc, Ipp32fc *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CToC_32fc(pSrc, pDst, (const IppsFFTSpec_C_32fc *)pFFTSpec, pBuffer)); }
     static inline IppStatus FFTInv(const Ipp64fc *pSrc, Ipp64fc *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CToC_64fc(pSrc, pDst, (const IppsFFTSpec_C_64fc *)pFFTSpec, pBuffer)); }
     static inline IppStatus FFTInv(const Ipp64fc *pSrc, double *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CCSToR_64f((const double *)pSrc, pDst, (const IppsFFTSpec_R_64f *)pFFTSpec, pBuffer)); }
     static inline IppStatus FFTInv(const Ipp32fc *pSrc, float *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CCSToR_32f((const float *)pSrc, pDst, (const IppsFFTSpec_R_32f *)pFFTSpec, pBuffer)); }
+    static inline IppStatus FFTInv(const std::complex<float> *pSrc, std::complex<float> *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CToC_32fc(reinterpret_cast<const Ipp32fc *>(pSrc), reinterpret_cast<Ipp32fc *>(pDst), (const IppsFFTSpec_C_32fc *)pFFTSpec, pBuffer)); }
+    static inline IppStatus FFTInv(const std::complex<double> *pSrc, std::complex<double> *pDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CToC_64fc(reinterpret_cast<const Ipp64fc *>(pSrc), reinterpret_cast<Ipp64fc *>(pDst), (const IppsFFTSpec_C_64fc *)pFFTSpec, pBuffer)); }
 
     static inline IppStatus FFTFwd_I(Ipp32fc *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTFwd_CToC_32fc_I(pSrcDst, (const IppsFFTSpec_C_32fc *)pFFTSpec, pBuffer)); }
     static inline IppStatus FFTFwd_I(Ipp64fc *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTFwd_CToC_64fc_I(pSrcDst, (const IppsFFTSpec_C_64fc *)pFFTSpec, pBuffer)); }
     static inline IppStatus FFTFwd_I(float *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTFwd_RToCCS_32f_I(pSrcDst, (const IppsFFTSpec_R_32f *)pFFTSpec, pBuffer)); }
     static inline IppStatus FFTFwd_I(double *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTFwd_RToCCS_64f_I(pSrcDst, (const IppsFFTSpec_R_64f *)pFFTSpec, pBuffer)); }
+    static inline IppStatus FFTFwd_I(std::complex<float> *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTFwd_CToC_32fc_I(reinterpret_cast<Ipp32fc *>(pSrcDst), (const IppsFFTSpec_C_32fc *)pFFTSpec, pBuffer)); }
+    static inline IppStatus FFTFwd_I(std::complex<double> *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTFwd_CToC_64fc_I(reinterpret_cast<Ipp64fc *>(pSrcDst), (const IppsFFTSpec_C_64fc *)pFFTSpec, pBuffer)); }
 
     static inline IppStatus FFTInv_I(Ipp32fc *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CToC_32fc_I(pSrcDst, (const IppsFFTSpec_C_32fc *)pFFTSpec, pBuffer)); }
     static inline IppStatus FFTInv_I(Ipp64fc *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CToC_64fc_I(pSrcDst, (const IppsFFTSpec_C_64fc *)pFFTSpec, pBuffer)); }
     static inline IppStatus FFTInv_I(Ipp64f *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CCSToR_64f_I((double *)pSrcDst, (const IppsFFTSpec_R_64f *)pFFTSpec, pBuffer)); }
     static inline IppStatus FFTInv_I(Ipp32f *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CCSToR_32f_I((float *)pSrcDst, (const IppsFFTSpec_R_32f *)pFFTSpec, pBuffer)); }
+    static inline IppStatus FFTInv_I(std::complex<float> *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CToC_32fc_I(reinterpret_cast<Ipp32fc *>(pSrcDst), (const IppsFFTSpec_C_32fc *)pFFTSpec, pBuffer)); }
+    static inline IppStatus FFTInv_I(std::complex<double> *pSrcDst, const Ipp8u *pFFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsFFTInv_CToC_64fc_I(reinterpret_cast<Ipp64fc *>(pSrcDst), (const IppsFFTSpec_C_64fc *)pFFTSpec, pBuffer)); }
 
 }

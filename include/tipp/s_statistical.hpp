@@ -16,6 +16,8 @@ namespace tipp
     static inline IppStatus Sum(const Ipp32fc *pSrc, int len, Ipp32fc *pSum) { return OptionalAssertNoError(ippsSum_32fc(pSrc, len, pSum, ippAlgHintAccurate)); }
     static inline IppStatus Sum(const Ipp64f *pSrc, int len, Ipp64f *pSum) { return OptionalAssertNoError(ippsSum_64f(pSrc, len, pSum)); }
     static inline IppStatus Sum(const Ipp64fc *pSrc, int len, Ipp64fc *pSum) { return OptionalAssertNoError(ippsSum_64fc(pSrc, len, pSum)); }
+    static inline IppStatus Sum(const std::complex<float> *pSrc, int len, std::complex<float> *pSum) { return OptionalAssertNoError(ippsSum_32fc((Ipp32fc *)pSrc, len, (Ipp32fc *)pSum, ippAlgHintAccurate)); }
+    static inline IppStatus Sum(const std::complex<double> *pSrc, int len, std::complex<double> *pSum) { return OptionalAssertNoError(ippsSum_64fc((Ipp64fc *)pSrc, len, (Ipp64fc *)pSum)); }
 
     static inline IppStatus Sum_Sfs(const Ipp16s *pSrc, int len, Ipp16s *pSum, int scaleFactor) { return OptionalAssertNoError(ippsSum_16s_Sfs(pSrc, len, pSum, scaleFactor)); }
     static inline IppStatus Sum_Sfs(const Ipp32s *pSrc, int len, Ipp32s *pSum, int scaleFactor) { return OptionalAssertNoError(ippsSum_32s_Sfs(pSrc, len, pSum, scaleFactor)); }
@@ -41,6 +43,7 @@ namespace tipp
     static inline IppStatus MinEvery(const Ipp16u *pSrc1, const Ipp16u *pSrc2, Ipp16u *pDst, Ipp32u len) { return OptionalAssertNoError(ippsMinEvery_16u(pSrc1, pSrc2, pDst, len)); }
     static inline IppStatus MinEvery(const Ipp32f *pSrc1, const Ipp32f *pSrc2, Ipp32f *pDst, Ipp32u len) { return OptionalAssertNoError(ippsMinEvery_32f(pSrc1, pSrc2, pDst, len)); }
     static inline IppStatus MinEvery(const Ipp64f *pSrc1, const Ipp64f *pSrc2, Ipp64f *pDst, Ipp32u len) { return OptionalAssertNoError(ippsMinEvery_64f(pSrc1, pSrc2, pDst, len)); }
+
     static inline IppStatus MaxEvery_I(const Ipp8u *pSrc, Ipp8u *pSrcDst, int len) { return OptionalAssertNoError(ippsMaxEvery_8u_I(pSrc, pSrcDst, len)); }
     static inline IppStatus MaxEvery_I(const Ipp16u *pSrc, Ipp16u *pSrcDst, int len) { return OptionalAssertNoError(ippsMaxEvery_16u_I(pSrc, pSrcDst, len)); }
     static inline IppStatus MaxEvery_I(const Ipp16s *pSrc, Ipp16s *pSrcDst, int len) { return OptionalAssertNoError(ippsMaxEvery_16s_I(pSrc, pSrcDst, len)); }
@@ -71,6 +74,8 @@ namespace tipp
     static inline IppStatus Mean(const Ipp32fc *pSrc, int len, Ipp32fc *pMean) { return OptionalAssertNoError(ippsMean_32fc(pSrc, len, pMean, ippAlgHintAccurate)); }
     static inline IppStatus Mean(const Ipp64f *pSrc, int len, Ipp64f *pMean) { return OptionalAssertNoError(ippsMean_64f(pSrc, len, pMean)); }
     static inline IppStatus Mean(const Ipp64fc *pSrc, int len, Ipp64fc *pMean) { return OptionalAssertNoError(ippsMean_64fc(pSrc, len, pMean)); }
+    static inline IppStatus Mean(const std::complex<float> *pSrc, int len, std::complex<float> *pMean) { return OptionalAssertNoError(ippsMean_32fc((Ipp32fc *)pSrc, len, (Ipp32fc *)pMean, ippAlgHintAccurate)); }
+    static inline IppStatus Mean(const std::complex<double> *pSrc, int len, std::complex<double> *pMean) { return OptionalAssertNoError(ippsMean_64fc((Ipp64fc *)pSrc, len, (Ipp64fc *)pMean)); }
 
     static inline IppStatus MinAbsIndx(const Ipp16s *pSrc, int len, Ipp16s *pMinAbs, int *pIndx) { return OptionalAssertNoError(ippsMinAbsIndx_16s(pSrc, len, pMinAbs, pIndx)); }
     static inline IppStatus MinAbsIndx(const Ipp32s *pSrc, int len, Ipp32s *pMinAbs, int *pIndx) { return OptionalAssertNoError(ippsMinAbsIndx_32s(pSrc, len, pMinAbs, pIndx)); }
@@ -116,32 +121,48 @@ namespace tipp
     static inline IppStatus NormDiff_Inf(const Ipp16s *pSrc1, const Ipp16s *pSrc2, int len, Ipp32f *pNorm) { return OptionalAssertNoError(ippsNormDiff_Inf_16s32f(pSrc1, pSrc2, len, pNorm)); }
     static inline IppStatus NormDiff_Inf(const Ipp32fc *pSrc1, const Ipp32fc *pSrc2, int len, Ipp32f *pNorm) { return OptionalAssertNoError(ippsNormDiff_Inf_32fc32f(pSrc1, pSrc2, len, pNorm)); }
     static inline IppStatus NormDiff_Inf(const Ipp64fc *pSrc1, const Ipp64fc *pSrc2, int len, Ipp64f *pNorm) { return OptionalAssertNoError(ippsNormDiff_Inf_64fc64f(pSrc1, pSrc2, len, pNorm)); }
+    static inline IppStatus NormDiff_Inf(const std::complex<float> *pSrc1, const std::complex<float> *pSrc2, int len, float *pNorm) { return OptionalAssertNoError(ippsNormDiff_Inf_32fc32f((Ipp32fc *)pSrc1, (Ipp32fc *)pSrc2, len, pNorm)); }
+    static inline IppStatus NormDiff_Inf(const std::complex<double> *pSrc1, const std::complex<double> *pSrc2, int len, double *pNorm) { return OptionalAssertNoError(ippsNormDiff_Inf_64fc64f((Ipp64fc *)pSrc1, (Ipp64fc *)pSrc2, len, pNorm)); }
+
     static inline IppStatus NormDiff_L1(const Ipp32f *pSrc1, const Ipp32f *pSrc2, int len, Ipp32f *pNorm) { return OptionalAssertNoError(ippsNormDiff_L1_32f(pSrc1, pSrc2, len, pNorm)); }
     static inline IppStatus NormDiff_L1(const Ipp64f *pSrc1, const Ipp64f *pSrc2, int len, Ipp64f *pNorm) { return OptionalAssertNoError(ippsNormDiff_L1_64f(pSrc1, pSrc2, len, pNorm)); }
     static inline IppStatus NormDiff_L1(const Ipp16s *pSrc1, const Ipp16s *pSrc2, int len, Ipp32f *pNorm) { return OptionalAssertNoError(ippsNormDiff_L1_16s32f(pSrc1, pSrc2, len, pNorm)); }
     static inline IppStatus NormDiff_L1(const Ipp32fc *pSrc1, const Ipp32fc *pSrc2, int len, Ipp64f *pNorm) { return OptionalAssertNoError(ippsNormDiff_L1_32fc64f(pSrc1, pSrc2, len, pNorm)); }
     static inline IppStatus NormDiff_L1(const Ipp64fc *pSrc1, const Ipp64fc *pSrc2, int len, Ipp64f *pNorm) { return OptionalAssertNoError(ippsNormDiff_L1_64fc64f(pSrc1, pSrc2, len, pNorm)); }
+    static inline IppStatus NormDiff_L1(const std::complex<float> *pSrc1, const std::complex<float> *pSrc2, int len, double *pNorm) { return OptionalAssertNoError(ippsNormDiff_L1_32fc64f((Ipp32fc *)pSrc1, (Ipp32fc *)pSrc2, len, pNorm)); }
+    static inline IppStatus NormDiff_L1(const std::complex<double> *pSrc1, const std::complex<double> *pSrc2, int len, double *pNorm) { return OptionalAssertNoError(ippsNormDiff_L1_64fc64f((Ipp64fc *)pSrc1, (Ipp64fc *)pSrc2, len, pNorm)); }
+
     static inline IppStatus NormDiff_L2(const Ipp32f *pSrc1, const Ipp32f *pSrc2, int len, Ipp32f *pNorm) { return OptionalAssertNoError(ippsNormDiff_L2_32f(pSrc1, pSrc2, len, pNorm)); }
     static inline IppStatus NormDiff_L2(const Ipp64f *pSrc1, const Ipp64f *pSrc2, int len, Ipp64f *pNorm) { return OptionalAssertNoError(ippsNormDiff_L2_64f(pSrc1, pSrc2, len, pNorm)); }
     static inline IppStatus NormDiff_L2(const Ipp16s *pSrc1, const Ipp16s *pSrc2, int len, Ipp32f *pNorm) { return OptionalAssertNoError(ippsNormDiff_L2_16s32f(pSrc1, pSrc2, len, pNorm)); }
     static inline IppStatus NormDiff_L2(const Ipp32fc *pSrc1, const Ipp32fc *pSrc2, int len, Ipp64f *pNorm) { return OptionalAssertNoError(ippsNormDiff_L2_32fc64f(pSrc1, pSrc2, len, pNorm)); }
     static inline IppStatus NormDiff_L2(const Ipp64fc *pSrc1, const Ipp64fc *pSrc2, int len, Ipp64f *pNorm) { return OptionalAssertNoError(ippsNormDiff_L2_64fc64f(pSrc1, pSrc2, len, pNorm)); }
+    static inline IppStatus NormDiff_L2(const std::complex<float> *pSrc1, const std::complex<float> *pSrc2, int len, double *pNorm) { return OptionalAssertNoError(ippsNormDiff_L2_32fc64f((Ipp32fc *)pSrc1, (Ipp32fc *)pSrc2, len, pNorm)); }
+    static inline IppStatus NormDiff_L2(const std::complex<double> *pSrc1, const std::complex<double> *pSrc2, int len, double *pNorm) { return OptionalAssertNoError(ippsNormDiff_L2_64fc64f((Ipp64fc *)pSrc1, (Ipp64fc *)pSrc2, len, pNorm)); }
 
     static inline IppStatus Norm_Inf(const Ipp32f *pSrc, int len, Ipp32f *pNorm) { return OptionalAssertNoError(ippsNorm_Inf_32f(pSrc, len, pNorm)); }
     static inline IppStatus Norm_Inf(const Ipp64f *pSrc, int len, Ipp64f *pNorm) { return OptionalAssertNoError(ippsNorm_Inf_64f(pSrc, len, pNorm)); }
     static inline IppStatus Norm_Inf(const Ipp16s *pSrc, int len, Ipp32f *pNorm) { return OptionalAssertNoError(ippsNorm_Inf_16s32f(pSrc, len, pNorm)); }
     static inline IppStatus Norm_Inf(const Ipp32fc *pSrc, int len, Ipp32f *pNorm) { return OptionalAssertNoError(ippsNorm_Inf_32fc32f(pSrc, len, pNorm)); }
     static inline IppStatus Norm_Inf(const Ipp64fc *pSrc, int len, Ipp64f *pNorm) { return OptionalAssertNoError(ippsNorm_Inf_64fc64f(pSrc, len, pNorm)); }
+    static inline IppStatus Norm_Inf(const std::complex<float> *pSrc, int len, float *pNorm) { return OptionalAssertNoError(ippsNorm_Inf_32fc32f((Ipp32fc *)pSrc, len, pNorm)); }
+    static inline IppStatus Norm_Inf(const std::complex<double> *pSrc, int len, double *pNorm) { return OptionalAssertNoError(ippsNorm_Inf_64fc64f((Ipp64fc *)pSrc, len, pNorm)); }
+
     static inline IppStatus Norm_L1(const Ipp32f *pSrc, int len, Ipp32f *pNorm) { return OptionalAssertNoError(ippsNorm_L1_32f(pSrc, len, pNorm)); }
     static inline IppStatus Norm_L1(const Ipp64f *pSrc, int len, Ipp64f *pNorm) { return OptionalAssertNoError(ippsNorm_L1_64f(pSrc, len, pNorm)); }
     static inline IppStatus Norm_L1(const Ipp16s *pSrc, int len, Ipp32f *pNorm) { return OptionalAssertNoError(ippsNorm_L1_16s32f(pSrc, len, pNorm)); }
     static inline IppStatus Norm_L1(const Ipp32fc *pSrc, int len, Ipp64f *pNorm) { return OptionalAssertNoError(ippsNorm_L1_32fc64f(pSrc, len, pNorm)); }
     static inline IppStatus Norm_L1(const Ipp64fc *pSrc, int len, Ipp64f *pNorm) { return OptionalAssertNoError(ippsNorm_L1_64fc64f(pSrc, len, pNorm)); }
+    static inline IppStatus Norm_L1(const std::complex<float> *pSrc, int len, double *pNorm) { return OptionalAssertNoError(ippsNorm_L1_32fc64f((Ipp32fc *)pSrc, len, pNorm)); }
+    static inline IppStatus Norm_L1(const std::complex<double> *pSrc, int len, double *pNorm) { return OptionalAssertNoError(ippsNorm_L1_64fc64f((Ipp64fc *)pSrc, len, pNorm)); }
+
     static inline IppStatus Norm_L2(const Ipp32f *pSrc, int len, Ipp32f *pNorm) { return OptionalAssertNoError(ippsNorm_L2_32f(pSrc, len, pNorm)); }
     static inline IppStatus Norm_L2(const Ipp64f *pSrc, int len, Ipp64f *pNorm) { return OptionalAssertNoError(ippsNorm_L2_64f(pSrc, len, pNorm)); }
     static inline IppStatus Norm_L2(const Ipp16s *pSrc, int len, Ipp32f *pNorm) { return OptionalAssertNoError(ippsNorm_L2_16s32f(pSrc, len, pNorm)); }
     static inline IppStatus Norm_L2(const Ipp32fc *pSrc, int len, Ipp64f *pNorm) { return OptionalAssertNoError(ippsNorm_L2_32fc64f(pSrc, len, pNorm)); }
     static inline IppStatus Norm_L2(const Ipp64fc *pSrc, int len, Ipp64f *pNorm) { return OptionalAssertNoError(ippsNorm_L2_64fc64f(pSrc, len, pNorm)); }
+    static inline IppStatus Norm_L2(const std::complex<float> *pSrc, int len, double *pNorm) { return OptionalAssertNoError(ippsNorm_L2_32fc64f((Ipp32fc *)pSrc, len, pNorm)); }
+    static inline IppStatus Norm_L2(const std::complex<double> *pSrc, int len, double *pNorm) { return OptionalAssertNoError(ippsNorm_L2_64fc64f((Ipp64fc *)pSrc, len, pNorm)); }
 
     static inline IppStatus DotProd(const Ipp32f *pSrc1, const Ipp32f *pSrc2, int len, Ipp32f *pDp) { return OptionalAssertNoError(ippsDotProd_32f(pSrc1, pSrc2, len, pDp)); }
     static inline IppStatus DotProd(const Ipp32fc *pSrc1, const Ipp32fc *pSrc2, int len, Ipp32fc *pDp) { return OptionalAssertNoError(ippsDotProd_32fc(pSrc1, pSrc2, len, pDp)); }
@@ -156,6 +177,12 @@ namespace tipp
     static inline IppStatus DotProd(const Ipp16sc *pSrc1, const Ipp16sc *pSrc2, int len, Ipp64sc *pDp) { return OptionalAssertNoError(ippsDotProd_16sc64sc(pSrc1, pSrc2, len, pDp)); }
     static inline IppStatus DotProd(const Ipp16s *pSrc1, const Ipp16sc *pSrc2, int len, Ipp64sc *pDp) { return OptionalAssertNoError(ippsDotProd_16s16sc64sc(pSrc1, pSrc2, len, pDp)); }
     static inline IppStatus DotProd(const Ipp16s *pSrc1, const Ipp16s *pSrc2, int len, Ipp32f *pDp) { return OptionalAssertNoError(ippsDotProd_16s32f(pSrc1, pSrc2, len, pDp)); }
+    static inline IppStatus DotProd(const std::complex<float> *pSrc1, const std::complex<float> *pSrc2, int len, std::complex<float> *pDp) { return OptionalAssertNoError(ippsDotProd_32fc((Ipp32fc *)pSrc1, (Ipp32fc *)pSrc2, len, (Ipp32fc *)pDp)); }
+    static inline IppStatus DotProd(const float *pSrc1, const std::complex<float> *pSrc2, int len, std::complex<float> *pDp) { return OptionalAssertNoError(ippsDotProd_32f32fc(pSrc1, (Ipp32fc *)pSrc2, len, (Ipp32fc *)pDp)); }
+    static inline IppStatus DotProd(const std::complex<float> *pSrc1, const std::complex<float> *pSrc2, int len, std::complex<double> *pDp) { return OptionalAssertNoError(ippsDotProd_32fc64fc((Ipp32fc *)pSrc1, (Ipp32fc *)pSrc2, len, (Ipp64fc *)pDp)); }
+    static inline IppStatus DotProd(const float *pSrc1, const std::complex<float> *pSrc2, int len, std::complex<double> *pDp) { return OptionalAssertNoError(ippsDotProd_32f32fc64fc(pSrc1, (Ipp32fc *)pSrc2, len, (Ipp64fc *)pDp)); }
+    static inline IppStatus DotProd(const std::complex<double> *pSrc1, const std::complex<double> *pSrc2, int len, std::complex<double> *pDp) { return OptionalAssertNoError(ippsDotProd_64fc((Ipp64fc *)pSrc1, (Ipp64fc *)pSrc2, len, (Ipp64fc *)pDp)); }
+    static inline IppStatus DotProd(const double *pSrc1, const std::complex<double> *pSrc2, int len, std::complex<double> *pDp) { return OptionalAssertNoError(ippsDotProd_64f64fc(pSrc1, (Ipp64fc *)pSrc2, len, (Ipp64fc *)pDp)); }
 
     static inline IppStatus StdDev(const Ipp32f *pSrc, int len, Ipp32f *pStdDev) { return OptionalAssertNoError(ippsStdDev_32f(pSrc, len, pStdDev, ippAlgHintAccurate)); }
     static inline IppStatus StdDev(const Ipp64f *pSrc, int len, Ipp64f *pStdDev) { return OptionalAssertNoError(ippsStdDev_64f(pSrc, len, pStdDev)); }
