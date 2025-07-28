@@ -69,7 +69,7 @@ namespace tipp
     template <>
     static inline IppStatus FIRSRInit<std::complex<double>>(const std::complex<double> *pTaps, int tapsLen, IppAlgType algType, Ipp8u *pSpec) { return OptionalAssertNoError(ippsFIRSRInit_64fc((Ipp64fc *)pTaps, tapsLen, algType, (IppsFIRSpec_64fc *)pSpec)); }
     template <>
-    static inline IppStatus FIRSRInit<std::complex<float>>(const std::complex<float> *pTaps, int tapsLen, IppAlgType algType, Ipp8u *pSpec) { return OptionalAssertNoError(ippsFIRSRInit_32fc((Ipp32fc *)pTaps, tapsLen, algType, (IppsFIRSpec_64fc *)pSpec)); }
+    static inline IppStatus FIRSRInit<std::complex<float>>(const std::complex<float> *pTaps, int tapsLen, IppAlgType algType, Ipp8u *pSpec) { return OptionalAssertNoError(ippsFIRSRInit_32fc((Ipp32fc *)pTaps, tapsLen, algType, (IppsFIRSpec_32fc *)pSpec)); }
 
     static inline IppStatus FIRMR(const Ipp32f *pSrc, Ipp32f *pDst, int numIters, Ipp8u *pSpec, const Ipp32f *pDlySrc, Ipp32f *pDlyDst, Ipp8u *pBuf) { return OptionalAssertNoError(ippsFIRMR_32f(pSrc, pDst, numIters, (IppsFIRSpec_32f *)pSpec, pDlySrc, pDlyDst, pBuf)); }
     static inline IppStatus FIRMR(const Ipp64f *pSrc, Ipp64f *pDst, int numIters, Ipp8u *pSpec, const Ipp64f *pDlySrc, Ipp64f *pDlyDst, Ipp8u *pBuf) { return OptionalAssertNoError(ippsFIRMR_64f(pSrc, pDst, numIters, (IppsFIRSpec_64f *)pSpec, pDlySrc, pDlyDst, pBuf)); }

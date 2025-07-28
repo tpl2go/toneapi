@@ -9,6 +9,7 @@
 #include "s_statistical.hpp"
 #include "s_transforms.hpp"
 #include "s_windowing.hpp"
+#include "s_arithmetic.hpp"
 
 // include the engines
 #include "s_conversion_engines.hpp"

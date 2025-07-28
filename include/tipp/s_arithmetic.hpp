@@ -52,6 +52,8 @@ namespace tipp
     static inline IppStatus AddProduct(const Ipp64f *pSrc1, const Ipp64f *pSrc2, Ipp64f *pSrcDst, int len) { return OptionalAssertNoError(ippsAddProduct_64f(pSrc1, pSrc2, pSrcDst, len)); }
     static inline IppStatus AddProduct(const Ipp32fc *pSrc1, const Ipp32fc *pSrc2, Ipp32fc *pSrcDst, int len) { return OptionalAssertNoError(ippsAddProduct_32fc(pSrc1, pSrc2, pSrcDst, len)); }
     static inline IppStatus AddProduct(const Ipp64fc *pSrc1, const Ipp64fc *pSrc2, Ipp64fc *pSrcDst, int len) { return OptionalAssertNoError(ippsAddProduct_64fc(pSrc1, pSrc2, pSrcDst, len)); }
+    static inline IppStatus AddProduct(const std::complex<float> *pSrc1, const std::complex<float> *pSrc2, std::complex<float> *pSrcDst, int len) { return OptionalAssertNoError(ippsAddProduct_32fc((Ipp32fc *)pSrc1, (Ipp32fc *)pSrc2, (Ipp32fc *)pSrcDst, len)); }
+    static inline IppStatus AddProduct(const std::complex<double> *pSrc1, const std::complex<double> *pSrc2, std::complex<double> *pSrcDst, int len) { return OptionalAssertNoError(ippsAddProduct_64fc((Ipp64fc *)pSrc1, (Ipp64fc *)pSrc2, (Ipp64fc *)pSrcDst, len)); }
 
     static inline IppStatus MulC(const Ipp32f *pSrc, Ipp32f val, Ipp32f *pDst, int len) { return OptionalAssertNoError(ippsMulC_32f(pSrc, val, pDst, len)); }
     static inline IppStatus MulC(const Ipp64f *pSrc, Ipp64f val, Ipp64f *pDst, int len) { return OptionalAssertNoError(ippsMulC_64f(pSrc, val, pDst, len)); }
@@ -122,6 +124,8 @@ namespace tipp
     static inline IppStatus SubCRev(const Ipp64f *pSrc, Ipp64f val, Ipp64f *pDst, int len) { return OptionalAssertNoError(ippsSubCRev_64f(pSrc, val, pDst, len)); }
     static inline IppStatus SubCRev(const Ipp32fc *pSrc, Ipp32fc val, Ipp32fc *pDst, int len) { return OptionalAssertNoError(ippsSubCRev_32fc(pSrc, val, pDst, len)); }
     static inline IppStatus SubCRev(const Ipp64fc *pSrc, Ipp64fc val, Ipp64fc *pDst, int len) { return OptionalAssertNoError(ippsSubCRev_64fc(pSrc, val, pDst, len)); }
+    static inline IppStatus SubCRev(const std::complex<float> *pSrc, std::complex<float> val, std::complex<float> *pDst, int len) { return OptionalAssertNoError(ippsSubCRev_32fc((Ipp32fc *)pSrc, *((Ipp32fc *)&val), (Ipp32fc *)pDst, len)); }
+    static inline IppStatus SubCRev(const std::complex<double> *pSrc, std::complex<double> val, std::complex<double> *pDst, int len) { return OptionalAssertNoError(ippsSubCRev_64fc((Ipp64fc *)pSrc, *((Ipp64fc *)&val), (Ipp64fc *)pDst, len)); }
 
     static inline IppStatus SubCRev_I(Ipp32f val, Ipp32f *pSrcDst, int len) { return OptionalAssertNoError(ippsSubCRev_32f_I(val, pSrcDst, len)); }
     static inline IppStatus SubCRev_I(Ipp64f val, Ipp64f *pSrcDst, int len) { return OptionalAssertNoError(ippsSubCRev_64f_I(val, pSrcDst, len)); }
