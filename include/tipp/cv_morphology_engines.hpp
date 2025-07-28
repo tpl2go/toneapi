@@ -3,6 +3,7 @@
 #include <ipp/ippcv_l.h>
 #include "tipp_error.hpp"
 #include "tipp_vector.hpp"
+#include "cv_morphology.hpp"
 
 namespace tipp
 {
