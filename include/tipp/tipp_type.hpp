@@ -84,8 +84,4 @@ namespace tipp
         using type = Ipp64f;
     };
 
-    // Convenience alias
-    template <typename T>
-    using ScalarType_t = typename ScalarType<T>::type;
-
 }

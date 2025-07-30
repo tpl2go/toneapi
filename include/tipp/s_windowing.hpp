@@ -2,11 +2,8 @@
 #include <ipp/ipps.h>
 #include <ipp/ipps_l.h>
 #include <complex>
-#include "s_conversion.hpp"
 #include "tipp_error.hpp"
 #include "tipp_type.hpp"
-#include "tipp_vector.hpp"
-#include "s_arithmetic.hpp"
 #include <stdexcept>
 
 #define PI 3.14159265358979323846264338327950288419
@@ -139,26 +136,4 @@ namespace tipp
     static inline IppStatus WinKaiser_I(std::complex<float> *pSrcDst, int len, Ipp32f alpha) { return OptionalAssertNoError(ippsWinKaiser_32fc_I((Ipp32fc *)pSrcDst, len, alpha)); }
     static inline IppStatus WinKaiser_I(std::complex<double> *pSrcDst, int len, Ipp64f alpha) { return OptionalAssertNoError(ippsWinKaiser_64fc_I((Ipp64fc *)pSrcDst, len, alpha)); }
 
-    template <typename T>
-    static inline void PeriodicWinHann_I(T *pDst, int len)
-    {
-        Zero(pDst, len);
-
-        vector<T> In(len);
-
-        if constexpr (IsComplex<T>::value)
-        {
-            using ScalarType_t = typename ScalarType<T>::type;
-            vector<ScalarType_t> win_tmp(len);
-            VectorSlope(win_tmp.data(), len, 0, 2 * PI / ((ScalarType_t)len));
-            RealToCplx(win_tmp.data(), nullptr, In.data(), len);
-        }
-        else
-        {
-            VectorSlope(In.data(), len, 0, 2 * PI / ((T)len));
-        }
-        Cos(In.data(), pDst, len);
-        MulC_I(-0.5, pDst, len);
-        AddC_I(0.5, pDst, len);
-    }
 }

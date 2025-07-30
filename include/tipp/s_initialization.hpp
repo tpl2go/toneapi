@@ -12,23 +12,23 @@ namespace tipp
 {
 
     /* Essential Initialization */
-    static inline IppStatus Copy(const Ipp8u *pSrc, Ipp8u *pDst, int len) { return OptionalAssertNoError(ippsCopy_8u(pSrc, pDst, len)); }                                                      // unsigned char
-    static inline IppStatus Copy(const Ipp8s *pSrc, Ipp8s *pDst, int len) { return OptionalAssertNoError(ippsCopy_8u((Ipp8u *)pSrc, (Ipp8u *)pDst, len)); }                                    // signed char  // REUSE
-    static inline IppStatus Copy(const Ipp16u *pSrc, Ipp16u *pDst, int len) { return OptionalAssertNoError(ippsCopy_16s((Ipp16s *)pSrc, (Ipp16s *)pDst, len)); }                               // unsigned short  // REUSE
-    static inline IppStatus Copy(const Ipp16s *pSrc, Ipp16s *pDst, int len) { return OptionalAssertNoError(ippsCopy_16s(pSrc, pDst, len)); }                                                   // signed short
-    static inline IppStatus Copy(const Ipp32u *pSrc, Ipp32u *pDst, int len) { return OptionalAssertNoError(ippsCopy_32s((Ipp32s *)pSrc, (Ipp32s *)pDst, len)); }                               // unsigned int
-    static inline IppStatus Copy(const Ipp32s *pSrc, Ipp32s *pDst, int len) { return OptionalAssertNoError(ippsCopy_32s(pSrc, pDst, len)); }                                                   // signed int
-    static inline IppStatus Copy(const Ipp32f *pSrc, Ipp32f *pDst, int len) { return OptionalAssertNoError(ippsCopy_32f(pSrc, pDst, len)); }                                                   // float
-    static inline IppStatus Copy(const Ipp64s *pSrc, Ipp64s *pDst, int len) { return OptionalAssertNoError(ippsCopy_64s(pSrc, pDst, len)); }                                                   // __int64 (Windows*) or long long (Linux*)
-    static inline IppStatus Copy(const Ipp64f *pSrc, Ipp64f *pDst, int len) { return OptionalAssertNoError(ippsCopy_64f(pSrc, pDst, len)); }                                                   // double
-    static inline IppStatus Copy(const Ipp8sc *pSrc, Ipp8sc *pDst, int len) { return OptionalAssertNoError(ippsCopy_16s((Ipp16s *)pSrc, (Ipp16s *)pDst, len)); }                               // REUSE another copy function
-    static inline IppStatus Copy(const Ipp16sc *pSrc, Ipp16sc *pDst, int len) { return OptionalAssertNoError(ippsCopy_16sc(pSrc, pDst, len)); }                                                // complex short
-    static inline IppStatus Copy(const Ipp32sc *pSrc, Ipp32sc *pDst, int len) { return OptionalAssertNoError(ippsCopy_32sc(pSrc, pDst, len)); }                                                // complex signed int
-    static inline IppStatus Copy(const Ipp32fc *pSrc, Ipp32fc *pDst, int len) { return OptionalAssertNoError(ippsCopy_32fc(pSrc, pDst, len)); }                                                // complex float
-    static inline IppStatus Copy(const Ipp64sc *pSrc, Ipp64sc *pDst, int len) { return OptionalAssertNoError(ippsCopy_64sc(pSrc, pDst, len)); }                                                // complex signed long long
-    static inline IppStatus Copy(const Ipp64fc *pSrc, Ipp64fc *pDst, int len) { return OptionalAssertNoError(ippsCopy_64fc(pSrc, pDst, len)); }                                                // complex double
-    static inline IppStatus Copy(const std::complex<float> *pSrc, std::complex<float> *pDst, int len) { return OptionalAssertNoError(ippsCopy_32fc((Ipp32fc *)pSrc, (Ipp32fc *)pDst, len)); }  // complex double
-    static inline IppStatus Copy(const std::complex<float> *pSrc, std::complex<double> *pDst, int len) { return OptionalAssertNoError(ippsCopy_64fc((Ipp64fc *)pSrc, (Ipp64fc *)pDst, len)); } // complex double
+    static inline IppStatus Copy(const Ipp8u *pSrc, Ipp8u *pDst, int len) { return OptionalAssertNoError(ippsCopy_8u(pSrc, pDst, len)); }                                                       // unsigned char
+    static inline IppStatus Copy(const Ipp8s *pSrc, Ipp8s *pDst, int len) { return OptionalAssertNoError(ippsCopy_8u((Ipp8u *)pSrc, (Ipp8u *)pDst, len)); }                                     // signed char  // REUSE
+    static inline IppStatus Copy(const Ipp16u *pSrc, Ipp16u *pDst, int len) { return OptionalAssertNoError(ippsCopy_16s((Ipp16s *)pSrc, (Ipp16s *)pDst, len)); }                                // unsigned short  // REUSE
+    static inline IppStatus Copy(const Ipp16s *pSrc, Ipp16s *pDst, int len) { return OptionalAssertNoError(ippsCopy_16s(pSrc, pDst, len)); }                                                    // signed short
+    static inline IppStatus Copy(const Ipp32u *pSrc, Ipp32u *pDst, int len) { return OptionalAssertNoError(ippsCopy_32s((Ipp32s *)pSrc, (Ipp32s *)pDst, len)); }                                // unsigned int
+    static inline IppStatus Copy(const Ipp32s *pSrc, Ipp32s *pDst, int len) { return OptionalAssertNoError(ippsCopy_32s(pSrc, pDst, len)); }                                                    // signed int
+    static inline IppStatus Copy(const Ipp32f *pSrc, Ipp32f *pDst, int len) { return OptionalAssertNoError(ippsCopy_32f(pSrc, pDst, len)); }                                                    // float
+    static inline IppStatus Copy(const Ipp64s *pSrc, Ipp64s *pDst, int len) { return OptionalAssertNoError(ippsCopy_64s(pSrc, pDst, len)); }                                                    // __int64 (Windows*) or long long (Linux*)
+    static inline IppStatus Copy(const Ipp64f *pSrc, Ipp64f *pDst, int len) { return OptionalAssertNoError(ippsCopy_64f(pSrc, pDst, len)); }                                                    // double
+    static inline IppStatus Copy(const Ipp8sc *pSrc, Ipp8sc *pDst, int len) { return OptionalAssertNoError(ippsCopy_16s((Ipp16s *)pSrc, (Ipp16s *)pDst, len)); }                                // REUSE another copy function
+    static inline IppStatus Copy(const Ipp16sc *pSrc, Ipp16sc *pDst, int len) { return OptionalAssertNoError(ippsCopy_16sc(pSrc, pDst, len)); }                                                 // complex short
+    static inline IppStatus Copy(const Ipp32sc *pSrc, Ipp32sc *pDst, int len) { return OptionalAssertNoError(ippsCopy_32sc(pSrc, pDst, len)); }                                                 // complex signed int
+    static inline IppStatus Copy(const Ipp32fc *pSrc, Ipp32fc *pDst, int len) { return OptionalAssertNoError(ippsCopy_32fc(pSrc, pDst, len)); }                                                 // complex float
+    static inline IppStatus Copy(const Ipp64sc *pSrc, Ipp64sc *pDst, int len) { return OptionalAssertNoError(ippsCopy_64sc(pSrc, pDst, len)); }                                                 // complex signed long long
+    static inline IppStatus Copy(const Ipp64fc *pSrc, Ipp64fc *pDst, int len) { return OptionalAssertNoError(ippsCopy_64fc(pSrc, pDst, len)); }                                                 // complex double
+    static inline IppStatus Copy(const std::complex<float> *pSrc, std::complex<float> *pDst, int len) { return OptionalAssertNoError(ippsCopy_32fc((Ipp32fc *)pSrc, (Ipp32fc *)pDst, len)); }   // complex double
+    static inline IppStatus Copy(const std::complex<double> *pSrc, std::complex<double> *pDst, int len) { return OptionalAssertNoError(ippsCopy_64fc((Ipp64fc *)pSrc, (Ipp64fc *)pDst, len)); } // complex double
 
     static inline IppStatus Move(const Ipp8u *pSrc, Ipp8u *pDst, int len) { return OptionalAssertNoError(ippsMove_8u(pSrc, pDst, len)); }
     static inline IppStatus Move(const Ipp16s *pSrc, Ipp16s *pDst, int len) { return OptionalAssertNoError(ippsMove_16s(pSrc, pDst, len)); }
@@ -121,10 +121,10 @@ namespace tipp
     template <>
     static inline IppStatus RandGaussGetSize<Ipp64f>(int *pRandGaussStateSize) { return OptionalAssertNoError(ippsRandGaussGetSize_64f(pRandGaussStateSize)); }
 
-    static inline IppStatus RandGauss(Ipp8u *pDst, int len, IppsRandGaussState_8u *pRandGaussState) { return OptionalAssertNoError(ippsRandGauss_8u(pDst, len, pRandGaussState)); }
-    static inline IppStatus RandGauss(Ipp16s *pDst, int len, IppsRandGaussState_16s *pRandGaussState) { return OptionalAssertNoError(ippsRandGauss_16s(pDst, len, pRandGaussState)); }
-    static inline IppStatus RandGauss(Ipp32f *pDst, int len, IppsRandGaussState_32f *pRandGaussState) { return OptionalAssertNoError(ippsRandGauss_32f(pDst, len, pRandGaussState)); }
-    static inline IppStatus RandGauss(Ipp64f *pDst, int len, IppsRandGaussState_64f *pRandGaussState) { return OptionalAssertNoError(ippsRandGauss_64f(pDst, len, pRandGaussState)); }
+    static inline IppStatus RandGauss(Ipp8u *pDst, int len, void *pRandGaussState) { return OptionalAssertNoError(ippsRandGauss_8u(pDst, len, (IppsRandGaussState_8u *)pRandGaussState)); }
+    static inline IppStatus RandGauss(Ipp16s *pDst, int len, void *pRandGaussState) { return OptionalAssertNoError(ippsRandGauss_16s(pDst, len, (IppsRandGaussState_16s *)pRandGaussState)); }
+    static inline IppStatus RandGauss(Ipp32f *pDst, int len, void *pRandGaussState) { return OptionalAssertNoError(ippsRandGauss_32f(pDst, len, (IppsRandGaussState_32f *)pRandGaussState)); }
+    static inline IppStatus RandGauss(Ipp64f *pDst, int len, void *pRandGaussState) { return OptionalAssertNoError(ippsRandGauss_64f(pDst, len, (IppsRandGaussState_64f *)pRandGaussState)); }
 
     template <typename T>
     static inline IppStatus RandUniformGetSize(int *pRandUniformStateSize);
