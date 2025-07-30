@@ -42,13 +42,13 @@ namespace tipp
                 throw std::runtime_error("Hilbert_Engine not initialized");
         }
 
-        IppStatus Fwd(const T *pSrc, T *pDst)
+        IppStatus forward(const T *pSrc, T *pDst)
         {
             assertIsInitialised();
             return OptionalAssertNoError(Hilbert(pSrc, pDst, (IppsHilbertSpec *)m_Spec.data(), m_Buffer.data()));
         }
 
-        vector<T> Fwd_V(vector<T> Src)
+        vector<T> forward_V(vector<T> Src)
         {
             if (Src.size() != m_length)
                 throw std::invalid_argument("Input vector size does not match the initialized length");
@@ -102,13 +102,13 @@ namespace tipp
                 throw std::runtime_error("DFT_Engine not initalized");
         }
 
-        IppStatus Fwd(const Trc *input, Tc *output)
+        IppStatus forward(const Trc *input, Tc *output)
         {
             assertIsInitialised();
             return OptionalAssertNoError(DFTFwd(input, output, m_pDFTSpec.data(), m_pDFTWorkBuf.data()));
         }
 
-        vector<Tc> Fwd_V(vector<Trc> input)
+        vector<Tc> forward_V(vector<Trc> input)
         {
             if (input.size() != m_inNFFT)
                 throw std::invalid_argument("Input vector size does not match the initialized input size");
@@ -117,13 +117,13 @@ namespace tipp
             return output;
         }
 
-        IppStatus Inv(const Tc *input, Trc *output)
+        IppStatus inverse(const Tc *input, Trc *output)
         {
             assertIsInitialised();
             return OptionalAssertNoError(DFTInv(input, output, m_pDFTSpec.data(), m_pDFTWorkBuf.data()));
         }
 
-        vector<Trc> Inv_V(const Tc *input)
+        vector<Trc> inverse_V(const Tc *input)
         {
             if (input.size() != m_outNFFT)
                 throw std::invalid_argument("Input vector size does not match the initialized output size");
@@ -178,22 +178,22 @@ namespace tipp
                 throw std::runtime_error("FFT not initalized");
         }
 
-        IppStatus Fwd(const Trc *input, Tc *output)
+        IppStatus forward(const Trc *input, Tc *output)
         {
             assertIsInitialised();
             return OptionalAssertNoError(FFTFwd(input, output, m_Spec.data(), m_pFFTWorkBuf.data()));
         }
-        IppStatus Fwd_I(const Trc *input, Tc *output)
+        IppStatus forward_I(const Trc *input, Tc *output)
         {
             assertIsInitialised();
             return OptionalAssertNoError(FFTFwd_I(input, output, m_Spec.data(), m_pFFTWorkBuf.data()));
         }
-        IppStatus Inv(const Tc *input, Trc *output)
+        IppStatus inverse(const Tc *input, Trc *output)
         {
             assertIsInitialised();
             return OptionalAssertNoError(FFTInv(input, output, m_Spec.data(), m_pFFTWorkBuf.data()));
         }
-        IppStatus Inv_I(const Tc *input, Trc *output)
+        IppStatus inverse_I(const Tc *input, Trc *output)
         {
             assertIsInitialised();
             return OptionalAssertNoError(FFTInv_I(input, output, m_Spec.data(), m_pFFTWorkBuf.data()));
@@ -251,14 +251,14 @@ namespace tipp
             m_Low_dlyLine.resize(m_dlyLowLen);
         }
 
-        IppStatus Fwd(const T *input, Ipp32f *pDstLow, Ipp32f *pDstHigh, int dstLen)
+        IppStatus forward(const T *input, Ipp32f *pDstLow, Ipp32f *pDstHigh, int dstLen)
         {
             if (m_Fwd_State.empty())
                 throw std::runtime_error("Buffer not initalized");
             return OptionalAssertNoError(WTFwd(input, pDstLow, pDstHigh, dstLen, m_Fwd_State.data()));
         }
 
-        IppStatus inv(const Ipp32f *input, Ipp32f *pSrcHigh, int srcLen, T *pDst)
+        IppStatus inverse(const Ipp32f *input, Ipp32f *pSrcHigh, int srcLen, T *pDst)
         {
             if (m_Inv_State.empty())
                 throw std::runtime_error("Buffer not initalized");

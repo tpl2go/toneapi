@@ -109,17 +109,15 @@ namespace tipp
                 throw std::runtime_error("SortRadixIndex_Engine not initialized");
         }
 
-        // TODO
-
-        IppStatus sortAscend(T *pSrcDst)
+        IppStatus sortAscend(const T *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len)
         {
             assertIsInitialised();
-            return OptionalAssertNoError(SortRadixIndexAscend(pSrcDst, m_len, m_Buffer.data()));
+            return OptionalAssertNoError(SortRadixIndexAscend(pSrc, srcStrideBytes, pDstIndx, len, m_Buffer.data()));
         }
-        IppStatus sortDescend_I(T *pSrcDst)
+        IppStatus sortDescend(const T *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len)
         {
             assertIsInitialised();
-            return OptionalAssertNoError(SortRadixIndexDescend(pSrcDst, m_len, m_Buffer.data()));
+            return OptionalAssertNoError(SortRadixIndexDescend(pSrc, srcStrideBytes, pDstIndx, len, m_Buffer.data()));
         }
     };
 
@@ -158,21 +156,21 @@ namespace tipp
                 throw std::runtime_error("TopK_Engine not initialized");
         }
 
-        IppStatus get_topk(const T *pSrc, Ipp64s srcIndex, Ipp64s srcStride, Ipp64s srcLen, T *pDstValue, Ipp64s *pDstIndex)
+        IppStatus topk(const T *pSrc, Ipp64s srcIndex, Ipp64s srcStride, Ipp64s srcLen, T *pDstValue, Ipp64s *pDstIndex)
         {
             assertIsInitialised();
             OptionalAssertNoError(TopKInit(pDstValue, pDstIndex, m_dstLen));
             return OptionalAssertNoError(TopK(pSrc, srcIndex, srcStride, srcLen, pDstValue, pDstIndex, m_dstLen, m_hint, m_Buffer.data()));
         }
 
-        std::pair<vector<T>, vector<Ipp64s>> get_topk_V(vector<T> Src)
+        std::pair<vector<T>, vector<Ipp64s>> topk_V(vector<T> Src)
         {
             if (Src.size() != m_srcLen)
                 throw std::invalid_argument("Input vector size does not match the initialized source length");
 
             vector<T> DstValue(m_dstLen);
             vector<Ipp64s> DstIndex(m_dstLen);
-            get_topk(Src.data(), 0, sizeof(T), Src.size(), DstValue.data(), DstIndex.data());
+            topk(Src.data(), 0, sizeof(T), Src.size(), DstValue.data(), DstIndex.data());
 
             return std::make_pair(std::move(DstValue), std::move(DstIndex));
         }

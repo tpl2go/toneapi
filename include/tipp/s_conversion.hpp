@@ -132,50 +132,31 @@ namespace tipp
     template <>
     static inline IppStatus SortRadixIndexGetBufferSize<Ipp64f>(int len, int *pBuffferSize) { ippsSortRadixIndexGetBufferSize(len, IppDataType::ipp64f, pBuffferSize); }
 
-    // TODO
-    IppStatus ippsSortRadixIndexAscend_8u(const Ipp8u *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer);
+    static inline IppStatus SortRadixIndexAscend(const Ipp8u *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexAscend_8u(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline IppStatus SortRadixIndexAscend(const Ipp16u *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexAscend_16u(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline IppStatus SortRadixIndexAscend(const Ipp16s *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexAscend_16s(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline IppStatus SortRadixIndexAscend(const Ipp32s *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexAscend_32s(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline IppStatus SortRadixIndexAscend(const Ipp32u *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexAscend_32u(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline IppStatus SortRadixIndexAscend(const Ipp32f *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexAscend_32f(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline IppStatus SortRadixIndexAscend(const Ipp64f *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexAscend_64f(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline IppStatus SortRadixIndexAscend(const Ipp64s *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexAscend_64s(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline IppStatus SortRadixIndexAscend(const Ipp64u *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexAscend_64u(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
 
-    IppStatus ippsSortRadixIndexAscend_16u(const Ipp16u *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer);
+    static inline IppStatus SortRadixIndexDescend(const Ipp8u *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexDescend_8u(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline IppStatus SortRadixIndexDescend(const Ipp16u *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexDescend_16u(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline IppStatus SortRadixIndexDescend(const Ipp16s *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexDescend_16s(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline IppStatus SortRadixIndexDescend(const Ipp32s *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexDescend_32s(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline IppStatus SortRadixIndexDescend(const Ipp32u *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexDescend_32u(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline IppStatus SortRadixIndexDescend(const Ipp32f *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexDescend_32f(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline IppStatus SortRadixIndexDescend(const Ipp64f *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexDescend_64f(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline IppStatus SortRadixIndexDescend(const Ipp64s *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexDescend_64s(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline IppStatus SortRadixIndexDescend(const Ipp64u *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexDescend_64u(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
 
-    IppStatus ippsSortRadixIndexAscend_16s(const Ipp16s *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer);
+    static inline IppStatus SortRadixIndexAscend_L(const Ipp64s *pSrc, IppSizeL srcStrideBytes, IppSizeL *pDstIndx, IppSizeL len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexAscend_64s_L(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline IppStatus SortRadixIndexAscend_L(const Ipp64u *pSrc, IppSizeL srcStrideBytes, IppSizeL *pDstIndx, IppSizeL len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexAscend_64u_L(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
 
-    IppStatus ippsSortRadixIndexAscend_32s(const Ipp32s *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer);
-
-    IppStatus ippsSortRadixIndexAscend_32u(const Ipp32u *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer);
-
-    IppStatus ippsSortRadixIndexAscend_32f(const Ipp32f *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer);
-
-    IppStatus ippsSortRadixIndexAscend_64f(const Ipp64f *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer);
-
-    IppStatus ippsSortRadixIndexAscend_64s(const Ipp64s *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer);
-
-    IppStatus ippsSortRadixIndexAscend_64u(const Ipp64u *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer);
-
-    IppStatus ippsSortRadixIndexDescend_8u(const Ipp8u *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer);
-
-    IppStatus ippsSortRadixIndexDescend_16u(const Ipp16u *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer);
-
-    IppStatus ippsSortRadixIndexDescend_16s(const Ipp16s *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer);
-
-    IppStatus ippsSortRadixIndexDescend_32s(const Ipp32s *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer);
-
-    IppStatus ippsSortRadixIndexDescend_32u(const Ipp32u *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer);
-
-    IppStatus ippsSortRadixIndexDescend_32f(const Ipp32f *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer);
-
-    IppStatus ippsSortRadixIndexDescend_64f(const Ipp64f *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer);
-
-    IppStatus ippsSortRadixIndexDescend_64s(const Ipp64s *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer);
-
-    IppStatus ippsSortRadixIndexDescend_64u(const Ipp64u *pSrc, Ipp32s srcStrideBytes, Ipp32s *pDstIndx, int len, Ipp8u *pBuffer);
-
-    IppStatus ippsSortRadixIndexAscend_64s_L(const Ipp64s *pSrc, IppSizeL srcStrideBytes, IppSizeL *pDstIndx, IppSizeL len, Ipp8u *pBuffer);
-
-    IppStatus ippsSortRadixIndexAscend_64u_L(const Ipp64u *pSrc, IppSizeL srcStrideBytes, IppSizeL *pDstIndx, IppSizeL len, Ipp8u *pBuffer);
-
-    IppStatus ippsSortRadixIndexDescend_64s_L(const Ipp64s *pSrc, IppSizeL srcStrideBytes, IppSizeL *pDstIndx, IppSizeL len, Ipp8u *pBuffer);
-
-    IppStatus ippsSortRadixIndexDescend_64u_L(const Ipp64u *pSrc, IppSizeL srcStrideBytes, IppSizeL *pDstIndx, IppSizeL len, Ipp8u *pBuffer);
+    static inline IppStatus SortRadixIndexDescend_L(const Ipp64s *pSrc, IppSizeL srcStrideBytes, IppSizeL *pDstIndx, IppSizeL len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexDescend_64s_L(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
+    static inline IppStatus SortRadixIndexDescend_L(const Ipp64u *pSrc, IppSizeL srcStrideBytes, IppSizeL *pDstIndx, IppSizeL len, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsSortRadixIndexDescend_64u_L(pSrc, srcStrideBytes, pDstIndx, len, pBuffer)); }
 
     // TopKGetBufferSize doesnt need wrappers
     // IppStatus ippsTopKGetBufferSize(Ipp64s srcLen, Ipp64s dstLen, IppDataType dataType, IppTopKMode hint, Ipp64s* bufSize);
@@ -189,14 +170,20 @@ namespace tipp
     static inline IppStatus Conj(const Ipp16sc *pSrc, Ipp16sc *pDst, int len) { return OptionalAssertNoError(ippsConj_16sc(pSrc, pDst, len)); }
     static inline IppStatus Conj(const Ipp32fc *pSrc, Ipp32fc *pDst, int len) { return OptionalAssertNoError(ippsConj_32fc(pSrc, pDst, len)); }
     static inline IppStatus Conj(const Ipp64fc *pSrc, Ipp64fc *pDst, int len) { return OptionalAssertNoError(ippsConj_64fc(pSrc, pDst, len)); }
+    static inline IppStatus Conj(const std::complex<float> *pSrc, std::complex<float> *pDst, int len) { return OptionalAssertNoError(ippsConj_32fc((Ipp32fc *)pSrc, (Ipp32fc *)pDst, len)); }
+    static inline IppStatus Conj(const std::complex<double> *pSrc, std::complex<double> *pDst, int len) { return OptionalAssertNoError(ippsConj_64fc((Ipp64fc *)pSrc, (Ipp64fc *)pDst, len)); }
 
     static inline IppStatus Conj_I(Ipp16sc *pSrcDst, int len) { return OptionalAssertNoError(ippsConj_16sc_I(pSrcDst, len)); }
     static inline IppStatus Conj_I(Ipp32fc *pSrcDst, int len) { return OptionalAssertNoError(ippsConj_32fc_I(pSrcDst, len)); }
     static inline IppStatus Conj_I(Ipp64fc *pSrcDst, int len) { return OptionalAssertNoError(ippsConj_64fc_I(pSrcDst, len)); }
+    static inline IppStatus Conj_I(std::complex<float> *pSrcDst, int len) { return OptionalAssertNoError(ippsConj_32fc_I((Ipp32fc *)pSrcDst, len)); }
+    static inline IppStatus Conj_I(std::complex<double> *pSrcDst, int len) { return OptionalAssertNoError(ippsConj_64fc_I((Ipp64fc *)pSrcDst, len)); }
 
     static inline IppStatus ConjFlip(const Ipp16sc *pSrc, Ipp16sc *pDst, int len) { return OptionalAssertNoError(ippsConjFlip_16sc(pSrc, pDst, len)); }
     static inline IppStatus ConjFlip(const Ipp32fc *pSrc, Ipp32fc *pDst, int len) { return OptionalAssertNoError(ippsConjFlip_32fc(pSrc, pDst, len)); }
     static inline IppStatus ConjFlip(const Ipp64fc *pSrc, Ipp64fc *pDst, int len) { return OptionalAssertNoError(ippsConjFlip_64fc(pSrc, pDst, len)); }
+    static inline IppStatus ConjFlip(const std::complex<float> *pSrc, std::complex<float> *pDst, int len) { return OptionalAssertNoError(ippsConjFlip_32fc((Ipp32fc *)pSrc, (Ipp32fc *)pDst, len)); }
+    static inline IppStatus ConjFlip(const std::complex<double> *pSrc, std::complex<double> *pDst, int len) { return OptionalAssertNoError(ippsConjFlip_64fc((Ipp64fc *)pSrc, (Ipp64fc *)pDst, len)); }
 
     static inline IppStatus Magnitude(const Ipp32f *pSrcRe, const Ipp32f *pSrcIm, Ipp32f *pDst, int len) { return OptionalAssertNoError(ippsMagnitude_32f(pSrcRe, pSrcIm, pDst, len)); }
     static inline IppStatus Magnitude(const Ipp64f *pSrcRe, const Ipp64f *pSrcIm, Ipp64f *pDst, int len) { return OptionalAssertNoError(ippsMagnitude_64f(pSrcRe, pSrcIm, pDst, len)); }
@@ -204,6 +191,8 @@ namespace tipp
     static inline IppStatus Magnitude(const Ipp64fc *pSrc, Ipp64f *pDst, int len) { return OptionalAssertNoError(ippsMagnitude_64fc(pSrc, pDst, len)); }
     static inline IppStatus Magnitude(const Ipp16s *pSrcRe, const Ipp16s *pSrcIm, Ipp32f *pDst, int len) { return OptionalAssertNoError(ippsMagnitude_16s32f(pSrcRe, pSrcIm, pDst, len)); }
     static inline IppStatus Magnitude(const Ipp16sc *pSrc, Ipp32f *pDst, int len) { return OptionalAssertNoError(ippsMagnitude_16sc32f(pSrc, pDst, len)); }
+    static inline IppStatus Magnitude(const std::complex<float> *pSrc, float *pDst, int len) { return OptionalAssertNoError(ippsMagnitude_32fc((Ipp32fc *)pSrc, pDst, len)); }
+    static inline IppStatus Magnitude(const std::complex<double> *pSrc, double *pDst, int len) { return OptionalAssertNoError(ippsMagnitude_64fc((Ipp64fc *)pSrc, pDst, len)); }
 
     static inline IppStatus Phase(const Ipp64fc *pSrc, Ipp64f *pDst, int len) { return OptionalAssertNoError(ippsPhase_64fc(pSrc, pDst, len)); }
     static inline IppStatus Phase(const Ipp32fc *pSrc, Ipp32f *pDst, int len) { return OptionalAssertNoError(ippsPhase_32fc(pSrc, pDst, len)); }
@@ -211,6 +200,8 @@ namespace tipp
     static inline IppStatus Phase(const Ipp64f *pSrcRe, const Ipp64f *pSrcIm, Ipp64f *pDst, int len) { return OptionalAssertNoError(ippsPhase_64f(pSrcRe, pSrcIm, pDst, len)); }
     static inline IppStatus Phase(const Ipp32f *pSrcRe, const Ipp32f *pSrcIm, Ipp32f *pDst, int len) { return OptionalAssertNoError(ippsPhase_32f(pSrcRe, pSrcIm, pDst, len)); }
     static inline IppStatus Phase(const Ipp16s *pSrcRe, const Ipp16s *pSrcIm, Ipp32f *pDst, int len) { return OptionalAssertNoError(ippsPhase_16s32f(pSrcRe, pSrcIm, pDst, len)); }
+    static inline IppStatus Phase(const std::complex<float> *pSrc, float *pDst, int len) { return OptionalAssertNoError(ippsPhase_32fc((Ipp32fc *)pSrc, pDst, len)); }
+    static inline IppStatus Phase(const std::complex<double> *pSrc, double *pDst, int len) { return OptionalAssertNoError(ippsPhase_64fc((Ipp64fc *)pSrc, pDst, len)); }
 
     static inline IppStatus PowerSpectr(const Ipp64fc *pSrc, Ipp64f *pDst, int len) { return OptionalAssertNoError(ippsPowerSpectr_64fc(pSrc, pDst, len)); }
     static inline IppStatus PowerSpectr(const Ipp32fc *pSrc, Ipp32f *pDst, int len) { return OptionalAssertNoError(ippsPowerSpectr_32fc(pSrc, pDst, len)); }
@@ -218,6 +209,8 @@ namespace tipp
     static inline IppStatus PowerSpectr(const Ipp32f *pSrcRe, const Ipp32f *pSrcIm, Ipp32f *pDst, int len) { return OptionalAssertNoError(ippsPowerSpectr_32f(pSrcRe, pSrcIm, pDst, len)); }
     static inline IppStatus PowerSpectr(const Ipp16s *pSrcRe, const Ipp16s *pSrcIm, Ipp32f *pDst, int len) { return OptionalAssertNoError(ippsPowerSpectr_16s32f(pSrcRe, pSrcIm, pDst, len)); }
     static inline IppStatus PowerSpectr(const Ipp16sc *pSrc, Ipp32f *pDst, int len) { return OptionalAssertNoError(ippsPowerSpectr_16sc32f(pSrc, pDst, len)); }
+    static inline IppStatus PowerSpectr(const std::complex<float> *pSrc, float *pDst, int len) { return OptionalAssertNoError(ippsPowerSpectr_32fc((Ipp32fc *)pSrc, pDst, len)); }
+    static inline IppStatus PowerSpectr(const std::complex<double> *pSrc, double *pDst, int len) { return OptionalAssertNoError(ippsPowerSpectr_64fc((Ipp64fc *)pSrc, pDst, len)); }
 
     static inline IppStatus RealToCplx(const Ipp16s *pSrcRe, const Ipp16s *pSrcIm, Ipp16sc *pDst, int len) { return OptionalAssertNoError(ippsRealToCplx_16s(pSrcRe, pSrcIm, pDst, len)); }
     static inline IppStatus RealToCplx(const Ipp32f *pSrcRe, const Ipp32f *pSrcIm, Ipp32fc *pDst, int len) { return OptionalAssertNoError(ippsRealToCplx_32f(pSrcRe, pSrcIm, pDst, len)); }
@@ -249,6 +242,8 @@ namespace tipp
     static inline IppStatus Threshold_LTVal(const Ipp16sc *pSrc, Ipp16sc *pDst, int len, Ipp16s level, Ipp16sc value) { return OptionalAssertNoError(ippsThreshold_LTVal_16sc(pSrc, pDst, len, level, value)); }
     static inline IppStatus Threshold_LTVal(const Ipp32fc *pSrc, Ipp32fc *pDst, int len, Ipp32f level, Ipp32fc value) { return OptionalAssertNoError(ippsThreshold_LTVal_32fc(pSrc, pDst, len, level, value)); }
     static inline IppStatus Threshold_LTVal(const Ipp64fc *pSrc, Ipp64fc *pDst, int len, Ipp64f level, Ipp64fc value) { return OptionalAssertNoError(ippsThreshold_LTVal_64fc(pSrc, pDst, len, level, value)); }
+    static inline IppStatus Threshold_LTVal(const std::complex<float> *pSrc, std::complex<float> *pDst, int len, float level, std::complex<float> value) { return OptionalAssertNoError(ippsThreshold_LTVal_32fc((Ipp32fc *)pSrc, (Ipp32fc *)pDst, len, level, *((Ipp32fc *)&value))); }
+    static inline IppStatus Threshold_LTVal(const std::complex<double> *pSrc, std::complex<double> *pDst, int len, double level, std::complex<double> value) { return OptionalAssertNoError(ippsThreshold_LTVal_64fc((Ipp64fc *)pSrc, (Ipp64fc *)pDst, len, level, *((Ipp64fc *)&value))); }
 
     static inline IppStatus Threshold_GTVal(const Ipp16s *pSrc, Ipp16s *pDst, int len, Ipp16s level, Ipp16s value) { return OptionalAssertNoError(ippsThreshold_GTVal_16s(pSrc, pDst, len, level, value)); }
     static inline IppStatus Threshold_GTVal(const Ipp32f *pSrc, Ipp32f *pDst, int len, Ipp32f level, Ipp32f value) { return OptionalAssertNoError(ippsThreshold_GTVal_32f(pSrc, pDst, len, level, value)); }
@@ -256,6 +251,8 @@ namespace tipp
     static inline IppStatus Threshold_GTVal(const Ipp16sc *pSrc, Ipp16sc *pDst, int len, Ipp16s level, Ipp16sc value) { return OptionalAssertNoError(ippsThreshold_GTVal_16sc(pSrc, pDst, len, level, value)); }
     static inline IppStatus Threshold_GTVal(const Ipp32fc *pSrc, Ipp32fc *pDst, int len, Ipp32f level, Ipp32fc value) { return OptionalAssertNoError(ippsThreshold_GTVal_32fc(pSrc, pDst, len, level, value)); }
     static inline IppStatus Threshold_GTVal(const Ipp64fc *pSrc, Ipp64fc *pDst, int len, Ipp64f level, Ipp64fc value) { return OptionalAssertNoError(ippsThreshold_GTVal_64fc(pSrc, pDst, len, level, value)); }
+    static inline IppStatus Threshold_GTVal(const std::complex<float> *pSrc, std::complex<float> *pDst, int len, float level, std::complex<float> value) { return OptionalAssertNoError(ippsThreshold_GTVal_32fc((Ipp32fc *)pSrc, (Ipp32fc *)pDst, len, level, *((Ipp32fc *)&value))); }
+    static inline IppStatus Threshold_GTVal(const std::complex<double> *pSrc, std::complex<double> *pDst, int len, double level, std::complex<double> value) { return OptionalAssertNoError(ippsThreshold_GTVal_64fc((Ipp64fc *)pSrc, (Ipp64fc *)pDst, len, level, *((Ipp64fc *)&value))); }
 
     static inline IppStatus Threshold_LTValGTVal(const Ipp16s *pSrc, Ipp16s *pDst, int len, Ipp16s levelLT, Ipp16s valueLT, Ipp16s levelGT, Ipp16s valueGT) { return OptionalAssertNoError(ippsThreshold_LTValGTVal_16s(pSrc, pDst, len, levelLT, valueLT, levelGT, valueGT)); }
     static inline IppStatus Threshold_LTValGTVal(const Ipp32s *pSrc, Ipp32s *pDst, int len, Ipp32s levelLT, Ipp32s valueLT, Ipp32s levelGT, Ipp32s valueGT) { return OptionalAssertNoError(ippsThreshold_LTValGTVal_32s(pSrc, pDst, len, levelLT, valueLT, levelGT, valueGT)); }
@@ -267,6 +264,8 @@ namespace tipp
     static inline IppStatus Threshold_LTVal_I(Ipp16sc *pSrcDst, int len, Ipp16s level, Ipp16sc value) { return OptionalAssertNoError(ippsThreshold_LTVal_16sc_I(pSrcDst, len, level, value)); }
     static inline IppStatus Threshold_LTVal_I(Ipp32fc *pSrcDst, int len, Ipp32f level, Ipp32fc value) { return OptionalAssertNoError(ippsThreshold_LTVal_32fc_I(pSrcDst, len, level, value)); }
     static inline IppStatus Threshold_LTVal_I(Ipp64fc *pSrcDst, int len, Ipp64f level, Ipp64fc value) { return OptionalAssertNoError(ippsThreshold_LTVal_64fc_I(pSrcDst, len, level, value)); }
+    static inline IppStatus Threshold_LTVal_I(std::complex<float> *pSrcDst, int len, float level, std::complex<float> value) { return OptionalAssertNoError(ippsThreshold_LTVal_32fc_I((Ipp32fc *)pSrcDst, len, level, *((Ipp32fc *)&value))); }
+    static inline IppStatus Threshold_LTVal_I(std::complex<double> *pSrcDst, int len, double level, std::complex<double> value) { return OptionalAssertNoError(ippsThreshold_LTVal_64fc_I((Ipp64fc *)pSrcDst, len, level, *((Ipp64fc *)&value))); }
 
     static inline IppStatus Threshold_GTVal_I(Ipp16s *pSrcDst, int len, Ipp16s level, Ipp16s value) { return OptionalAssertNoError(ippsThreshold_GTVal_16s_I(pSrcDst, len, level, value)); }
     static inline IppStatus Threshold_GTVal_I(Ipp32f *pSrcDst, int len, Ipp32f level, Ipp32f value) { return OptionalAssertNoError(ippsThreshold_GTVal_32f_I(pSrcDst, len, level, value)); }
@@ -274,6 +273,8 @@ namespace tipp
     static inline IppStatus Threshold_GTVal_I(Ipp16sc *pSrcDst, int len, Ipp16s level, Ipp16sc value) { return OptionalAssertNoError(ippsThreshold_GTVal_16sc_I(pSrcDst, len, level, value)); }
     static inline IppStatus Threshold_GTVal_I(Ipp32fc *pSrcDst, int len, Ipp32f level, Ipp32fc value) { return OptionalAssertNoError(ippsThreshold_GTVal_32fc_I(pSrcDst, len, level, value)); }
     static inline IppStatus Threshold_GTVal_I(Ipp64fc *pSrcDst, int len, Ipp64f level, Ipp64fc value) { return OptionalAssertNoError(ippsThreshold_GTVal_64fc_I(pSrcDst, len, level, value)); }
+    static inline IppStatus Threshold_GTVal_I(std::complex<float> *pSrcDst, int len, float level, std::complex<float> value) { return OptionalAssertNoError(ippsThreshold_GTVal_32fc_I((Ipp32fc *)pSrcDst, len, level, *((Ipp32fc *)&value))); }
+    static inline IppStatus Threshold_GTVal_I(std::complex<double> *pSrcDst, int len, double level, std::complex<double> value) { return OptionalAssertNoError(ippsThreshold_GTVal_64fc_I((Ipp64fc *)pSrcDst, len, level, *((Ipp64fc *)&value))); }
 
     static inline IppStatus Threshold_LTValGTVal_I(Ipp16s *pSrcDst, int len, Ipp16s levelLT, Ipp16s valueLT, Ipp16s levelGT, Ipp16s valueGT) { return OptionalAssertNoError(ippsThreshold_LTValGTVal_16s_I(pSrcDst, len, levelLT, valueLT, levelGT, valueGT)); }
     static inline IppStatus Threshold_LTValGTVal_I(Ipp32s *pSrcDst, int len, Ipp32s levelLT, Ipp32s valueLT, Ipp32s levelGT, Ipp32s valueGT) { return OptionalAssertNoError(ippsThreshold_LTValGTVal_32s_I(pSrcDst, len, levelLT, valueLT, levelGT, valueGT)); }
@@ -285,11 +286,16 @@ namespace tipp
 
     static inline IppStatus CartToPolar(const Ipp32fc *pSrc, Ipp32f *pDstMagn, Ipp32f *pDstPhase, int len) { return OptionalAssertNoError(ippsCartToPolar_32fc(pSrc, pDstMagn, pDstPhase, len)); }
     static inline IppStatus CartToPolar(const Ipp64fc *pSrc, Ipp64f *pDstMagn, Ipp64f *pDstPhase, int len) { return OptionalAssertNoError(ippsCartToPolar_64fc(pSrc, pDstMagn, pDstPhase, len)); }
+    static inline IppStatus CartToPolar(const std::complex<float> *pSrc, float *pDstMagn, float *pDstPhase, int len) { return OptionalAssertNoError(ippsCartToPolar_32fc((Ipp32fc *)pSrc, pDstMagn, pDstPhase, len)); }
+    static inline IppStatus CartToPolar(const std::complex<double> *pSrc, double *pDstMagn, double *pDstPhase, int len) { return OptionalAssertNoError(ippsCartToPolar_64fc((Ipp64fc *)pSrc, pDstMagn, pDstPhase, len)); }
 
     static inline IppStatus PolarToCart(const Ipp32f *pSrcMagn, const Ipp32f *pSrcPhase, Ipp32f *pDstRe, Ipp32f *pDstIm, int len) { return OptionalAssertNoError(ippsPolarToCart_32f(pSrcMagn, pSrcPhase, pDstRe, pDstIm, len)); }
     static inline IppStatus PolarToCart(const Ipp64f *pSrcMagn, const Ipp64f *pSrcPhase, Ipp64f *pDstRe, Ipp64f *pDstIm, int len) { return OptionalAssertNoError(ippsPolarToCart_64f(pSrcMagn, pSrcPhase, pDstRe, pDstIm, len)); }
+
     static inline IppStatus PolarToCart(const Ipp32f *pSrcMagn, const Ipp32f *pSrcPhase, Ipp32fc *pDst, int len) { return OptionalAssertNoError(ippsPolarToCart_32fc(pSrcMagn, pSrcPhase, pDst, len)); }
     static inline IppStatus PolarToCart(const Ipp64f *pSrcMagn, const Ipp64f *pSrcPhase, Ipp64fc *pDst, int len) { return OptionalAssertNoError(ippsPolarToCart_64fc(pSrcMagn, pSrcPhase, pDst, len)); }
+    static inline IppStatus PolarToCart(const float *pSrcMagn, const float *pSrcPhase, std::complex<float> *pDst, int len) { return OptionalAssertNoError(ippsPolarToCart_32fc(pSrcMagn, pSrcPhase, (Ipp32fc *)pDst, len)); }
+    static inline IppStatus PolarToCart(const double *pSrcMagn, const double *pSrcPhase, std::complex<double> *pDst, int len) { return OptionalAssertNoError(ippsPolarToCart_64fc(pSrcMagn, pSrcPhase, (Ipp64fc *)pDst, len)); }
 
     static inline IppStatus MaxOrder(const Ipp16s *pSrc, int len, int *pOrder) { return OptionalAssertNoError(ippsMaxOrder_16s(pSrc, len, pOrder)); }
     static inline IppStatus MaxOrder(const Ipp32s *pSrc, int len, int *pOrder) { return OptionalAssertNoError(ippsMaxOrder_32s(pSrc, len, pOrder)); }
@@ -302,6 +308,8 @@ namespace tipp
     static inline IppStatus Flip(const Ipp64f *pSrc, Ipp64f *pDst, int len) { return OptionalAssertNoError(ippsFlip_64f(pSrc, pDst, len)); }
     static inline IppStatus Flip(const Ipp32fc *pSrc, Ipp32fc *pDst, int len) { return OptionalAssertNoError(ippsFlip_32fc(pSrc, pDst, len)); }
     static inline IppStatus Flip(const Ipp64fc *pSrc, Ipp64fc *pDst, int len) { return OptionalAssertNoError(ippsFlip_64fc(pSrc, pDst, len)); }
+    static inline IppStatus Flip(const std::complex<float> *pSrc, std::complex<float> *pDst, int len) { return OptionalAssertNoError(ippsFlip_32fc((Ipp32fc *)pSrc, (Ipp32fc *)pDst, len)); }
+    static inline IppStatus Flip(const std::complex<double> *pSrc, std::complex<double> *pDst, int len) { return OptionalAssertNoError(ippsFlip_64fc((Ipp64fc *)pSrc, (Ipp64fc *)pDst, len)); }
 
     static inline IppStatus Flip_I(Ipp16u *pSrcDst, int len) { return OptionalAssertNoError(ippsFlip_16u_I(pSrcDst, len)); }
     static inline IppStatus Flip_I(Ipp8u *pSrcDst, int len) { return OptionalAssertNoError(ippsFlip_8u_I(pSrcDst, len)); }
@@ -309,6 +317,8 @@ namespace tipp
     static inline IppStatus Flip_I(Ipp64f *pSrcDst, int len) { return OptionalAssertNoError(ippsFlip_64f_I(pSrcDst, len)); }
     static inline IppStatus Flip_I(Ipp32fc *pSrcDst, int len) { return OptionalAssertNoError(ippsFlip_32fc_I(pSrcDst, len)); }
     static inline IppStatus Flip_I(Ipp64fc *pSrcDst, int len) { return OptionalAssertNoError(ippsFlip_64fc_I(pSrcDst, len)); }
+    static inline IppStatus Flip_I(std::complex<float> *pSrcDst, int len) { return OptionalAssertNoError(ippsFlip_32fc_I((Ipp32fc *)pSrcDst, len)); }
+    static inline IppStatus Flip_I(std::complex<double> *pSrcDst, int len) { return OptionalAssertNoError(ippsFlip_64fc_I((Ipp64fc *)pSrcDst, len)); }
 
     static inline IppStatus SwapBytes(const Ipp16u *pSrc, Ipp16u *pDst, int len) { return OptionalAssertNoError(ippsSwapBytes_16u(pSrc, pDst, len)); }
     static inline IppStatus SwapBytes(const Ipp8u *pSrc, Ipp8u *pDst, int len) { return OptionalAssertNoError(ippsSwapBytes_24u(pSrc, pDst, len)); }

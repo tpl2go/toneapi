@@ -405,25 +405,25 @@ namespace tipp
                 throw std::runtime_error("Buffer not initialized");
         }
 
-        IppStatus apply(const externalType *pSrc, externalType *pDst, int len)
+        IppStatus filter(const externalType *pSrc, externalType *pDst, int len)
         {
             assertIsInitialised();
             return OptionalAssertNoError(IIR(pSrc, pDst, len, m_State));
         }
 
-        IppStatus apply_I(const externalType *pSrcDst, int len)
+        IppStatus filter_I(const externalType *pSrcDst, int len)
         {
             assertIsInitialised();
             return OptionalAssertNoError(IIR_I(pSrcDst, len, m_State));
         }
 
-        IppStatus apply_Sfs(const externalType *pSrc, externalType *pDst, int len, int scaleFactor)
+        IppStatus filter_Sfs(const externalType *pSrc, externalType *pDst, int len, int scaleFactor)
         {
             assertIsInitialised();
             return OptionalAssertNoError(IIR_Sfs(pSrc, pDst, len, m_State, scaleFactor));
         }
 
-        IppStatus apply_ISfs(const externalType *pSrcDst, externalType *pDst, int len, int scaleFactor)
+        IppStatus filter_ISfs(const externalType *pSrcDst, externalType *pDst, int len, int scaleFactor)
         {
             assertIsInitialised();
             return OptionalAssertNoError(IIR_Sfs(pSrcDst, len, m_State, scaleFactor));
@@ -525,7 +525,7 @@ namespace tipp
                 throw std::runtime_error("Buffer not initalized");
         }
 
-        IppStatus apply(const T *pSrc, int len, T *pDst, Ipp64f factor, Ipp32f norm, Ipp64f *pTime, int *pOutlen)
+        IppStatus resample(const T *pSrc, int len, T *pDst, Ipp64f factor, Ipp32f norm, Ipp64f *pTime, int *pOutlen)
         {
             assertIsInitialised();
             return OptionalAssertNoError(ResamplePolyphase(pSrc, len, pDst, factor, norm, *pTime, pOutlen, m_State.data()));
@@ -565,7 +565,7 @@ namespace tipp
                 throw std::runtime_error("Buffer not initalized");
         }
 
-        IppStatus apply(const T *pSrc, int len, T *pDst, Ipp32f norm, Ipp64f *pTime, int *pOutlen)
+        IppStatus resample(const T *pSrc, int len, T *pDst, Ipp32f norm, Ipp64f *pTime, int *pOutlen)
         {
             assertIsInitialised();
             return OptionalAssertNoError(ResamplePolyphaseFixed(pSrc, len, pDst, norm, pTime, pOutlen, m_State.data()));

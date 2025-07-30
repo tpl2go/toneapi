@@ -110,7 +110,7 @@ namespace tipp
 
         if constexpr (IsComplex<T>::value)
         {
-            using ScalarType_t = typename ScalarType<T>::type;
+            using ScalarType_t = typename ToReal<T>::type;
             vector<ScalarType_t> win_tmp(len);
             VectorSlope(win_tmp.data(), len, 0, 2 * PI / ((ScalarType_t)len));
             ScalarType_t *imag_ptr = nullptr;

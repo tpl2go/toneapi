@@ -61,25 +61,49 @@ namespace tipp
     };
 
     template <typename T>
-    struct ScalarType
+    struct ToCplx
+    {
+        using type = T;
+    };
+
+    template <>
+    struct ToCplx<float>
+    {
+        using type = std::complex<float>;
+    };
+
+    template <>
+    struct ToCplx<double>
+    {
+        using type = std::complex<double>;
+    };
+
+    template <>
+    struct ToCplx<short>
+    {
+        using type = std::complex<short>;
+    };
+
+    template <typename T>
+    struct ToReal
     {
         using type = T;
     };
 
     template <typename T>
-    struct ScalarType<std::complex<T>>
+    struct ToReal<std::complex<T>>
     {
         using type = T;
     };
 
     template <>
-    struct ScalarType<Ipp32fc>
+    struct ToReal<Ipp32fc>
     {
         using type = Ipp32f;
     };
 
     template <>
-    struct ScalarType<Ipp64fc>
+    struct ToReal<Ipp64fc>
     {
         using type = Ipp64f;
     };
