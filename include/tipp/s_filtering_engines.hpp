@@ -83,16 +83,16 @@ namespace tipp
     public:
         FIRMR_Engine() = default;
 
-        FIRMR_Engine(T *taps, int taplen, int upFactor, int downFactor, ppAlgType algType = IppAlgType::ippAlgDirect) { initialise(taps, taplen, upFactor, downFactor, algType); }
+        FIRMR_Engine(T *taps, int taplen, int upFactor, int downFactor, IppAlgType algType = IppAlgType::ippAlgDirect) { initialise(taps, taplen, upFactor, downFactor, algType); }
 
         void initialise(T *taps, int taplen, int upFactor, int downFactor, IppAlgType algType = IppAlgType::ippAlgDirect)
         {
             m_algType = algType;
 
             int specSize, bufSize;
-            ippsFIRMRGetSize(taplen, upFactor, downFactor, GetIppDataType<T>(), &specSize, &bufSize)
+            ippsFIRMRGetSize(taplen, upFactor, downFactor, GetIppDataType<T>(), &specSize, &bufSize);
 
-                m_Spec.resize(specSize);
+            m_Spec.resize(specSize);
             m_Buffer.resize(bufSize);
 
             FIRMRInit<T>(m_taps.data(), taplen, m_algType, m_Spec.data());

@@ -226,7 +226,7 @@ namespace tipp
     public:
         WT_Engine() = default;
 
-        WT_Engine(int lenLow, int offsLow, int lenHigh, int offsHigh) { initialise(lenLow, offsLow, lenHigh, offsHigh, ); }
+        WT_Engine(int lenLow, int offsLow, int lenHigh, int offsHigh) { initialise(lenLow, offsLow, lenHigh, offsHigh); }
 
         void initialise(int lenLow, int offsLow, int lenHigh, int offsHigh)
         {

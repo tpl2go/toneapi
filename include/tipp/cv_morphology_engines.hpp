@@ -14,22 +14,22 @@ namespace tipp
     protected:
         vector<Ipp8u> m_Spec;
         vector<Ipp8u> m_Buffer;
-        IppiSizeL m_roiSize;
-        IppiSizeL m_maskSize;
+        IppiSize m_roiSize;
+        IppiSize m_maskSize;
         IppiBorderType m_borderType = ippBorderRepl;
         vector<T> m_BorderVector = vector<T>(C);
 
     public:
         DilateErodeBorder_Engine() = default;
-        DilateErodeBorder_Engine(IppiSizeL roiSize, IppiSizeL maskSize, Ipp8u *pMask) { initialise(roiSize, maskSize, pMask); }
-        void initialise(IppiSizeL roiSize, IppiSizeL maskSize, Ipp8u *pMask)
+        DilateErodeBorder_Engine(IppiSize roiSize, IppiSize maskSize, const Ipp8u *pMask) { initialise(roiSize, maskSize, pMask); }
+        void initialise(IppiSize roiSize, IppiSize maskSize, const Ipp8u *pMask)
         {
             IppSizeL specSize;
             IppSizeL bufferSize;
             MorphologyBorderGetSize<T, C>(roiSize, maskSize, &specSize, &bufferSize);
             m_Spec.resize(specSize);
             m_Buffer.resize(bufferSize);
-            MorphologyBorderInit(roiSize, pMask, maskSize, (IppiMorphState *)m_Spec.data(), m_Buffer.data());
+            MorphologyBorderInit<T, C>(roiSize, pMask, maskSize, (IppiMorphState *)m_Spec.data(), m_Buffer.data());
             m_roiSize = roiSize;
             m_maskSize = maskSize;
         }
@@ -43,27 +43,27 @@ namespace tipp
             }
         }
 
-        void DilateBorder(const T *pSrc, int srcStep, T *pDst, int dstStep)
+        void dilate(const T *pSrc, int srcStep, T *pDst, int dstStep)
         {
-            if (C == 1)
+            if constexpr (C == 1)
             {
-                DilateBorder<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector[0], (IppiMorphAdvStateL *)m_Spec.data(), m_Buffer.data());
+                DilateBorder<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector[0], (IppiMorphState *)m_Spec.data(), m_Buffer.data());
             }
             else
             {
-                DilateBorder<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector.data(), (IppiMorphAdvStateL *)m_Spec.data(), m_Buffer.data());
+                DilateBorder<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector.data(), (IppiMorphState *)m_Spec.data(), m_Buffer.data());
             }
         }
 
-        void ErodeBorder(const T *pSrc, int srcStep, T *pDst, int dstStep)
+        void erode(const T *pSrc, int srcStep, T *pDst, int dstStep)
         {
-            if (C == 1)
+            if constexpr (C == 1)
             {
-                ErodeBorder<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector[0], (IppiMorphAdvStateL *)m_Spec.data(), m_Buffer.data());
+                ErodeBorder<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector[0], (IppiMorphState *)m_Spec.data(), m_Buffer.data());
             }
             else
             {
-                ErodeBorder<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector.data(), (IppiMorphAdvStateL *)m_Spec.data(), m_Buffer.data());
+                ErodeBorder<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector.data(), (IppiMorphState *)m_Spec.data(), m_Buffer.data());
             }
         }
     };
@@ -77,7 +77,6 @@ namespace tipp
         IppiSize m_roiSize;
         IppiSize m_maskSize;
         IppiBorderType m_borderType = ippBorderRepl;
-        vector<Ipp8u> m_BorderVector = vector<Ipp8u>(C);
         bool m_isIpp8u = false;
 
     public:
@@ -108,20 +107,20 @@ namespace tipp
 
         void setBorderType(IppiBorderType borderType) { m_borderType = borderType; }
 
-        void erodeBorder(const Ipp8u *pSrc, int srcStep, Ipp8u *pDst, int dstStep)
+        void erode(const Ipp8u *pSrc, int srcStep, Ipp8u *pDst, int dstStep)
         {
             if (!m_isIpp8u)
             {
-                throw std::runtime_error("Error: MorphGray was initialized for Ipp32f. Not Ipp8u")
+                throw std::runtime_error("Error: MorphGray was initialized for Ipp32f. Not Ipp8u");
             }
             ippiGrayErodeBorder_8u_C1R(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, (IppiMorphGrayState_8u *)m_Buffer.data());
         }
 
-        void erodeBorder(const Ipp32f *pSrc, int srcStep, Ipp32f *pDst, int dstStep)
+        void erode(const Ipp32f *pSrc, int srcStep, Ipp32f *pDst, int dstStep)
         {
             if (m_isIpp8u)
             {
-                throw std::runtime_error("Error: MorphGray was initialized for Ipp8u. Not Ipp32f")
+                throw std::runtime_error("Error: MorphGray was initialized for Ipp8u. Not Ipp32f");
             }
             ippiGrayErodeBorder_32f_C1R(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, (IppiMorphGrayState_32f *)m_Buffer.data());
         }
@@ -152,7 +151,7 @@ namespace tipp
             m_maskSize = maskSize;
         }
         // Alternative Mode: IPP_MORPH_MASK_NO_FLIP
-        void setMode(int mode = IPP_MORPH_DEFAULT) { ippiMorphSetMode(mode, (IppiMorphAdvState *)m_Spec.data()) }
+        void setMode(int mode = IPP_MORPH_DEFAULT) { ippiMorphSetMode(mode, (IppiMorphAdvState *)m_Spec.data()); }
         void setBorderType(IppiBorderType borderType) { m_borderType = borderType; }
         void setBorderValue(T value) { m_BorderVector[0] = value; }
         void setBorderValue(vector<T> value) { m_BorderVector = value; }
@@ -164,9 +163,9 @@ namespace tipp
             }
         }
 
-        void OpenBorder(const T *pSrc, int srcStep, T *pDst, int dstStep)
+        void open(const T *pSrc, int srcStep, T *pDst, int dstStep)
         {
-            if (C == 1)
+            if constexpr (C == 1)
             {
                 MorphOpenBorder<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector[0], m_Spec.data(), m_Buffer.data());
             }
@@ -176,9 +175,9 @@ namespace tipp
             }
         }
 
-        void CloseBorder(const T *pSrc, int srcStep, T *pDst, int dstStep)
+        void close(const T *pSrc, int srcStep, T *pDst, int dstStep)
         {
-            if (C == 1)
+            if constexpr (C == 1)
             {
                 MorphCloseBorder<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector[0], m_Spec.data(), m_Buffer.data());
             }
@@ -188,9 +187,9 @@ namespace tipp
             }
         }
 
-        void TopHatBorder(const T *pSrc, int srcStep, T *pDst, int dstStep)
+        void tophat(const T *pSrc, int srcStep, T *pDst, int dstStep)
         {
-            if (C == 1)
+            if constexpr (C == 1)
             {
                 MorphTophatBorder<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector[0], m_Spec.data(), m_Buffer.data());
             }
@@ -200,9 +199,9 @@ namespace tipp
             }
         }
 
-        void BlackHatBorder(const T *pSrc, int srcStep, T *pDst, int dstStep)
+        void blackhat(const T *pSrc, int srcStep, T *pDst, int dstStep)
         {
-            if (C == 1)
+            if constexpr (C == 1)
             {
                 BlackHatBorder<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector[0], m_Spec.data(), m_Buffer.data());
             }
@@ -334,7 +333,7 @@ namespace tipp
         }
 
         // Alternative Mode: IPP_MORPH_MASK_NO_FLIP
-        void setMode(int mode = IPP_MORPH_DEFAULT) { ippiMorphSetMode_L(mode, (IppiMorphAdvStateL *)m_Spec.data()) }
+        void setMode(int mode = IPP_MORPH_DEFAULT) { ippiMorphSetMode_L(mode, (IppiMorphAdvStateL *)m_Spec.data()); }
         void setBorderType(IppiBorderType borderType) { m_borderType = borderType; }
         void setBorderValue(vector<T> value) { m_BorderVector = value; }
         void setBorderValue(T *value)
@@ -357,12 +356,12 @@ namespace tipp
 
         void TopHat(const T *pSrc, int srcStep, T *pDst, int dstStep)
         {
-            MorphTophat_L<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector.data(), (IppiMorphAdvStateL *)m_Spec.data(), m_Buffer.data())
+            MorphTophat_L<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector.data(), (IppiMorphAdvStateL *)m_Spec.data(), m_Buffer.data());
         }
 
         void BlackHat(const T *pSrc, int srcStep, T *pDst, int dstStep)
         {
-            MorphBlackhat_L<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector.data(), (IppiMorphAdvStateL *)m_Spec.data(), m_Buffer.data())
+            MorphBlackhat_L<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector.data(), (IppiMorphAdvStateL *)m_Spec.data(), m_Buffer.data());
         }
     };
 
@@ -379,19 +378,19 @@ namespace tipp
         void initialise(IppiSize roiSize)
         {
             IppSizeL bufferSize;
-            ippiMorphReconstructGetBufferSize(roiSize, GetIppDataType<T>(), C, &bufferSize);
+            ippiMorphReconstructGetBufferSize(roiSize, GetIppDataType<T>(), 1, &bufferSize);
             m_Buffer.resize(bufferSize);
             m_roiSize = roiSize;
         }
 
         void ReconstructErode(const T *pSrc, int srcStep, T *pSrcDst, int srcDstStep, IppiNorm norm)
         {
-            MorphReconstructErode(pSrc, srcStep, pSrcDst, srcDstStep, m_roiSize, m_Buffer.data(), norm)
+            MorphReconstructErode(pSrc, srcStep, pSrcDst, srcDstStep, m_roiSize, m_Buffer.data(), norm);
         }
 
         void ReconstructDilate(const T *pSrc, int srcStep, T *pSrcDst, int srcDstStep, IppiNorm norm)
         {
-            MorphReconstructDilate(pSrc, srcStep, pSrcDst, srcDstStep, m_roiSize, m_Buffer.data(), norm)
+            MorphReconstructDilate(pSrc, srcStep, pSrcDst, srcDstStep, m_roiSize, m_Buffer.data(), norm);
         }
     };
 }

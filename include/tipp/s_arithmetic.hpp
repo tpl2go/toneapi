@@ -157,6 +157,12 @@ namespace tipp
     static inline IppStatus Sub(const std::complex<float> *pSrc1, const std::complex<float> *pSrc2, std::complex<float> *pDst, int len) { return OptionalAssertNoError(ippsSub_32fc((Ipp32fc *)pSrc1, (Ipp32fc *)pSrc2, (Ipp32fc *)pDst, len)); }
     static inline IppStatus Sub(const std::complex<double> *pSrc1, const std::complex<double> *pSrc2, std::complex<double> *pDst, int len) { return OptionalAssertNoError(ippsSub_64fc((Ipp64fc *)pSrc1, (Ipp64fc *)pSrc2, (Ipp64fc *)pDst, len)); }
 
+    static inline IppStatus Sub_I(const Ipp16s *pSrc, Ipp16s *pSrcDst, int len) { return ippsSub_16s_I(pSrc, pSrcDst, len); }
+    static inline IppStatus Sub_I(const Ipp32f *pSrc, Ipp32f *pSrcDst, int len) { return ippsSub_32f_I(pSrc, pSrcDst, len); }
+    static inline IppStatus Sub_I(const Ipp64f *pSrc, Ipp64f *pSrcDst, int len) { return ippsSub_64f_I(pSrc, pSrcDst, len); }
+    static inline IppStatus Sub_I(const Ipp32fc *pSrc, Ipp32fc *pSrcDst, int len) { return ippsSub_32fc_I(pSrc, pSrcDst, len); }
+    static inline IppStatus Sub_I(const Ipp64fc *pSrc, Ipp64fc *pSrcDst, int len) { return ippsSub_64fc_I(pSrc, pSrcDst, len); }
+
     static inline IppStatus DivC_I(Ipp32f val, Ipp32f *pSrcDst, int len) { return OptionalAssertNoError(ippsDivC_32f_I(val, pSrcDst, len)); }
     static inline IppStatus DivC_I(Ipp64f val, Ipp64f *pSrcDst, int len) { return OptionalAssertNoError(ippsDivC_64f_I(val, pSrcDst, len)); }
     static inline IppStatus DivC_I(Ipp32fc val, Ipp32fc *pSrcDst, int len) { return OptionalAssertNoError(ippsDivC_32fc_I(val, pSrcDst, len)); }

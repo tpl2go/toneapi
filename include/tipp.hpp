@@ -92,4 +92,12 @@ namespace tipp
         std::chrono::time_point<std::chrono::high_resolution_clock> elapsed_start;
         std::chrono::time_point<std::chrono::high_resolution_clock> lap_start;
     };
+
+    // WARNING: This function will perform in-place partial sort
+    template <typename T>
+    static inline T median(T *x, int winlen)
+    {
+        std::nth_element(x, x + winlen / 2, x + winlen);
+        return x[winlen / 2];
+    }
 }

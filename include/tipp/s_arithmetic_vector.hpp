@@ -10,8 +10,8 @@ namespace tipp
 {
 
     /* Essentials Arthimetic */
-
-    static inline IppStatus AddC(const Ipp32f *pSrc, Ipp32f val, Ipp32f *pDst, int len) { return OptionalAssertNoError(ippsAddC_32f(pSrc, val, pDst, len)); }
+    template <typename T>
+    static inline IppStatus AddC(vector<T> Src, Ipp32f val, Ipp32f *pDst, int len) { return OptionalAssertNoError(ippsAddC_32f(pSrc, val, pDst, len)); }
     static inline IppStatus AddC(const Ipp64f *pSrc, Ipp64f val, Ipp64f *pDst, int len) { return OptionalAssertNoError(ippsAddC_64f(pSrc, val, pDst, len)); }
     static inline IppStatus AddC(const Ipp32fc *pSrc, Ipp32fc val, Ipp32fc *pDst, int len) { return OptionalAssertNoError(ippsAddC_32fc(pSrc, val, pDst, len)); }
     static inline IppStatus AddC(const Ipp64fc *pSrc, Ipp64fc val, Ipp64fc *pDst, int len) { return OptionalAssertNoError(ippsAddC_64fc(pSrc, val, pDst, len)); }

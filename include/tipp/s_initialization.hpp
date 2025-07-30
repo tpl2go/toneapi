@@ -6,7 +6,6 @@
 #include <complex>
 #include "tipp_error.hpp"
 #include "tipp_type.hpp"
-#include "tipp_vector.hpp"
 #include <stdexcept>
 
 namespace tipp
@@ -72,9 +71,6 @@ namespace tipp
     static inline IppStatus Zero(Ipp64fc *pDst, int len) { return OptionalAssertNoError(ippsZero_64fc(pDst, len)); }
     static inline IppStatus Zero(std::complex<float> *pDst, int len) { return OptionalAssertNoError(ippsZero_32fc((Ipp32fc *)pDst, len)); }
     static inline IppStatus Zero(std::complex<double> *pDst, int len) { return OptionalAssertNoError(ippsZero_64fc((Ipp64fc *)pDst, len)); }
-
-    template <typename T>
-    static inline IppStatus Zero(vector<T> Dst) { return Zero(Dst.data(), Dst.size()); }
 
     static inline IppStatus Tone(Ipp16s *pDst, int len, Ipp16s magn, Ipp32f rFreq, Ipp32f *pPhase) { return OptionalAssertNoError(ippsTone_16s(pDst, len, magn, rFreq, pPhase, ippAlgHintAccurate)); }
     static inline IppStatus Tone(Ipp16sc *pDst, int len, Ipp16s magn, Ipp32f rFreq, Ipp32f *pPhase) { return OptionalAssertNoError(ippsTone_16sc(pDst, len, magn, rFreq, pPhase, ippAlgHintAccurate)); }
