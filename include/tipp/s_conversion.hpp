@@ -13,6 +13,8 @@ namespace tipp
     static inline IppStatus CplxToReal(const Ipp16sc *pSrc, Ipp16s *pDstRe, Ipp16s *pDstIm, int len) { return OptionalAssertNoError(ippsCplxToReal_16sc(pSrc, pDstRe, pDstIm, len)); }
     static inline IppStatus CplxToReal(const Ipp32fc *pSrc, Ipp32f *pDstRe, Ipp32f *pDstIm, int len) { return OptionalAssertNoError(ippsCplxToReal_32fc(pSrc, pDstRe, pDstIm, len)); }
     static inline IppStatus CplxToReal(const Ipp64fc *pSrc, Ipp64f *pDstRe, Ipp64f *pDstIm, int len) { return OptionalAssertNoError(ippsCplxToReal_64fc(pSrc, pDstRe, pDstIm, len)); }
+    static inline IppStatus CplxToReal(const std::complex<float> *pSrc, Ipp32f *pDstRe, Ipp32f *pDstIm, int len) { return OptionalAssertNoError(ippsCplxToReal_32fc((Ipp32fc *)pSrc, pDstRe, pDstIm, len)); }
+    static inline IppStatus CplxToReal(const std::complex<double> *pSrc, Ipp64f *pDstRe, Ipp64f *pDstIm, int len) { return OptionalAssertNoError(ippsCplxToReal_64fc((Ipp64fc *)pSrc, pDstRe, pDstIm, len)); }
 
     static inline IppStatus SortAscend_I(Ipp8u *pSrcDst, int len) { return OptionalAssertNoError(ippsSortAscend_8u_I(pSrcDst, len)); }
     static inline IppStatus SortAscend_I(Ipp16u *pSrcDst, int len) { return OptionalAssertNoError(ippsSortAscend_16u_I(pSrcDst, len)); }
@@ -220,6 +222,8 @@ namespace tipp
     static inline IppStatus RealToCplx(const Ipp16s *pSrcRe, const Ipp16s *pSrcIm, Ipp16sc *pDst, int len) { return OptionalAssertNoError(ippsRealToCplx_16s(pSrcRe, pSrcIm, pDst, len)); }
     static inline IppStatus RealToCplx(const Ipp32f *pSrcRe, const Ipp32f *pSrcIm, Ipp32fc *pDst, int len) { return OptionalAssertNoError(ippsRealToCplx_32f(pSrcRe, pSrcIm, pDst, len)); }
     static inline IppStatus RealToCplx(const Ipp64f *pSrcRe, const Ipp64f *pSrcIm, Ipp64fc *pDst, int len) { return OptionalAssertNoError(ippsRealToCplx_64f(pSrcRe, pSrcIm, pDst, len)); }
+    static inline IppStatus RealToCplx(const double *pSrcRe, const double *pSrcIm, std::complex<double> *pDst, int len) { return OptionalAssertNoError(ippsRealToCplx_64f(pSrcRe, pSrcIm, (Ipp64fc *)pDst, len)); }
+    static inline IppStatus RealToCplx(const float *pSrcRe, const float *pSrcIm, std::complex<float> *pDst, int len) { return OptionalAssertNoError(ippsRealToCplx_32f(pSrcRe, pSrcIm, (Ipp32fc *)pDst, len)); }
 
     static inline IppStatus Real(const Ipp16sc *pSrc, Ipp16s *pDstRe, int len) { return OptionalAssertNoError(ippsReal_16sc(pSrc, pDstRe, len)); }
     static inline IppStatus Real(const Ipp32fc *pSrc, Ipp32f *pDstRe, int len) { return OptionalAssertNoError(ippsReal_32fc(pSrc, pDstRe, len)); }

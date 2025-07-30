@@ -113,7 +113,8 @@ namespace tipp
             using ScalarType_t = typename ScalarType<T>::type;
             vector<ScalarType_t> win_tmp(len);
             VectorSlope(win_tmp.data(), len, 0, 2 * PI / ((ScalarType_t)len));
-            RealToCplx(win_tmp.data(), nullptr, In.data(), len);
+            ScalarType_t *imag_ptr = nullptr;
+            RealToCplx(win_tmp.data(), imag_ptr, In.data(), len);
         }
         else
         {
