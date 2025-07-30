@@ -4,6 +4,7 @@
 #include "tipp_error.hpp"
 #include <stdexcept>
 #include <utility>
+#include <span>
 
 namespace tipp
 {
@@ -120,20 +121,19 @@ namespace tipp
         }
     };
 
-    template <typename T>
     class FIRGen_Engine
     {
     protected:
-        vector<T> m_Buffer;
+        vector<Ipp8u> m_Buffer;
         int m_tapsLen;
         IppWinType m_winType; // ippWinBartlett,ippWinBlackman,ippWinHamming,ippWinHann,ippWinRect
         IppBool m_doNormal;
 
     public:
         FIRGen_Engine() = default;
-        FIRGen_Engine(int tapsLen)
+        FIRGen_Engine(int tapsLen, IppWinType winType, IppBool doNormal)
         {
-            initialise(tapsLen);
+            initialise(tapsLen, winType, doNormal);
         }
 
         void initialise(int tapsLen, IppWinType winType, IppBool doNormal)
@@ -180,23 +180,55 @@ namespace tipp
             return OptionalAssertNoError(
                 ippsFIRGenBandstop_64f(rLowFreq, rHighFreq, pTaps, m_tapsLen, m_winType, m_doNormal, m_Buffer.data()));
         }
+
+        vector<Ipp64f> highpass_V(Ipp64f rFreq)
+        {
+            assertIsInitialised();
+            vector<Ipp64f> out(m_tapsLen);
+            ippsFIRGenHighpass_64f(rFreq, out.data(), m_tapsLen, m_winType, m_doNormal, m_Buffer.data());
+            return out;
+        }
+
+        vector<Ipp64f> lowpass_V(Ipp64f rFreq)
+        {
+            assertIsInitialised();
+            vector<Ipp64f> out(m_tapsLen);
+            ippsFIRGenLowpass_64f(rFreq, out.data(), m_tapsLen, m_winType, m_doNormal, m_Buffer.data());
+            return out;
+        }
+
+        vector<Ipp64f> bandpass_V(Ipp64f rLowFreq, Ipp64f rHighFreq)
+        {
+            assertIsInitialised();
+            vector<Ipp64f> out(m_tapsLen);
+            ippsFIRGenBandpass_64f(rLowFreq, rHighFreq, out.data(), m_tapsLen, m_winType, m_doNormal, m_Buffer.data());
+            return out;
+        }
+
+        vector<Ipp64f> bandstop_V(Ipp64f rLowFreq, Ipp64f rHighFreq)
+        {
+            assertIsInitialised();
+            vector<Ipp64f> out(m_tapsLen);
+            ippsFIRGenBandstop_64f(rLowFreq, rHighFreq, out.data(), m_tapsLen, m_winType, m_doNormal, m_Buffer.data());
+            return out;
+        }
     };
 
-    template <typename T>
     class FIRLMS_Engine
     {
     protected:
-        float mu = 0.001f;
+        float m_mu = 0.001f;
         vector<Ipp8u> m_Buffer;
-        IppsFIRLMSState_32f *pState = nullptr; // TODO: change this to vector
+        IppsFIRLMSState_32f *pState = nullptr; // pointer to state structure (taps and delay line) probably within buffer
 
     public:
-        // TODO: add mu as a parameter to the constructor
-        // TODO: check how to use this class
-
         FIRLMS_Engine() = default;
 
-        explicit FIRLMS_Engine(int tapsLen)
+        FIRLMS_Engine(int tapsLen, float mu)
+        {
+            initialise(tapsLen, mu);
+        }
+        void initialise(int tapsLen, float mu)
         {
             int BufferSize;
             OptionalAssertNoError(ippsFIRLMSGetStateSize_32f(tapsLen, 0, &BufferSize));
@@ -207,7 +239,7 @@ namespace tipp
 
         IppStatus filter(const Ipp32f *pSrc, const Ipp32f *pRef, Ipp32f *pDst, int len)
         {
-            return OptionalAssertNoError(ippsFIRLMS_32f(pSrc, pRef, pDst, len, mu, pState));
+            return OptionalAssertNoError(ippsFIRLMS_32f(pSrc, pRef, pDst, len, m_mu, pState));
         }
 
         // Retrieves the tap values from the FIR LMS filter.
