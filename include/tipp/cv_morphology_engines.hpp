@@ -203,11 +203,11 @@ namespace tipp
         {
             if constexpr (C == 1)
             {
-                BlackHatBorder<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector[0], m_Spec.data(), m_Buffer.data());
+                MorphBlackhatBorder<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector[0], m_Spec.data(), m_Buffer.data());
             }
             else
             {
-                BlackHatBorder<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector.data(), m_Spec.data(), m_Buffer.data());
+                MorphBlackhatBorder<T, C>(pSrc, srcStep, pDst, dstStep, m_roiSize, m_borderType, m_BorderVector.data(), m_Spec.data(), m_Buffer.data());
             }
         }
     };
