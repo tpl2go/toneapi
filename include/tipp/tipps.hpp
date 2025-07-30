@@ -16,3 +16,6 @@
 #include "s_filtering_engines.hpp"
 #include "s_initialization_engines.hpp"
 #include "s_transforms_engines.hpp"
+
+// include the extras
+#include "s_transforms_extras.hpp"

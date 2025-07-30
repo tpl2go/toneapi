@@ -2,6 +2,7 @@
 #include "s_transforms.hpp"
 #include "tipp_vector.hpp"
 #include "tipp_error.hpp"
+#include "tipp_type.hpp"
 #include <stdexcept>
 #include <utility>
 
@@ -83,7 +84,14 @@ namespace tipp
         void initialise(const int nfft, const int flag = IPP_FFT_DIV_INV_BY_N)
         {
             m_inNFFT = nfft;
-            m_outNFFT = DFT_Get_FwdSize<Trc>(nfft);
+            if constexpr (IsComplex<Trc>::value)
+            {
+                m_outNFFT = nfft;
+            }
+            else
+            {
+                m_outNFFT = nfft / 2 + 1;
+            }
             m_flag = flag;
 
             int SizeSpec, SizeInit, SizeBuf;
@@ -167,7 +175,15 @@ namespace tipp
             FFTInit<Trc>(m_pFFTWorkBuf.data(), order, flag, m_Spec.data(), m_Buffer.data());
 
             m_inNFFT = 1 << order;
-            m_outNFFT = DFT_Get_FwdSize<Trc>(m_inNFFT);
+            if constexpr (IsComplex<Trc>::value)
+            {
+                m_outNFFT = nfft;
+            }
+            else
+            {
+                m_outNFFT = nfft / 2 + 1;
+            }
+
             m_flag = flag;
             m_order = order;
         }

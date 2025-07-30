@@ -163,13 +163,6 @@ namespace tipp
     static inline IppStatus DFTInv(const std::complex<float> *pSrc, float *pDst, const Ipp8u *pDFTSpec, Ipp8u *pBuffer) { return OptionalAssertNoError(ippsDFTInv_CCSToR_32f((const float *)pSrc, pDst, (const IppsDFTSpec_R_32f *)pDFTSpec, pBuffer)); }
 
     template <typename T>
-    static inline int DFT_Get_FwdSize(int nfft) { return nfft; }
-    template <>
-    static inline int DFT_Get_FwdSize<float>(int nfft) { return nfft / 2 + 1; }
-    template <>
-    static inline int DFT_Get_FwdSize<double>(int nfft) { return nfft / 2 + 1; }
-
-    template <typename T>
     static inline IppStatus FFTGetSize(int order, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf);
     template <>
     static inline IppStatus FFTGetSize<Ipp32fc>(int order, int flag, int *pSizeSpec, int *pSizeInit, int *pSizeBuf) { return OptionalAssertNoError(ippsFFTGetSize_C_32fc(order, flag, ippAlgHintNone, pSizeSpec, pSizeInit, pSizeBuf)); }
