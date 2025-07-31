@@ -1,6 +1,10 @@
 # TONEAPI
 
-This library provides convenience wrappers around Intel IPP for use in C++ codebases.
+This library provides **simple** C++ wrappers for Intel IPP.
+
+## Usage
+
+**Example 1: Overloaded Functions**
 
 Instead of:
 
@@ -11,15 +15,17 @@ if (sts != 0) throw std::runtime_error();
 
 `TONEAPI` offers
 ```cpp
-// implicit error status checking if ASSERT_IPP_NOERROR is defined
-// overloaded function so that you dont have to select the Abs function of the correct type
-ipps::Abs(pSrc, pDst, len);
+tipp::Abs(pSrc, pDst, len);  // error checking built-in
 ```
+
+**Example 2: Convenience Engines**
 
 Instead of:
 
+Source: [Intel Documentation](https://www.intel.com/content/www/us/en/developer/articles/training/how-to-use-intel-ipp-s-1d-fourier-transform-functions.html)
+
 ```cpp
-// https://www.intel.com/content/www/us/en/developer/articles/training/how-to-use-intel-ipp-s-1d-fourier-transform-functions.html
+int N = 128;
 
 // Spec and working buffers
 IppsDFTSpec_C_32fc *pDFTSpec=0;
@@ -54,24 +60,13 @@ ipps::DFT_Engine<Ipp32fc,Ipp32fc> dfteng(128);
 dfteng.Fwd(pSrc, pDst);
 ```
 
-Additionally, if using `TONEAPI`'s built-in `vector` container, you dont have to pass around pointers and lengths
-
-```cpp
-ipps::vector<Ipp32fc> src(128);
-ipps::DFT_Engine<Ipp32fc,Ipp32fc> dfteng(128);
-auto dst = dfteng.Fwd_V(src);
-```
-
-## Usage
-
-
-
 ## Similar Libraries
 This is not the first library to wrap Intel IPP. The following repositories have similar aims.
 * [ipp_ext by icyveins7](https://github.com/icyveins7/ipp_ext)
 * [IPPPlus by Red-Li](https://github.com/Red-Li/IPPPlus)
+* [Integration Wrapper by Intel](https://www.intel.com/content/www/us/en/docs/ipp/developer-reference-integration-wrapper/2020/overview.html)
 
-oneMKL's sycl interface also offers a C++ interface to MKL's routines. But it requires DPC++ compiler. This library is meant to be a simple wrapper around the .libs and .dll files 
+There is also a large open source collaboration effort under the [UXL foundation](https://uxlfoundation.org/) to implement the oneAPI specification. The oneAPI specification currently doesnt cover Intel IPP but it covers Intel MKL (oneMath) and it offers a nice C++ SYCL interface too. However, to use the oneMath SYCL interface, a Intel DPC++ compiler or clang compiler is needed. For MSVC compatibility, this dumb wrapper is still needed.
 
 ## Design Principles
 1. Instead of returning status codes and requiring the user to check for errors, this library will check every function call and throw a runtime exception if errors are detected
