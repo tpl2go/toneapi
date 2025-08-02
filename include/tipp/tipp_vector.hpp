@@ -1,9 +1,7 @@
 #pragma once
-#include "s_support.hpp"
-#include "s_initialization.hpp"
-#include "tipp_error.hpp"
 #include <stdexcept>
 #include <utility>
+#include <ipp/ippcore.h>
 
 namespace tipp
 {
@@ -59,7 +57,7 @@ namespace tipp
         vector(const vector &other)
         {
             reserve(m_numel);
-            Copy(other.m_data, m_data, (int)m_numel);
+            memcpy(m_data, other.m_data, (int)m_numel * sizeof(value_type));
             m_numel = other.m_numel;
         }
 
@@ -97,7 +95,7 @@ namespace tipp
                 if (other.m_numel > 0)
                 {
                     reserve(other.m_numel);
-                    Copy(other.m_data, m_data, (int)m_numel);
+                    memcpy(m_data, other.m_data, (int)m_numel * sizeof(value_type));
                 }
                 m_numel = other.m_numel;
             }
@@ -179,10 +177,10 @@ namespace tipp
         {
             if (new_cap > m_cap)
             {
-                value_type *new_data = ippsMalloc<value_type>(new_cap);
+                value_type *new_data = ippMalloc(new_cap * sizeof(value_type));
                 if (m_data != nullptr)
                 {
-                    Copy(m_data, new_data, (int)m_numel);
+                    memcpy(new_data, m_data, (int)m_numel * sizeof(value_type));
                     ippsFree(m_data);
                 }
                 m_data = new_data;
@@ -294,7 +292,7 @@ namespace tipp
 
         T *allocate(const size_t n) const
         {
-            return ippsMalloc<T>(n);
+            return ippMalloc(n * sizeof(T));
         }
         void deallocate(T *const p, size_t) const noexcept
         {

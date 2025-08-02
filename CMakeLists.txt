@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 project(TONEAPI VERSION 0.0.1 DESCRIPTION "A header-only C++ wrapper of Intel Performance Primitives")
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Define the header-only library
 # This is the core of a header-only library. 
