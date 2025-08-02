@@ -1,0 +1,11 @@
+# .clang-format
+---
+Language: Cpp
+BreakBeforeBraces: Attach
+# BraceWrapping:
+#   AfterStruct: false
+#   SplitEmptyRecord: false
+ColumnLimit: 1000
+AllowShortBlocksOnASingleLine: true
+NamespaceIndentation: All
+BreakTemplateDeclarations: Leave 
