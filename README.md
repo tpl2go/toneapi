@@ -78,8 +78,7 @@ This library is full of `static inline` because this library is not defining any
 ## Class Design
 When using a class to wrap the management of a resource like memory buffers, it is strongly recommended to specify the following 5 classes --- 1) Copy Constructor 2) Move Constructor, 3) Copy Assignment Operator 4) Move Assignment Operator, 5) Destructor. This is commonly known as the Rule of Five. The move / copy assignment operator is implemented using the copy and swap idiom.
 
-The code looks so repetitive and verbose. Why dont you write some macros to reduce code duplication?
-* Well, I want this library to be a thin and simple wrapper. Learning Intel IPP is hard enough for a developer and the developer shouldnt need to understand more metaprogramming logic to use this convenience library.
+The code is verbose and repetitive. While MACROS or tag-dispatch could be used to reduce code duplication, it was avoided because this library is intended to be simple. Learning an IPP's API is hard enough. A wrapper that adds convenience around an unweldy library shouldnt add too much more complexity around the library.
 
 ## On memory alignment
 Mallocs by modern C++ on 64-bit machines often returns a 16-byte aligned pointer. However, some SMID instructions (like AVX-256, AVX-512) require stricter memory alignment for optimal performance. 
