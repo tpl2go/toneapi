@@ -15,7 +15,7 @@ if (sts != 0) throw std::runtime_error();
 
 `TONEAPI` offers
 ```cpp
-tipp::Abs(pSrc, pDst, len);  // error checking built-in
+tipp::s::Abs(pSrc, pDst, len);  // error checking built-in
 ```
 
 **Example 2: Convenience Engines**
@@ -56,8 +56,8 @@ if (pDFTSpec) ippFree(pDFTSpec);
 
 `TONEAPI` offers
 ```cpp
-ipps::DFT_Engine<Ipp32fc,Ipp32fc> dfteng(128);
-dfteng.Fwd(pSrc, pDst);
+tipp::s::DFT_Engine<Ipp32fc,Ipp32fc> dfteng(128);
+dfteng.forward(pSrc, pDst);
 ```
 
 ## Similar Libraries
