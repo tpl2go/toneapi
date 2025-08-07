@@ -14,9 +14,11 @@ if (sts != 0) throw std::runtime_error();
 ```
 
 `TONEAPI` offers
+
 ```cpp
-tipp::s::Abs(pSrc, pDst, len);  // error checking built-in
+tipp::s::Abs(pSrc, pDst, len);
 ```
+Function overloading allows you to use IPP functions within templated codes.
 
 **Example 2: Convenience Engines**
 
@@ -60,6 +62,24 @@ tipp::s::DFT_Engine<Ipp32fc,Ipp32fc> dfteng(128);
 dfteng.forward(pSrc, pDst);
 ```
 
+**Example 3: Error Checking**
+
+Instead of:
+
+```cpp
+IppStatus sts = ippsAbs_32f_A24(pSrc, pDst, len);
+if (sts != 0) throw std::runtime_error();
+```
+
+TONEAPI offers
+
+```cpp
+#define ASSERT_TIPP_NOERROR
+tipp::s::Abs(pSrc, pDst, len); // error checking built in
+```
+
+define the `ASSERT_TIPP_NOERROR` flag within each translation unit to enable throwing an `std::runtime_error` when status is not 0.
+
 ## Similar Libraries
 This is not the first library to wrap Intel IPP. The following repositories have similar aims.
 * [ipp_ext by icyveins7](https://github.com/icyveins7/ipp_ext)
@@ -68,38 +88,64 @@ This is not the first library to wrap Intel IPP. The following repositories have
 
 There is also a large open source collaboration effort under the [UXL foundation](https://uxlfoundation.org/) to implement the oneAPI specification. The oneAPI specification currently doesnt cover Intel IPP but it covers Intel MKL (oneMath) and it offers a nice C++ SYCL interface too. However, to use the oneMath SYCL interface, a Intel DPC++ compiler or clang compiler is needed. For MSVC compatibility, this dumb wrapper is still needed.
 
+## Domains
+As much as possible, `TONEAPI` follows the same organization structure as Intel IPP binaries. Functions found in an IPP domain would be wrapped in an equivalent namespace. 
+For example:
+
+| domain            | tipp namespace | IPP includes | IPP libraries |
+|:-----------------:| :-------------:|:------------:|:-------------:|
+| signal processing | `tipp::s`      | `<ipp/ipps.h>`| `ipps.lib`   |
+| image processing |   `tipp::i`  | `<ipp/ippi.h>`| `ippi.lib`   |
+| computer vision |   `tipp::cv`  | `<ipp/ippcv.h>`| `ippcv.lib`   |
+
+
+
 ## Design Principles
-1. Instead of returning status codes and requiring the user to check for errors, this library will check every function call and throw a runtime exception if errors are detected
-2. Namespaces are designed to follow the intel binaries as closely as possible (ipps, ippvm, ippi, etc)
-3. Where possible, we will create additional wrapper functions that accept and return `std::vector` instead of pointers
+### static inline
+`static inline` is used to avoid causing multiple definition errors when this header library is included in multiple translation units. An additional benefit is that `inline` strongly suggests to the compiler that the wrapper function (and associated error checking) should be inlined away, resulting in zero-runtime overhead.
 
-This library is full of `static inline` because this library is not defining any new implementations. It cannot be compiled into a binary library. It is simply a wrapper that redirects the Intel api and should exist only within the compiler's translation unit. 
+### Simplicty
+This wrapper library is verbose and sometimes repetitive. While MACROS or tag-dispatch could be used to reduce code duplication, it was avoided to maintain simplicity. Learning IPP's API is hard enough. This wrapper intends to offer convenience not additionaly complexity when using IPP.
 
-## Class Design
-When using a class to wrap the management of a resource like memory buffers, it is strongly recommended to specify the following 5 classes --- 1) Copy Constructor 2) Move Constructor, 3) Copy Assignment Operator 4) Move Assignment Operator, 5) Destructor. This is commonly known as the Rule of Five. The move / copy assignment operator is implemented using the copy and swap idiom.
+### Functions without multiple types
+Even though it seems meaningless to  which dont support multiple types are ignored in this library. For example `ippsCountInRange_32s`, `ippsFindNearestOne_16u`.
 
-The code is verbose and repetitive. While MACROS or tag-dispatch could be used to reduce code duplication, it was avoided because this library is intended to be simple. Learning an IPP's API is hard enough. A wrapper that adds convenience around an unweldy library shouldnt add too much more complexity around the library.
-
-## On memory alignment
-Mallocs by modern C++ on 64-bit machines often returns a 16-byte aligned pointer. However, some SMID instructions (like AVX-256, AVX-512) require stricter memory alignment for optimal performance. 
-Users of Intel IPP are encouraged to use `IppsMalloc` to create 64-byte aligned memory for use with IPP functions. 
-If we were to abide by C++ practices of avoiding mallocs and using containers like `std::vector`, we have two possible options:
-1. Create our custom `vector` class that uses `IppsMalloc` and `IppsFree`
-2. Use a custom allocator with `std::vector`
-
-This library shall provide both options
-
-For the first option, refer to [ipp_ext by icyveins7](https://github.com/icyveins7/ipp_ext) for a possible implementation. 
-Instead, this section will describe how to use the second option.
-
-for Ippi, Ipp1u is not supported
-
-## Error checking
-It might be painful to always be checking the error status of a call to ipp. There is an optional MACROS flag `CHECK_IPP_ERROR` to throw a `runtime_error` whenever the return code isnt 0. 
-
-Functions which dont support multiple types are ignored in this library. For example `ippsCountInRange_32s`, `ippsFindNearestOne_16u`.
-
+### Functions with multiple accuracy
 Function which offer multiple accuracy levels for the same input type, only the most accurate is selected.
+
+### Memory management
+Convenience engine classes in this library apply the `rule of zero` by using `tipp::vector` to manage memory. Thus, destructors, copy constructors, move assignment operators etc need not be implemented and the class is kept simple.
+
+**Explanation**:
+The C standard guarentees that malloc() return pointers aligned for any fundamental type. 
+In practice, 64-bit machines often return 16-byte aligned pointers to support SIMD operations from SSE and SSE2. 
+But advanced SMID instructions like AVX-256 and AVX-512 require stricter 32-byte and 64 byte memory alignment respectively. 
+The code won't crash if it AVX512 was called on non-aligned memory but there would be a performance hit
+`tipp::vector` is a container class that functions similarly to std::vector. Internally it uses `IppMalloc` to allocate 64-byte aligned memory. 
+
+
+
+### Static Inline Functions
+All wrapper functions use `static inline` to prevent multiple definition errors when the header is included across multiple translation units. The `inline` keyword also encourages the compiler to optimize away the wrapper function calls, resulting in zero runtime overhead while maintaining the convenience of error checking and type safety.
+
+### Simplicity Over Cleverness
+This library prioritizes readability and ease of use over code compactness. While macros or template metaprogramming could reduce code duplication, we deliberately avoid such techniques to keep the learning curve shallow. Intel IPP already has a steep learning curve—this wrapper aims to simplify usage, not add complexity.
+
+### Selective Function Coverage
+**Single-type functions**: Functions that only support one data type (e.g., `ippsCountInRange_32s`, `ippsFindNearestOne_16u`) are excluded from this library since they don't benefit from C++ function overloading.
+
+**Multiple accuracy variants**: When IPP provides multiple accuracy levels for the same operation and data type, only the highest accuracy variant is wrapped to avoid decision paralysis and ensure consistent quality.
+
+### Memory Management
+Convenience engine classes follow the **Rule of Zero** by using `tipp::vector` for automatic memory management. This eliminates the need to manually implement destructors, copy constructors, or move operators, keeping the classes simple and safe.
+
+**Why custom memory allocation?**
+While the C standard guarantees that `malloc()` returns pointers aligned for fundamental types, modern SIMD instructions have stricter requirements:
+- SSE/SSE2: 16-byte alignment (typically provided by default on 64-bit systems)
+- AVX-256: 32-byte alignment 
+- AVX-512: 64-byte alignment
+
+Using misaligned memory won't crash your program, but it can significantly impact performance. `tipp::vector` uses Intel IPP's `ippMalloc()` to ensure 64-byte alignment, maximizing performance across all SIMD instruction sets.
 
 ## Contributions
 This project welcomes contributions and is keen to hear how it can be tweaked to serve your project needs. Do drop a message under issues if there are requests

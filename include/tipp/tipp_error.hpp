@@ -11,7 +11,7 @@ namespace tipp {
   }
 
   static inline IppStatus OptionalAssertNoError(IppStatus status) {
-#ifdef ASSERT_IPP_NOERROR
+#ifdef ASSERT_TIPP_NOERROR
     if (status != ippStsNoErr)
       throw std::runtime_error(ippGetStatusString(status));
 #endif
