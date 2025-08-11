@@ -97,33 +97,11 @@ For example:
 | signal processing | `tipp::s`      | `<ipp/ipps.h>`| `ipps.lib`   |
 | image processing |   `tipp::i`  | `<ipp/ippi.h>`| `ippi.lib`   |
 | computer vision |   `tipp::cv`  | `<ipp/ippcv.h>`| `ippcv.lib`   |
+| color conversion |   `tipp::cc`  | `<ipp/ippcc.h>`| `ippcc.lib`   |
 
 
 
 ## Design Principles
-### static inline
-`static inline` is used to avoid causing multiple definition errors when this header library is included in multiple translation units. An additional benefit is that `inline` strongly suggests to the compiler that the wrapper function (and associated error checking) should be inlined away, resulting in zero-runtime overhead.
-
-### Simplicty
-This wrapper library is verbose and sometimes repetitive. While MACROS or tag-dispatch could be used to reduce code duplication, it was avoided to maintain simplicity. Learning IPP's API is hard enough. This wrapper intends to offer convenience not additionaly complexity when using IPP.
-
-### Functions without multiple types
-Even though it seems meaningless to  which dont support multiple types are ignored in this library. For example `ippsCountInRange_32s`, `ippsFindNearestOne_16u`.
-
-### Functions with multiple accuracy
-Function which offer multiple accuracy levels for the same input type, only the most accurate is selected.
-
-### Memory management
-Convenience engine classes in this library apply the `rule of zero` by using `tipp::vector` to manage memory. Thus, destructors, copy constructors, move assignment operators etc need not be implemented and the class is kept simple.
-
-**Explanation**:
-The C standard guarentees that malloc() return pointers aligned for any fundamental type. 
-In practice, 64-bit machines often return 16-byte aligned pointers to support SIMD operations from SSE and SSE2. 
-But advanced SMID instructions like AVX-256 and AVX-512 require stricter 32-byte and 64 byte memory alignment respectively. 
-The code won't crash if it AVX512 was called on non-aligned memory but there would be a performance hit
-`tipp::vector` is a container class that functions similarly to std::vector. Internally it uses `IppMalloc` to allocate 64-byte aligned memory. 
-
-
 
 ### Static Inline Functions
 All wrapper functions use `static inline` to prevent multiple definition errors when the header is included across multiple translation units. The `inline` keyword also encourages the compiler to optimize away the wrapper function calls, resulting in zero runtime overhead while maintaining the convenience of error checking and type safety.
